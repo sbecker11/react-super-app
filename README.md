@@ -72,6 +72,12 @@ src/
 └── index.css              # Global styles
 ```
 
+**💡 Tip:** To view the current project structure in your terminal, run:
+```bash
+tree -L 3 -I 'node_modules' --dirsfirst
+```
+This command displays the directory tree structure (up to 3 levels deep), excluding the `node_modules` folder, with directories shown first.
+
 ## 🛠️ Available Scripts
 
 ### `npm start`
@@ -82,6 +88,9 @@ The page will reload when you make changes.
 Launches the test runner in interactive watch mode.  
 See the [testing documentation](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
+### `npm run test:coverage`
+Runs all tests and generates a coverage report. The report is displayed in the terminal and saved to the `coverage/` directory. Opens an interactive HTML report showing which parts of your code are covered by tests.
+
 ### `npm run build`
 Builds the app for production to the `build` folder.  
 The build is optimized and minified for best performance. Ready for deployment!
@@ -89,6 +98,182 @@ The build is optimized and minified for best performance. Ready for deployment!
 ### `npm run eject`
 **⚠️ Warning: This is a one-way operation!**  
 Ejects from Create React App configuration. You won't be able to go back!
+
+## 🧪 Testing
+
+This project includes comprehensive unit tests for all major components using [Jest](https://jestjs.io/) and [React Testing Library](https://testing-library.com/react).
+
+### Running Tests
+
+**Run all tests in watch mode** (recommended for development):
+```bash
+npm test
+```
+This launches the test runner in interactive watch mode. Press `a` to run all tests, or press `p` to filter by a filename pattern.
+
+**Run all tests once** (useful for CI/CD):
+```bash
+CI=true npm test
+```
+
+**Run a specific test file**:
+```bash
+npm test -- Home.test.js
+```
+
+**Run tests matching a pattern**:
+```bash
+npm test -- --testNamePattern="renders without crashing"
+```
+
+### Test Coverage
+
+The project includes comprehensive test coverage tracking. Coverage reports show which parts of your code are covered by tests.
+
+**Generate coverage report**:
+```bash
+npm run test:coverage
+```
+
+This will:
+- Run all tests
+- Generate a detailed coverage report in the terminal
+- Create an HTML coverage report in the `coverage/` directory
+- Show coverage percentages for branches, functions, lines, and statements
+
+**Coverage Thresholds**:
+The project is configured with minimum coverage thresholds of **70%** for:
+- ✅ Branches (conditional logic)
+- ✅ Functions (functions called)
+- ✅ Lines (lines of code executed)
+- ✅ Statements (statements executed)
+
+If coverage falls below these thresholds, the test run will fail. This helps maintain code quality.
+
+**View HTML Coverage Report**:
+After running coverage, open `coverage/lcov-report/index.html` in your browser to see a detailed, interactive coverage report.
+
+**What's Included in Coverage**:
+- All `.js` and `.jsx` files in the `src/` directory
+- Excludes: `index.js`, `reportWebVitals.js`, test files, and mock files
+
+**Improving Coverage**:
+- Write tests for components with low coverage
+- Test edge cases and error conditions
+- Test user interactions and state changes
+- Aim for 80%+ coverage for critical business logic
+
+### Test Structure
+
+Tests are located alongside the components they test, using the `.test.js` extension:
+```
+src/
+├── App.test.js
+└── components/
+    ├── About.test.js
+    ├── Footer.test.js
+    ├── Header.test.js
+    ├── Home.test.js
+    ├── JDAnalyzer.test.js
+    ├── Left.test.js
+    └── LoginRegister.test.js
+```
+
+### What's Tested
+
+- ✅ **App Component**: Routing, navigation, component rendering
+- ✅ **Header Component**: Link rendering, click handlers
+- ✅ **Left Component**: Sidebar navigation, click handlers
+- ✅ **Footer Component**: Copyright year display
+- ✅ **Home Component**: Content rendering
+- ✅ **About Component**: State management, localStorage integration, counter functionality
+- ✅ **LoginRegister Component**: Form validation, input handling, error messages
+- ✅ **JDAnalyzer Component**: Form fields, input handling, form submission
+
+### Writing New Tests
+
+When adding new components, create corresponding test files following this pattern:
+
+```javascript
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import YourComponent from './YourComponent';
+
+describe('YourComponent', () => {
+  it('renders without crashing', () => {
+    render(<Router><YourComponent /></Router>);
+  });
+
+  it('displays expected content', () => {
+    render(<Router><YourComponent /></Router>);
+    expect(screen.getByText('Expected Text')).toBeInTheDocument();
+  });
+});
+```
+
+### Test Best Practices
+
+1. **Test user interactions**, not implementation details
+2. **Use descriptive test names** that explain what is being tested
+3. **Keep tests focused** - one concept per test
+4. **Clean up** - use `beforeEach` and `afterEach` to reset state
+5. **Test accessibility** - use queries that resemble how users interact with your app
+
+### Common Test Patterns
+
+**Testing user input:**
+```javascript
+const input = screen.getByLabelText(/email/i);
+fireEvent.change(input, { target: { value: 'test@example.com' } });
+expect(input).toHaveValue('test@example.com');
+```
+
+**Testing button clicks:**
+```javascript
+const button = screen.getByText('Submit');
+fireEvent.click(button);
+expect(mockFunction).toHaveBeenCalled();
+```
+
+**Testing async operations:**
+```javascript
+await waitFor(() => {
+  expect(screen.getByText('Loading complete')).toBeInTheDocument();
+});
+```
+
+### Troubleshooting Tests
+
+**Issue: Tests fail with "Cannot find module"**
+- Make sure all dependencies are installed: `npm install`
+
+**Issue: Tests fail after adding new dependencies**
+- Clear Jest cache: `npm test -- --clearCache`
+
+**Issue: localStorage not working in tests**
+- Mock localStorage or use `beforeEach` to clear it:
+```javascript
+beforeEach(() => {
+  localStorage.clear();
+});
+```
+
+**Issue: Seeing deprecation warnings during tests**
+All deprecation warnings have been suppressed through configuration:
+
+**Suppressed warnings:**
+- ✅ **Node.js `punycode` deprecation warnings**: Suppressed via `NODE_OPTIONS='--no-deprecation'` in the test script (`package.json`)
+- ✅ **`ReactDOMTestUtils.act` deprecated**: Suppressed in `setupTests.js` - this warning came from React Testing Library's internal code
+- ✅ **React Router Future Flag Warnings**: Suppressed via future flags configured in both the main app (`App.js`) and test utilities (`test-utils.js`)
+
+Your tests should run without deprecation warnings. If you see any warnings, they are from dependencies and don't indicate problems with your code.
+
+### Additional Resources
+
+- [Jest Documentation](https://jestjs.io/docs/getting-started)
+- [React Testing Library Documentation](https://testing-library.com/react)
+- [Testing Best Practices](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
 
 ## 🔍 Current Routes
 

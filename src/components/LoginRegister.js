@@ -69,6 +69,7 @@ const LoginRegister = () => {
           </div>
           <input
             type="text"
+            id="email"
             name="email"
             value={profileData.email}
             onChange={handleChange}
@@ -83,6 +84,7 @@ const LoginRegister = () => {
           </div>
           <input
             type="password"
+            id="password"
             name="password"
             value={profileData.password}
             onChange={handleChange}
