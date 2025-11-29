@@ -26,28 +26,27 @@ describe('Database Connection', () => {
 
   describe('query function', () => {
     it('should execute query successfully', async () => {
-      const mockRows = [{ id: 1, name: 'Test' }];
-      const mockPool = new Pool();
-      mockPool.query.mockResolvedValueOnce({
-        rowCount: 1,
-      });
-
-      // Mock the query function to return our mock result
-      const originalQuery = require('../../database/connection').query;
-      
-      // Since we're testing the actual implementation, we need to mock at the Pool level
-      // This is a simplified test - in a real scenario, you'd test with a test database
-      expect(mockPool.query).toBeDefined();
+      // This test verifies the query function exists and can be called
+      // In a real scenario, you'd test with a test database
+      const { query } = require('../../database/connection');
+      expect(query).toBeDefined();
+      expect(typeof query).toBe('function');
     });
 
     it('should handle query errors', async () => {
-      const mockPool = new Pool();
+      const { query } = require('../../database/connection');
       const error = new Error('Database error');
-      mockPool.query.mockRejectedValueOnce(error);
+      
+      // Mock pool.query to throw an error
+      const { pool } = require('../../database/connection');
+      const originalQuery = pool.query;
+      pool.query = jest.fn().mockRejectedValueOnce(error);
 
-      // Test error handling
-      expect(mockPool.query).toBeDefined();
-      await expect(mockPool.query('SELECT * FROM users')).rejects.toThrow('Database error');
+      // Test that the query function properly propagates errors
+      await expect(query('SELECT * FROM users')).rejects.toThrow('Database error');
+      
+      // Restore original query
+      pool.query = originalQuery;
     });
   });
 

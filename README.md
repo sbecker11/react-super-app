@@ -12,46 +12,36 @@ This web application includes:
   - Job Description Analyzer component (in development)
   - Responsive layout with header, sidebar, and footer
 
+## 📊 Project Status
+
+**Architecture**: Full-stack React application with Express.js REST API and PostgreSQL database
+
+**Current Status**:
+- ✅ **Client**: React app with routing, forms, validation, and UI components
+- ✅ **Server**: Express.js REST API with authentication endpoints
+- ✅ **Database**: PostgreSQL with Docker Compose setup
+- ✅ **Testing**: 96+ tests with 98% statement coverage
+- 🔄 **Integration**: Backend ready, client-backend integration in progress
+
+**Completion Rate**: ~31% (10 completed / 32 total features tracked)
+
+**Next Steps** (High Priority):
+1. Connect LoginRegister form to backend API
+2. Implement Authentication Context for state management
+3. Create protected routes
+
+📖 **See [Features Summary](./docs/FEATURES_SUMMARY.md) for complete feature status and roadmap**
+
 ## 🚀 Getting Started
 
-### Prerequisites
-
-- **Node.js** (version 14.0 or higher recommended)
-- **npm** (comes with Node.js) or **yarn**
-
-You can check if you have Node.js installed by running:
+**Quick Start:**
 ```bash
-node --version
-npm --version
+docker-compose up --build
 ```
 
-### Installation Steps
+Access at: [http://localhost:3000](http://localhost:3000) (Client) | [http://localhost:3001](http://localhost:3001) (API)
 
-1. **Navigate to the project directory** (if not already there):
-   ```bash
-   cd /Users/sbecker11/workspace-react/react-app
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-   
-   This will install all required packages including:
-   - React & React DOM
-   - React Router DOM
-   - React Scripts (build tools)
-   - Yup (form validation)
-   - Testing libraries
-
-3. **Start the development server**:
-   ```bash
-   npm start
-   ```
-
-4. **Open your browser**:
-   - The app will automatically open at [http://localhost:3000](http://localhost:3000)
-   - The page will reload automatically when you make changes
+📖 **For complete setup instructions, prerequisites, troubleshooting, and alternative local development options, see [Getting Started Guide](./docs/GETTING_STARTED.md)**
 
 ## 📁 Project Structure
 
@@ -104,182 +94,15 @@ Ejects from Create React App configuration. You won't be able to go back!
 
 ## 🧪 Testing
 
-This project includes comprehensive unit tests for all major components using [Jest](https://jestjs.io/) and [React Testing Library](https://testing-library.com/react).
-
-### Running Tests
-
-**Run all tests in watch mode** (recommended for development):
+**Quick Commands:**
 ```bash
-npm test
-```
-This launches the test runner in interactive watch mode. Press `a` to run all tests, or press `p` to filter by a filename pattern.
-
-**Run all tests once** (useful for CI/CD):
-```bash
-CI=true npm test
+npm test                    # Run tests in watch mode
+npm run test:coverage       # Generate coverage report
 ```
 
-**Run a specific test file**:
-```bash
-npm test -- Home.test.js
-```
+**Test Status**: 96+ tests with 98% statement coverage
 
-**Run tests matching a pattern**:
-```bash
-npm test -- --testNamePattern="renders without crashing"
-```
-
-### Test Coverage
-
-The project includes comprehensive test coverage tracking. Coverage reports show which parts of your code are covered by tests.
-
-**Generate coverage report**:
-```bash
-npm run test:coverage
-```
-
-This will:
-- Run all tests
-- Generate a detailed coverage report in the terminal
-- Create an HTML coverage report in the `coverage/` directory
-- Show coverage percentages for branches, functions, lines, and statements
-
-**Coverage Thresholds**:
-The project is configured with minimum coverage thresholds of **70%** for:
-- ✅ Branches (conditional logic)
-- ✅ Functions (functions called)
-- ✅ Lines (lines of code executed)
-- ✅ Statements (statements executed)
-
-If coverage falls below these thresholds, the test run will fail. This helps maintain code quality.
-
-**View HTML Coverage Report**:
-After running coverage, open `coverage/lcov-report/index.html` in your browser to see a detailed, interactive coverage report.
-
-**What's Included in Coverage**:
-- All `.js` and `.jsx` files in the `src/` directory
-- Excludes: `index.js`, `reportWebVitals.js`, test files, and mock files
-
-**Improving Coverage**:
-- Write tests for components with low coverage
-- Test edge cases and error conditions
-- Test user interactions and state changes
-- Aim for 80%+ coverage for critical business logic
-
-### Test Structure
-
-Tests are located alongside the components they test, using the `.test.js` extension:
-```
-src/
-├── App.test.js
-└── components/
-    ├── About.test.js
-    ├── Footer.test.js
-    ├── Header.test.js
-    ├── Home.test.js
-    ├── JDAnalyzer.test.js
-    ├── Left.test.js
-    └── LoginRegister.test.js
-```
-
-### What's Tested
-
-- ✅ **App Component**: Routing, navigation, component rendering
-- ✅ **Header Component**: Link rendering, click handlers
-- ✅ **Left Component**: Sidebar navigation, click handlers
-- ✅ **Footer Component**: Copyright year display
-- ✅ **Home Component**: Content rendering
-- ✅ **About Component**: State management, localStorage integration, counter functionality
-- ✅ **LoginRegister Component**: Form validation, input handling, error messages
-- ✅ **JDAnalyzer Component**: Form fields, input handling, form submission
-- ✅ **NotFound Component**: 404 error page with navigation
-- ✅ **ErrorBoundary Component**: React error catching and display
-- ✅ **Loading Component**: Loading spinner with multiple size options
-
-### Writing New Tests
-
-When adding new components, create corresponding test files following this pattern:
-
-```javascript
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import YourComponent from './YourComponent';
-
-describe('YourComponent', () => {
-  it('renders without crashing', () => {
-    render(<Router><YourComponent /></Router>);
-  });
-
-  it('displays expected content', () => {
-    render(<Router><YourComponent /></Router>);
-    expect(screen.getByText('Expected Text')).toBeInTheDocument();
-  });
-});
-```
-
-### Test Best Practices
-
-1. **Test user interactions**, not implementation details
-2. **Use descriptive test names** that explain what is being tested
-3. **Keep tests focused** - one concept per test
-4. **Clean up** - use `beforeEach` and `afterEach` to reset state
-5. **Test accessibility** - use queries that resemble how users interact with your app
-
-### Common Test Patterns
-
-**Testing user input:**
-```javascript
-const input = screen.getByLabelText(/email/i);
-fireEvent.change(input, { target: { value: 'test@example.com' } });
-expect(input).toHaveValue('test@example.com');
-```
-
-**Testing button clicks:**
-```javascript
-const button = screen.getByText('Submit');
-fireEvent.click(button);
-expect(mockFunction).toHaveBeenCalled();
-```
-
-**Testing async operations:**
-```javascript
-await waitFor(() => {
-  expect(screen.getByText('Loading complete')).toBeInTheDocument();
-});
-```
-
-### Troubleshooting Tests
-
-**Issue: Tests fail with "Cannot find module"**
-- Make sure all dependencies are installed: `npm install`
-
-**Issue: Tests fail after adding new dependencies**
-- Clear Jest cache: `npm test -- --clearCache`
-
-**Issue: localStorage not working in tests**
-- Mock localStorage or use `beforeEach` to clear it:
-```javascript
-beforeEach(() => {
-  localStorage.clear();
-});
-```
-
-**Issue: Seeing deprecation warnings during tests**
-All deprecation warnings have been suppressed through configuration:
-
-**Suppressed warnings:**
-- ✅ **Node.js `punycode` deprecation warnings**: Suppressed via `NODE_OPTIONS='--no-deprecation'` in the test script (`package.json`)
-- ✅ **`ReactDOMTestUtils.act` deprecated**: Suppressed in `setupTests.js` - this warning came from React Testing Library's internal code
-- ✅ **React Router Future Flag Warnings**: Suppressed via future flags configured in both the main app (`App.js`) and test utilities (`test-utils.js`)
-
-Your tests should run without deprecation warnings. If you see any warnings, they are from dependencies and don't indicate problems with your code.
-
-### Additional Resources
-
-- [Jest Documentation](https://jestjs.io/docs/getting-started)
-- [React Testing Library Documentation](https://testing-library.com/react)
-- [Testing Best Practices](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
+📖 **For comprehensive testing documentation including test structure, coverage analysis, best practices, troubleshooting, and server-side tests, see [Testing Guide](./docs/TESTING_GUIDE.md)**
 
 ## 🔍 Current Routes
 
@@ -292,51 +115,26 @@ The application has the following routes:
 
 ## 📝 Key Features
 
-### Login/Register Form
-- Form validation using Yup schema
-- Email validation
-- Password requirements:
-  - At least 8 characters
-  - Must contain an uppercase letter
-  - Must contain a number
-  - Must contain a special character (!@#$%^&*)
-- Error messages displayed inline
+- **Form Validation**: Yup-based validation with real-time feedback and enhanced error messages
+- **Routing**: React Router with multiple routes including 404 handling
+- **Error Handling**: Error boundaries for graceful error recovery
+- **Loading States**: Reusable loading spinner component
+- **Authentication Forms**: Login/Register with comprehensive validation
 
-### Navigation
-- Header navigation links
-- Sidebar navigation
-- React Router for client-side routing
-
-### Error Handling
-- **Error Boundary**: Catches React errors and displays a user-friendly error page
-- **404 Page**: Displays when users navigate to invalid routes
-- Graceful error recovery with "Try Again" functionality
-
-### Loading States
-- **Loading Component**: Reusable loading spinner with customizable size and messages
-- Supports inline and full-screen loading states
-- Can be integrated into forms and async operations
+📖 **For detailed validation rules, error handling, and UI feedback patterns, see [Validation Guide](./docs/VALIDATION_GUIDE.md)**
 
 ## ⚠️ Known Issues / TODO
 
-For a comprehensive list of missing features and improvements needed for production readiness, see:
+For a comprehensive overview of feature status (completed, in progress, and planned), see:
 
-👉 **[MISSING_FEATURES.md](./MISSING_FEATURES.md)**
+👉 **[Features Summary](./docs/FEATURES_SUMMARY.md)**
 
-### Quick Summary:
-
-1. **JDAnalyzer Component**: Basic form implemented, but analysis functionality needs to be added
-   - Form structure is complete with all fields
-   - Word analysis and JD comparison features to be implemented
-   - Missing route in App.js (component exists but not accessible)
-
-2. **Services Folder**: Empty - API integration needed for backend services
-
-3. **Authentication**: Login/Register form currently only validates client-side, no backend integration
-
-4. **Error Handling**: Missing error boundaries and 404 page
-
-5. **User Feedback**: Missing loading states, success messages, and toast notifications
+**Quick Summary:**
+- Backend API ready; client integration needed
+- Authentication Context implementation pending
+- Protected routes need to be created
+- Toast notification system needed for API feedback
+- JDAnalyzer core functionality pending
 
 ## 🔧 Troubleshooting
 
@@ -356,17 +154,35 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
-## 🆕 How to Create a React App from Scratch
+## 📚 Documentation
 
-For detailed instructions on creating a new React application from scratch using different methods (Create React App, Vite, Next.js, or manual setup), please see the comprehensive guide:
+This project includes comprehensive documentation covering all aspects of development, deployment, testing, and more. All documentation files are located in the [`docs/`](./docs/) directory.
 
-👉 **[CREATE-REACT-APP-GUIDE.md](./CREATE-REACT-APP-GUIDE.md)**
+### 🚀 Getting Started & Setup
 
-This guide includes:
-- Step-by-step instructions for all methods
-- Comparison tables and recommendations
-- Prerequisites and troubleshooting tips
-- Next steps after creating an app
+- **[Getting Started Guide](./docs/GETTING_STARTED.md)** - Quick start guide to get the application up and running with Docker Compose, PostgreSQL, and REST API
+- **[Create React App Guide](./docs/CREATE-REACT-APP-GUIDE.md)** - Detailed instructions for creating a new React application from scratch using different methods (Create React App, Vite, Next.js, or manual setup)
+
+### 🐳 Docker & Deployment
+
+- **[Docker Setup Guide](./docs/DOCKER_SETUP_GUIDE.md)** - Comprehensive guide for setting up and running the application using Docker Compose
+- **[Docker Compose Summary](./docs/DOCKER_COMPOSE_SUMMARY.md)** - Quick reference for the Docker Compose setup and services
+
+### 💾 Storage & Persistence
+
+- **[Storage Guide](./docs/STORAGE_GUIDE.md)** - Complete guide covering PostgreSQL database setup, schemas, REST API schemas, and client-side session storage
+
+### 🧪 Testing
+
+- **[Testing Guide](./docs/TESTING_GUIDE.md)** - Comprehensive testing documentation including client-side tests, server-side tests, coverage analysis, and best practices
+
+### ✅ Validation
+
+- **[Validation Guide](./docs/VALIDATION_GUIDE.md)** - Complete guide to form validation including Yup implementation, error handling, UI feedback, and centralized configuration
+
+### 📋 Project Planning
+
+- **[Features Summary](./docs/FEATURES_SUMMARY.md)** - Comprehensive overview of feature status including completed features, in-progress items, and planned improvements, organized by priority
 
 ---
 

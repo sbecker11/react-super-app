@@ -133,6 +133,33 @@ docker-compose exec postgres psql -U jduser -d jdanalyzer
 docker-compose exec postgres psql -U jduser -d jdanalyzer -c "SELECT * FROM users;"
 ```
 
+### Database Management Commands (npm scripts)
+
+```bash
+# Initialize database (starts container + creates schema)
+npm run db:init
+
+# Start database container
+npm run db:start
+
+# Stop database container
+npm run db:stop
+
+# Restart database
+npm run db:restart
+
+# Check database status
+npm run db:status
+
+# View database logs
+npm run db:logs
+
+# Connect to PostgreSQL shell
+npm run db:shell
+```
+
+**Note:** The `db:init` script automatically checks if Docker Desktop is running and starts it if needed (macOS).
+
 ### Rebuild Services
 
 ```bash
@@ -143,6 +170,19 @@ docker-compose build
 docker-compose build server
 docker-compose build client
 ```
+
+### Test Commands Summary
+
+| Command | Description |
+|---------|-------------|
+| `npm test` | Run client tests (watch mode) |
+| `npm test -- --watchAll=false` | Run client tests once |
+| `npm run test:coverage` | Client tests with coverage |
+| `cd server && npm test` | Run server tests |
+| `cd server && npm test -- --coverage` | Server tests with coverage |
+| `cd server && npm test -- middleware/auth.test.js` | Run specific test file |
+
+**Note:** Server API integration tests require PostgreSQL to be running. Start it with `npm run db:init` before running server tests.
 
 ## 🗄️ Database Schema
 
@@ -341,6 +381,14 @@ For production:
    ```
 
 ## 📚 Additional Resources
+
+- **Quick Commands**: See [`../COMMANDS.md`](../COMMANDS.md) for a quick command reference
+- **Getting Started**: See [`GETTING_STARTED.md`](./GETTING_STARTED.md) for complete setup guide
+- **Troubleshooting**: See [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md) for common issues and solutions
+- **Testing**: See [`TESTING_GUIDE.md`](./TESTING_GUIDE.md) for comprehensive testing information
+- **Storage & Database**: See [`STORAGE_GUIDE.md`](./STORAGE_GUIDE.md) for database schemas and API details
+
+### External Resources
 
 - [Docker Documentation](https://docs.docker.com/)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)

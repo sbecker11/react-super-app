@@ -18,7 +18,17 @@
     "build": "react-scripts build",
     "test": "NODE_OPTIONS='--no-deprecation' react-scripts test",
     "test:coverage": "NODE_OPTIONS='--no-deprecation' react-scripts test --coverage --watchAll=false",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "check-ports": "./scripts/check-ports.sh",
+    "start:services": "./scripts/start-services.sh up --build",
+    "start:services:detached": "./scripts/start-services.sh up -d --build",
+    "db:init": "./scripts/init-database.sh",
+    "db:start": "docker-compose up -d postgres",
+    "db:stop": "docker-compose stop postgres",
+    "db:restart": "docker-compose restart postgres",
+    "db:status": "docker-compose ps postgres",
+    "db:logs": "docker-compose logs -f postgres",
+    "db:shell": "docker-compose exec postgres psql -U ${POSTGRES_USER:-jduser} -d ${POSTGRES_DB:-jdanalyzer}"
   },
   "eslintConfig": {
     "extends": [

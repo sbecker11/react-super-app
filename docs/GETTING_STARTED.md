@@ -32,18 +32,24 @@ The `.env` file is already created! It contains:
 
 ### Step 2: Start All Services
 
-From the project root directory:
-
+**Option A: Start Everything (Recommended)**
 ```bash
 docker-compose up --build
+```
+
+**Option B: Start Database Only (for testing)**
+```bash
+npm run db:init
 ```
 
 **What happens:**
 - ✅ Builds Docker images for all services (first time only)
 - ✅ Starts PostgreSQL database container
 - ✅ Initializes database schema automatically
-- ✅ Starts Express REST API server (port 3001)
-- ✅ Starts React development client (port 3000)
+- ✅ Starts Express REST API server (port 3001) - Option A only
+- ✅ Starts React development client (port 3000) - Option A only
+
+**Note**: Use `npm run db:init` if you only need the database for running server tests. This script ensures the database is properly initialized with all tables and indexes.
 
 **Expected output:**
 ```
@@ -103,14 +109,85 @@ curl -X POST http://localhost:3001/api/auth/login \
 
 ## ✅ Success Checklist
 
-After starting Docker Compose, verify:
+After starting Docker Compose, verify everything is working:
 
+### 1. Check Containers Are Running
+```bash
+docker-compose ps
+```
+**Expected:** All containers show "Up" status
+
+### 2. Test API Health Endpoint
+```bash
+curl http://localhost:3001/health
+```
+**Expected result:**
+```json
+{"status":"ok","message":"Server is running"}
+```
+
+### 3. Test API Registration
+```bash
+curl -X POST http://localhost:3001/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test User","email":"test@example.com","password":"TestPass123!"}'
+```
+**Expected result:** Returns token and user data
+
+### 4. Open Browser to React App
+```bash
+open http://localhost:3000  # macOS
+# OR
+xdg-open http://localhost:3000  # Linux
+```
+**Expected:** React app loads in browser
+
+### Verification Checklist
 - [ ] PostgreSQL container is running
 - [ ] Server responds to `/health` endpoint
 - [ ] You can register a user via API (returns token)
 - [ ] You can login via API (returns token)
 - [ ] React app loads at http://localhost:3000
 - [ ] No errors in Docker Compose logs
+
+---
+
+## 💻 Development Mode (Local, No Docker)
+
+If you prefer to run client and server locally (outside Docker) for faster development:
+
+### Setup
+
+#### Terminal 1: Start Database
+```bash
+npm run db:init
+```
+
+#### Terminal 2: Start Server
+```bash
+cd server
+npm install  # First time only
+npm run dev
+```
+Server runs on http://localhost:3001
+
+#### Terminal 3: Start React Client
+```bash
+npm install  # First time only
+npm start
+```
+Client runs on http://localhost:3000 (opens automatically)
+
+### Advantages of Local Development
+- **Faster hot reload** - Changes reflect immediately
+- **Easier debugging** - Direct access to console logs
+- **Better IDE integration** - Breakpoints and debugging tools work better
+- **No Docker overhead** - Faster startup and less resource usage
+
+### Notes
+- Database still runs in Docker (via `npm run db:init`)
+- Environment variables from `.env` are still used
+- API URL should be configured in `.env` as `REACT_APP_API_URL=http://localhost:3001/api`
 
 ---
 
@@ -244,6 +321,10 @@ cd server && npm test -- --testPathPattern="middleware"
 
 ## 🐛 Troubleshooting
 
+For comprehensive troubleshooting information, see [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md).
+
+### Quick Fixes
+
 ### Port Already in Use
 
 **Error**: `Error: bind: address already in use`
@@ -357,10 +438,12 @@ docker-compose restart client
 
 ## 📖 Additional Documentation
 
-- **Docker Setup**: See `DOCKER_SETUP_GUIDE.md` for detailed Docker information
-- **API Documentation**: See `server/README.md` for API details
-- **Testing**: See `TESTING_SUMMARY.md` for testing information
-- **User Storage**: See `USER_SESSION_STORAGE_GUIDE.md` for authentication details
+- **Quick Commands**: See [`../COMMANDS.md`](../COMMANDS.md) for a quick command reference
+- **Docker Setup**: See [`DOCKER_SETUP_GUIDE.md`](./DOCKER_SETUP_GUIDE.md) for detailed Docker information
+- **Troubleshooting**: See [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md) for common issues and solutions
+- **API Documentation**: See [`../server/README.md`](../server/README.md) for API details
+- **Testing**: See [`TESTING_GUIDE.md`](./TESTING_GUIDE.md) for comprehensive testing information
+- **Storage & Persistence**: See [`STORAGE_GUIDE.md`](./STORAGE_GUIDE.md) for database, API, and authentication storage details
 
 ---
 

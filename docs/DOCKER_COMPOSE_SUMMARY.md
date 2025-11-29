@@ -28,8 +28,8 @@
    - Indexes for performance
 
 ### 5. **Documentation**
-   - `DOCKER_SETUP_GUIDE.md` - Comprehensive setup guide
-   - `server/README.md` - Server-specific documentation
+   - [`DOCKER_SETUP_GUIDE.md`](./DOCKER_SETUP_GUIDE.md) - Comprehensive setup guide
+   - [`../server/README.md`](../server/README.md) - Server-specific documentation
 
 ## 📦 Services
 
@@ -128,9 +128,9 @@ react-app/
 
 ## 📚 Documentation
 
-- See `DOCKER_SETUP_GUIDE.md` for detailed setup instructions
-- See `server/README.md` for server-specific documentation
-- See `USER_SESSION_STORAGE_GUIDE.md` for authentication storage best practices
+- See [`DOCKER_SETUP_GUIDE.md`](./DOCKER_SETUP_GUIDE.md) for detailed setup instructions
+- See [`../server/README.md`](../server/README.md) for server-specific documentation
+- See [`STORAGE_GUIDE.md`](./STORAGE_GUIDE.md) for database, API, and authentication storage best practices
 
 ## ⚠️ Security Notes
 
@@ -143,7 +143,7 @@ react-app/
 
 ## 🐛 Troubleshooting
 
-See `DOCKER_SETUP_GUIDE.md` for troubleshooting tips.
+See [`DOCKER_SETUP_GUIDE.md`](./DOCKER_SETUP_GUIDE.md) for troubleshooting tips.
 
 Common issues:
 - Port conflicts: Change ports in `.env`

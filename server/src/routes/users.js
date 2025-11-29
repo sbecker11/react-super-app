@@ -26,6 +26,15 @@ router.get('/', async (req, res) => {
 });
 
 /**
+ * GET /api/users/me
+ * Get current authenticated user
+ * NOTE: This must come before /:id route to avoid matching "me" as an ID
+ */
+router.get('/me', (req, res) => {
+  res.json({ user: req.user });
+});
+
+/**
  * GET /api/users/:id
  * Get user by ID
  */
@@ -33,11 +42,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Only allow users to view their own profile (unless admin)
-    if (req.user.id !== id) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-    
+    // Check if user exists first
     const result = await query(
       'SELECT id, name, email, created_at, updated_at FROM users WHERE id = $1',
       [id]
@@ -47,19 +52,16 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
+    // Only allow users to view their own profile (unless admin)
+    if (req.user.id !== id) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    
     res.json({ user: result.rows[0] });
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Failed to fetch user' });
   }
-});
-
-/**
- * GET /api/users/me
- * Get current authenticated user
- */
-router.get('/me', (req, res) => {
-  res.json({ user: req.user });
 });
 
 /**
