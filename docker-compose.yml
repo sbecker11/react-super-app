@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: jd_analyzer_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-jduser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jdpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-jdanalyzer}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - jd_analyzer_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jduser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Node.js/Express REST API Server
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: jd_analyzer_server
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${SERVER_PORT:-3001}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-jduser}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-jdpassword}
+      DB_NAME: ${POSTGRES_DB:-jdanalyzer}
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+    ports:
+      - "${SERVER_PORT:-3001}:3001"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - jd_analyzer_network
+    restart: unless-stopped
+    command: npm run dev
+
+  # React Client
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: jd_analyzer_client
+    environment:
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:3001/api}
+      REACT_APP_ENV: ${REACT_APP_ENV:-development}
+    ports:
+      - "${CLIENT_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    networks:
+      - jd_analyzer_network
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  jd_analyzer_network:
+    driver: bridge
+

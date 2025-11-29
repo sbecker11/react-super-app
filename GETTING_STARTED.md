@@ -1,0 +1,399 @@
+# 🚀 Getting Started Guide
+
+This guide will help you get your JD Analyzer application up and running with Docker Compose, PostgreSQL, and REST API in just a few minutes!
+
+## 📋 Prerequisites
+
+- **Docker** (version 20.10 or higher) - [Install Docker](https://www.docker.com/get-started)
+- **Docker Compose** (usually comes with Docker Desktop)
+- **Git** (if cloning the repository)
+
+Verify installations:
+```bash
+docker --version
+docker-compose --version
+```
+
+---
+
+## ⚡ Quick Start (5 Minutes)
+
+### Step 1: Create Environment File
+
+The `.env` file is already created! It contains:
+- Database configuration (PostgreSQL)
+- Server port configuration
+- Client port and API URL
+- JWT secret for authentication
+
+**Location**: `.env` in project root
+
+**Note**: The `.env` file is in `.gitignore` and won't be committed to Git.
+
+### Step 2: Start All Services
+
+From the project root directory:
+
+```bash
+docker-compose up --build
+```
+
+**What happens:**
+- ✅ Builds Docker images for all services (first time only)
+- ✅ Starts PostgreSQL database container
+- ✅ Initializes database schema automatically
+- ✅ Starts Express REST API server (port 3001)
+- ✅ Starts React development client (port 3000)
+
+**Expected output:**
+```
+postgres_1  | database system is ready to accept connections
+server_1    | 🚀 Server running on port 3001
+client_1    | Compiled successfully!
+client_1    | webpack compiled successfully
+```
+
+**First run:** Takes 2-5 minutes (building images and installing dependencies)  
+**Subsequent runs:** Takes 30-60 seconds (containers start quickly)
+
+### Step 3: Verify Everything is Running
+
+**Check services:**
+```bash
+# In a new terminal, check container status
+docker-compose ps
+
+# View logs
+docker-compose logs server
+docker-compose logs client
+docker-compose logs postgres
+```
+
+**Test the API:**
+
+```bash
+# Health check - should return: {"status":"ok","message":"Server is running"}
+curl http://localhost:3001/health
+
+# Register a new user - save the token from response!
+curl -X POST http://localhost:3001/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "SecurePass123!"
+  }'
+
+# Login - should return token and user info
+curl -X POST http://localhost:3001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "SecurePass123!"
+  }'
+```
+
+**Access the application:**
+- 🌐 **React Client**: http://localhost:3000
+- 🔌 **API Server**: http://localhost:3001
+- ❤️ **Health Check**: http://localhost:3001/health
+- 🗄️ **PostgreSQL**: localhost:5432 (for direct database access)
+
+---
+
+## ✅ Success Checklist
+
+After starting Docker Compose, verify:
+
+- [ ] PostgreSQL container is running
+- [ ] Server responds to `/health` endpoint
+- [ ] You can register a user via API (returns token)
+- [ ] You can login via API (returns token)
+- [ ] React app loads at http://localhost:3000
+- [ ] No errors in Docker Compose logs
+
+---
+
+## 🎯 Next Steps
+
+Once everything is running:
+
+### 1. **Integrate React Client with API**
+   - Update `LoginRegister` component to use the API service
+   - Connect form submission to `/api/auth/register` and `/api/auth/login`
+   - Store JWT token in localStorage
+
+### 2. **Add Authentication Context**
+   - Create `AuthContext` to share user state across components
+   - Wrap app with `AuthProvider`
+   - Implement login/logout functionality
+
+### 3. **Create Protected Routes**
+   - Add `ProtectedRoute` component
+   - Protect routes that require authentication
+   - Redirect unauthenticated users to login
+
+### 4. **Test the Full Flow**
+   - Register new user through UI
+   - Login through UI
+   - Access protected pages
+   - Update user profile
+
+---
+
+## 📚 Available Services
+
+### PostgreSQL Database
+- **Port**: 5432
+- **Database**: `jdanalyzer`
+- **User**: `jduser`
+- **Password**: `jdpassword`
+- **Schema**: Auto-initialized from `server/database/init.sql`
+
+### Express REST API Server
+- **Port**: 3001
+- **Base URL**: http://localhost:3001
+- **API Base**: http://localhost:3001/api
+- **Endpoints**:
+  - `GET /health` - Health check
+  - `POST /api/auth/register` - Register user
+  - `POST /api/auth/login` - Login user
+  - `GET /api/users` - Get all users (requires auth)
+  - `GET /api/users/me` - Get current user (requires auth)
+  - `GET /api/users/:id` - Get user by ID (requires auth)
+  - `PUT /api/users/:id` - Update user (requires auth)
+  - `DELETE /api/users/:id` - Delete user (requires auth)
+
+### React Client
+- **Port**: 3000
+- **URL**: http://localhost:3000
+- **Hot Reload**: Enabled (auto-reloads on file changes)
+
+---
+
+## 🔧 Useful Commands
+
+### Docker Compose Commands
+
+```bash
+# Start all services
+docker-compose up
+
+# Start in background (detached mode)
+docker-compose up -d
+
+# Rebuild and start
+docker-compose up --build
+
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (⚠️ deletes database data)
+docker-compose down -v
+
+# View logs
+docker-compose logs
+
+# View logs for specific service
+docker-compose logs server
+docker-compose logs client
+docker-compose logs postgres
+
+# Follow logs (like tail -f)
+docker-compose logs -f server
+
+# Restart a specific service
+docker-compose restart server
+docker-compose restart client
+docker-compose restart postgres
+
+# Check service status
+docker-compose ps
+```
+
+### Database Commands
+
+```bash
+# Connect to PostgreSQL
+docker-compose exec postgres psql -U jduser -d jdanalyzer
+
+# Run SQL query
+docker-compose exec postgres psql -U jduser -d jdanalyzer -c "SELECT * FROM users;"
+
+# Backup database
+docker-compose exec postgres pg_dump -U jduser jdanalyzer > backup.sql
+
+# Restore database
+docker-compose exec -T postgres psql -U jduser jdanalyzer < backup.sql
+```
+
+### Testing Commands
+
+```bash
+# Run client tests
+npm test
+
+# Run server tests (from server directory)
+cd server && npm test
+
+# Run server middleware tests (no database needed)
+cd server && npm test -- --testPathPattern="middleware"
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Port Already in Use
+
+**Error**: `Error: bind: address already in use`
+
+**Solutions:**
+
+1. **Change ports in `.env` file:**
+   ```env
+   CLIENT_PORT=3002
+   SERVER_PORT=3003
+   POSTGRES_PORT=5433
+   ```
+
+2. **Find and stop the process using the port:**
+   ```bash
+   # Find process
+   lsof -i :3000  # React client
+   lsof -i :3001  # API server
+   lsof -i :5432  # PostgreSQL
+   
+   # Kill process (replace PID with actual process ID)
+   kill -9 <PID>
+   ```
+
+### Docker Container Won't Start
+
+**Check logs:**
+```bash
+docker-compose logs <service-name>
+```
+
+**Rebuild containers:**
+```bash
+docker-compose down
+docker-compose build --no-cache
+docker-compose up
+```
+
+### Database Connection Errors
+
+**Check if PostgreSQL is running:**
+```bash
+docker-compose ps postgres
+```
+
+**View database logs:**
+```bash
+docker-compose logs postgres
+```
+
+**Restart database:**
+```bash
+docker-compose restart postgres
+```
+
+**Reinitialize database:**
+```bash
+# ⚠️ WARNING: This deletes all data!
+docker-compose down -v
+docker-compose up postgres
+```
+
+### "Cannot find module" Errors
+
+**For server:**
+```bash
+cd server
+npm install
+docker-compose restart server
+```
+
+**For client:**
+```bash
+npm install
+docker-compose restart client
+```
+
+### React App Shows "Cannot GET /"
+
+**Solution**: This is normal! React Router handles client-side routing. The server should serve the React app on all routes in production. In development, this is handled by `react-scripts`.
+
+### API Requests Return 404
+
+**Check:**
+1. Server container is running: `docker-compose ps server`
+2. Server logs show no errors: `docker-compose logs server`
+3. API URL is correct: `http://localhost:3001/api`
+4. Check `.env` file has correct `REACT_APP_API_URL`
+
+---
+
+## 🔒 Security Notes
+
+**⚠️ Important for Production:**
+
+1. **Change JWT_SECRET** - Use a strong, random secret:
+   ```bash
+   # Generate a secure secret
+   openssl rand -base64 32
+   ```
+
+2. **Change Database Passwords** - Use strong passwords in production
+
+3. **Use HTTPS** - Enable SSL/TLS in production
+
+4. **Environment Variables** - Never commit `.env` file to Git (already in `.gitignore`)
+
+5. **Database Security** - Restrict database access in production
+
+---
+
+## 📖 Additional Documentation
+
+- **Docker Setup**: See `DOCKER_SETUP_GUIDE.md` for detailed Docker information
+- **API Documentation**: See `server/README.md` for API details
+- **Testing**: See `TESTING_SUMMARY.md` for testing information
+- **User Storage**: See `USER_SESSION_STORAGE_GUIDE.md` for authentication details
+
+---
+
+## 🎉 You're Ready!
+
+You now have:
+- ✅ PostgreSQL database running
+- ✅ Express REST API server running
+- ✅ React client application running
+- ✅ Complete development environment
+
+**Next**: Start integrating the React client with the API, or explore the API endpoints!
+
+---
+
+## 💡 Quick Reference
+
+```bash
+# Start everything
+docker-compose up --build
+
+# Stop everything
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Test API
+curl http://localhost:3001/health
+
+# Access app
+# Client: http://localhost:3000
+# API: http://localhost:3001
+```
+
+**Happy coding! 🚀**
