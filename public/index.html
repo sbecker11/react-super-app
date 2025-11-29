@@ -25,10 +25,285 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>React App</title>
+    <style>
+      /* Dark mode support for test commands panel */
+      @media (prefers-color-scheme: dark) {
+        .test-panel {
+          background: #2d2d2d !important;
+          border-color: #404040 !important;
+          color: #e0e0e0 !important;
+        }
+        
+        .test-panel-title {
+          color: #ffffff !important;
+        }
+        
+        .test-panel strong {
+          color: #ffffff !important;
+        }
+        
+        .test-panel code {
+          background: #1a1a1a !important;
+          color: #4fc3f7 !important;
+          border: 1px solid #404040 !important;
+        }
+        
+        .test-panel .copy-command-btn {
+          background: #1976d2 !important;
+          color: white !important;
+        }
+        
+        .test-panel .copy-command-btn:hover {
+          background: #1565c0 !important;
+        }
+        
+        .close-test-btn {
+          color: #b0b0b0 !important;
+        }
+        
+        .close-test-btn:hover {
+          color: #ffffff !important;
+          background: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .test-panel-kbd {
+          background: #404040 !important;
+          border-color: #606060 !important;
+          color: #e0e0e0 !important;
+        }
+        
+        .test-panel-footer {
+          border-top-color: #404040 !important;
+          color: #b0b0b0 !important;
+        }
+        
+        #test-commands-toggle {
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    
+    <!-- Toggle Button for Test Commands -->
+    <button id="test-commands-toggle" style="position: fixed; bottom: 10px; right: 10px; background: #007bff; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; z-index: 10000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: background-color 0.2s;">
+      🧪
+    </button>
+    
+    <!-- Developer Test Commands Section -->
+    <div id="dev-test-commands" class="test-panel" style="display: none; position: fixed; bottom: 70px; right: 10px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; max-width: 400px; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.1); color: #212529;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div class="test-panel-title" style="font-weight: bold; color: #495057; font-size: 14px;">🧪 Test Commands</div>
+        <button id="close-test-panel" class="close-test-btn" style="background: transparent; border: none; font-size: 18px; cursor: pointer; color: #6c757d; padding: 0; width: 24px; height: 24px; line-height: 1;">×</button>
+      </div>
+      <div style="margin-bottom: 8px;">
+        <strong>Run all tests:</strong>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <button class="copy-command-btn" data-command="npm test" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+          <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm test</code>
+        </div>
+      </div>
+      <div style="margin-bottom: 8px;">
+        <strong>Run LoginRegister tests:</strong>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <button class="copy-command-btn" data-command="npm test LoginRegister.test.js" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+          <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm test LoginRegister.test.js</code>
+        </div>
+      </div>
+      <div style="margin-bottom: 8px;">
+        <strong>Run tests with coverage:</strong>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <button class="copy-command-btn" data-command="npm run test:coverage" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+          <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm run test:coverage</code>
+        </div>
+      </div>
+      <div style="margin-bottom: 8px;">
+        <strong>Start dev server:</strong>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+          <button class="copy-command-btn" data-command="npm start" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+          <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm start</code>
+        </div>
+      </div>
+      <div class="test-panel-footer" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6; font-size: 11px; color: #6c757d;">
+        Press <kbd class="test-panel-kbd" style="background: #fff; border: 1px solid #ced4da; padding: 2px 6px; border-radius: 3px;">Ctrl+Shift+D</kbd> or click the 🧪 button to toggle
+      </div>
+    </div>
+    
+    <script>
+      // Toggle developer test commands panel
+      (function() {
+        const panel = document.getElementById('dev-test-commands');
+        const toggleButton = document.getElementById('test-commands-toggle');
+        const closeButton = document.getElementById('close-test-panel');
+        let isVisible = false;
+        
+        // Function to toggle panel visibility
+        function togglePanel() {
+          isVisible = !isVisible;
+          panel.style.display = isVisible ? 'block' : 'none';
+          // Update button style based on visibility
+          if (isVisible) {
+            toggleButton.style.background = '#28a745';
+            toggleButton.textContent = '✓';
+          } else {
+            toggleButton.style.background = '#007bff';
+            toggleButton.textContent = '🧪';
+          }
+        }
+        
+        // Show in development mode by default (localhost or 127.0.0.1)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '') {
+          isVisible = true;
+          panel.style.display = 'block';
+          toggleButton.style.background = '#28a745';
+          toggleButton.textContent = '✓';
+        } else {
+          // Hide toggle button in production
+          toggleButton.style.display = 'none';
+        }
+        
+        // Toggle button click handler
+        toggleButton.addEventListener('click', togglePanel);
+        
+        // Close button click handler
+        closeButton.addEventListener('click', togglePanel);
+        
+        // Check if dark mode is enabled
+        function isDarkMode() {
+          return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        
+        // Listen for dark mode changes and update styles dynamically
+        if (window.matchMedia) {
+          const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+          darkModeQuery.addEventListener('change', function(e) {
+            // Styles will automatically update via CSS media queries
+            // But we can force a re-render if needed
+            panel.style.display = panel.style.display; // Force reflow
+          });
+        }
+        
+        // Make copy buttons functional
+        function copyToClipboard(text, button) {
+          navigator.clipboard.writeText(text).then(function() {
+            const originalText = button.textContent;
+            const darkMode = isDarkMode();
+            button.textContent = 'Copied!';
+            button.style.background = '#28a745';
+            setTimeout(function() {
+              button.textContent = originalText;
+              button.style.background = darkMode ? '#1976d2' : '#007bff';
+            }, 1500);
+          }).catch(function(err) {
+            console.error('Failed to copy:', err);
+            button.textContent = 'Error';
+            setTimeout(function() {
+              button.textContent = 'Copy';
+            }, 1500);
+          });
+        }
+        
+        // Attach copy functionality to all copy buttons
+        panel.querySelectorAll('.copy-command-btn').forEach(function(button) {
+          const command = button.getAttribute('data-command');
+          button.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent panel drag when clicking button
+            copyToClipboard(command, button);
+          });
+          
+          // Add hover effect
+          button.addEventListener('mouseenter', function() {
+            if (this.textContent === 'Copy') {
+              this.style.background = isDarkMode() ? '#1565c0' : '#0056b3';
+            }
+          });
+          button.addEventListener('mouseleave', function() {
+            if (this.textContent === 'Copy') {
+              this.style.background = isDarkMode() ? '#1976d2' : '#007bff';
+            }
+          });
+        });
+        
+        // Also keep code elements copyable (users can click code or button)
+        panel.querySelectorAll('code').forEach(function(code) {
+          code.style.cursor = 'pointer';
+          code.title = 'Click to copy';
+          code.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent panel drag when clicking code
+            const text = this.textContent.trim();
+            // Find the corresponding button to show feedback
+            const button = this.parentElement.querySelector('.copy-command-btn');
+            if (button) {
+              copyToClipboard(text, button);
+            } else {
+              copyToClipboard(text, this);
+            }
+          });
+        });
+        
+        // Toggle with Ctrl+Shift+D
+        document.addEventListener('keydown', function(e) {
+          if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+            e.preventDefault();
+            togglePanel();
+          }
+        });
+        
+        // Hover effect on toggle button (adapts to dark mode)
+        toggleButton.addEventListener('mouseenter', function() {
+          if (isVisible) {
+            this.style.background = '#218838';
+          } else {
+            this.style.background = isDarkMode() ? '#0056b3' : '#0056b3';
+          }
+        });
+        toggleButton.addEventListener('mouseleave', function() {
+          if (isVisible) {
+            this.style.background = '#28a745';
+          } else {
+            this.style.background = isDarkMode() ? '#1976d2' : '#007bff';
+          }
+        });
+        
+        // Make panel draggable
+        let isDragging = false;
+        let currentX, currentY, initialX, initialY;
+        
+        panel.addEventListener('mousedown', function(e) {
+          // Don't start dragging if clicking on code, buttons, or links
+          if (e.target.tagName === 'CODE' || 
+              e.target.tagName === 'BUTTON' || 
+              e.target.tagName === 'KBD' ||
+              e.target.closest('button')) {
+            return;
+          }
+          initialX = e.clientX - panel.offsetLeft;
+          initialY = e.clientY - panel.offsetTop;
+          if (e.target === panel || (panel.contains(e.target) && e.target.tagName !== 'BUTTON')) {
+            isDragging = true;
+          }
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+          if (isDragging) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            panel.style.left = currentX + 'px';
+            panel.style.right = 'auto';
+            panel.style.top = currentY + 'px';
+            panel.style.bottom = 'auto';
+          }
+        });
+        
+        document.addEventListener('mouseup', function() {
+          isDragging = false;
+        });
+      })();
+    </script>
+    
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

@@ -29,13 +29,26 @@
   
   .profile-form input {
     padding: 5px;
-    border: 1px solid rgb(249, 4, 4); /* Dark grey border initially */
+    border: 1px solid #ccc; /* Grey border initially */
     border-radius: 3px;
+    transition: border-color 0.2s ease; /* Smooth transition for border color */
   }
   
-  /* Add a red border when there's a validation error */
-  .profile-form .input-container.error input {
-    border-color: red;
+  .profile-form input:focus {
+    outline: none;
+    border-color: #007bff; /* Blue border on focus */
+  }
+  
+  /* Red border and visual feedback when there's a validation error */
+  .profile-form .input-container.error input,
+  .profile-form input.error-input {
+    border-color: #dc3545; /* Red border */
+    border-width: 2px;
+  }
+  
+  .profile-form .input-container.error input:focus {
+    border-color: #dc3545; /* Keep red border even when focused */
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); /* Red shadow on focus */
   }
     
   .input-description {
@@ -53,5 +66,16 @@
   
   .button-container button {
     margin-right: 10px; /* Add margin between buttons */
+  }
+  
+  .button-container button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #6c757d;
+    color: #fff;
+  }
+  
+  .button-container button[type="submit"]:not(:disabled) {
+    cursor: pointer;
   }
   

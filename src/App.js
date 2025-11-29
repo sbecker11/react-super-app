@@ -10,6 +10,8 @@ import About from "./components/About";
 import Home from "./components/Home";
 import LoginRegister from "./components/LoginRegister";
 import JDAnalyzer from './components/JDAnalyzer';
+import NotFound from './components/NotFound';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   function handleHomeClick() {
@@ -28,35 +30,39 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/home" element={<Home />} />
       <Route path="/login-register" element={<LoginRegister />} />
+      <Route path="/jd-analyzer" element={<JDAnalyzer />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 
   return (
-    <Router
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
-      <div>
-        <Header
-          onHomeClick={handleHomeClick}
-          onAboutClick={handleAboutClick}
-          onLoginRegisterClick={handleLoginRegisterClick}
-        />
-        <div className="container">
-          <div className="left-column">
-            <Left
-              onHomeClick={handleHomeClick}
-              onAboutClick={handleAboutClick}
-              onLoginRegisterClick={handleLoginRegisterClick}
-            />
+    <ErrorBoundary>
+      <Router
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <div>
+          <Header
+            onHomeClick={handleHomeClick}
+            onAboutClick={handleAboutClick}
+            onLoginRegisterClick={handleLoginRegisterClick}
+          />
+          <div className="container">
+            <div className="left-column">
+              <Left
+                onHomeClick={handleHomeClick}
+                onAboutClick={handleAboutClick}
+                onLoginRegisterClick={handleLoginRegisterClick}
+              />
+            </div>
+            <div className="body-content">{body_content}</div>
           </div>
-          <div className="body-content">{body_content}</div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </Router>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

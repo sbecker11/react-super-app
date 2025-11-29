@@ -64,7 +64,10 @@ src/
 │   ├── Home.js            # Home page component
 │   ├── About.js           # About page component
 │   ├── LoginRegister.js   # Login/Register form with validation
-│   └── JDAnalyzer.js      # Job Description Analyzer (in development)
+│   ├── JDAnalyzer.js      # Job Description Analyzer (in development)
+│   ├── NotFound.js        # 404 error page
+│   ├── ErrorBoundary.js   # Error boundary for React error handling
+│   └── Loading.js         # Loading spinner component
 ├── services/              # API services (currently empty)
 ├── App.js                 # Main app component with routing
 ├── App.css                # Main app styles
@@ -189,6 +192,9 @@ src/
 - ✅ **About Component**: State management, localStorage integration, counter functionality
 - ✅ **LoginRegister Component**: Form validation, input handling, error messages
 - ✅ **JDAnalyzer Component**: Form fields, input handling, form submission
+- ✅ **NotFound Component**: 404 error page with navigation
+- ✅ **ErrorBoundary Component**: React error catching and display
+- ✅ **Loading Component**: Loading spinner with multiple size options
 
 ### Writing New Tests
 
@@ -281,6 +287,8 @@ The application has the following routes:
 - `/` or `/home` - Home page
 - `/about` - About page
 - `/login-register` - Login/Register form
+- `/jd-analyzer` - Job Description Analyzer
+- `*` (any other path) - 404 Not Found page
 
 ## 📝 Key Features
 
@@ -299,15 +307,36 @@ The application has the following routes:
 - Sidebar navigation
 - React Router for client-side routing
 
+### Error Handling
+- **Error Boundary**: Catches React errors and displays a user-friendly error page
+- **404 Page**: Displays when users navigate to invalid routes
+- Graceful error recovery with "Try Again" functionality
+
+### Loading States
+- **Loading Component**: Reusable loading spinner with customizable size and messages
+- Supports inline and full-screen loading states
+- Can be integrated into forms and async operations
+
 ## ⚠️ Known Issues / TODO
+
+For a comprehensive list of missing features and improvements needed for production readiness, see:
+
+👉 **[MISSING_FEATURES.md](./MISSING_FEATURES.md)**
+
+### Quick Summary:
 
 1. **JDAnalyzer Component**: Basic form implemented, but analysis functionality needs to be added
    - Form structure is complete with all fields
    - Word analysis and JD comparison features to be implemented
+   - Missing route in App.js (component exists but not accessible)
 
 2. **Services Folder**: Empty - API integration needed for backend services
 
 3. **Authentication**: Login/Register form currently only validates client-side, no backend integration
+
+4. **Error Handling**: Missing error boundaries and 404 page
+
+5. **User Feedback**: Missing loading states, success messages, and toast notifications
 
 ## 🔧 Troubleshooting
 
