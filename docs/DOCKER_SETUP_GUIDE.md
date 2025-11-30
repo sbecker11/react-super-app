@@ -1,6 +1,6 @@
 # Docker Compose Setup Guide
 
-This guide explains how to set up and run the JD Analyzer application using Docker Compose with PostgreSQL database and REST API server.
+This guide explains how to set up and run the React Super App application using Docker Compose with PostgreSQL database and REST API server.
 
 ## 🏗️ Architecture
 
@@ -32,7 +32,7 @@ This guide explains how to set up and run the JD Analyzer application using Dock
 
 Make sure you're in the project root directory:
 ```bash
-cd /Users/sbecker11/workspace-react/react-app
+cd /Users/sbecker11/workspace-react/react-super-app
 ```
 
 ### 2. Create Environment File
@@ -126,10 +126,10 @@ docker-compose logs -f server
 
 ```bash
 # Connect to PostgreSQL container
-docker-compose exec postgres psql -U jduser -d jdanalyzer
+docker-compose exec postgres psql -U superapp_user -d react_super_app
 
 # Run SQL commands
-docker-compose exec postgres psql -U jduser -d jdanalyzer -c "SELECT * FROM users;"
+docker-compose exec postgres psql -U superapp_user -d react_super_app -c "SELECT * FROM users;"
 ```
 
 ### Database Management Commands (npm scripts)
@@ -376,7 +376,7 @@ For production:
 
 5. **Backup database regularly:**
    ```bash
-   docker-compose exec postgres pg_dump -U jduser jdanalyzer > backup.sql
+   docker-compose exec postgres pg_dump -U superapp_user react_super_app > backup.sql
    ```
 
 ## 📚 Additional Resources

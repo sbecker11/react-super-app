@@ -26,7 +26,7 @@ This project is a full-stack React application with:
 
 ### 3. **JDAnalyzer Route** ✅
 - **Status**: ✅ Implemented
-- **Route**: `/jd-analyzer` configured in `App.js`
+- **Route**: `/analyzer` configured in `App.js`
 - **Notes**: Component accessible via navigation
 
 ### 4. **Loading States** ✅

@@ -219,7 +219,7 @@ npm test -- api.test.js
 
 2. **Create Test Database (if needed):**
    ```bash
-   createdb jdanalyzer_test
+   createdb react_super_app_test
    ```
 
 3. **Run Tests:**
@@ -274,7 +274,7 @@ module.exports = {
 ```javascript
 process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'test-jwt-secret-key-for-testing-only';
-process.env.DB_NAME = 'jdanalyzer_test';
+process.env.DB_NAME = 'react_super_app_test';
 ```
 
 ### 3. Package.json Scripts
@@ -380,7 +380,7 @@ ECONNREFUSED ::1:5432
 
 3. **Or use test database:**
    ```bash
-   export TEST_DB_NAME=jdanalyzer_test
+   export TEST_DB_NAME=react_super_app_test
    npm test
    ```
 

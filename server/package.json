@@ -1,7 +1,7 @@
 {
-  "name": "jd-analyzer-server",
+  "name": "react-super-app-server",
   "version": "1.0.0",
-  "description": "REST API server for JD Analyzer application",
+  "description": "REST API server for React Super App application",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

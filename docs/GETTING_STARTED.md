@@ -1,6 +1,6 @@
 # 🚀 Getting Started Guide
 
-This guide will help you get your JD Analyzer application up and running with Docker Compose, PostgreSQL, and REST API in just a few minutes!
+This guide will help you get your React Super App application up and running with Docker Compose, PostgreSQL, and REST API in just a few minutes!
 
 ## 📋 Prerequisites
 
@@ -233,9 +233,9 @@ Once everything is running:
 
 ### PostgreSQL Database
 - **Port**: 5432
-- **Database**: `jdanalyzer`
-- **User**: `jduser`
-- **Password**: `jdpassword`
+- **Database**: `react_super_app`
+- **User**: `superapp_user`
+- **Password**: `superapp_password`
 - **Schema**: Auto-initialized from `server/database/init.sql`
 
 ### Express REST API Server
@@ -303,16 +303,16 @@ docker-compose ps
 
 ```bash
 # Connect to PostgreSQL
-docker-compose exec postgres psql -U jduser -d jdanalyzer
+docker-compose exec postgres psql -U superapp_user -d react_super_app
 
 # Run SQL query
-docker-compose exec postgres psql -U jduser -d jdanalyzer -c "SELECT * FROM users;"
+docker-compose exec postgres psql -U superapp_user -d react_super_app -c "SELECT * FROM users;"
 
 # Backup database
-docker-compose exec postgres pg_dump -U jduser jdanalyzer > backup.sql
+docker-compose exec postgres pg_dump -U superapp_user react_super_app > backup.sql
 
 # Restore database
-docker-compose exec -T postgres psql -U jduser jdanalyzer < backup.sql
+docker-compose exec -T postgres psql -U superapp_user react_super_app < backup.sql
 ```
 
 ### Testing Commands

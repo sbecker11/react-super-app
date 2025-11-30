@@ -6,7 +6,7 @@
 
 **Folder to share:**
 ```
-/Users/sbecker11/workspace-react/react-app
+/Users/sbecker11/workspace-react/react-super-app
 ```
 
 **Instructions:** See [`DOCKER_FILE_SHARING_INSTRUCTIONS.md`](./DOCKER_FILE_SHARING_INSTRUCTIONS.md) for step-by-step guide.
@@ -47,7 +47,7 @@ While the script works without it, configuring file sharing is still recommended
 Follow instructions in [`DOCKER_FILE_SHARING_INSTRUCTIONS.md`](./DOCKER_FILE_SHARING_INSTRUCTIONS.md):
 1. Open Docker Desktop
 2. Settings → Resources → File Sharing
-3. Add: `/Users/sbecker11/workspace-react/react-app`
+3. Add: `/Users/sbecker11/workspace-react/react-super-app`
 4. Apply & Restart
 
 ## Ready to Retry

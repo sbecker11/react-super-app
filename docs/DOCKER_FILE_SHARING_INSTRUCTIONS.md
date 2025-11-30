@@ -5,7 +5,7 @@ Docker Desktop needs access to the project directory to mount files into contain
 
 ## Folder to Share
 ```
-/Users/sbecker11/workspace-react/react-app
+/Users/sbecker11/workspace-react/react-super-app
 ```
 
 ## Solution: Configure Docker Desktop File Sharing
@@ -26,7 +26,7 @@ Docker Desktop needs access to the project directory to mount files into contain
 
 4. **Add the Project Directory**
    - Click the "+" button or "Add folder" button
-   - Navigate to: `/Users/sbecker11/workspace-react/react-app`
+   - Navigate to: `/Users/sbecker11/workspace-react/react-super-app`
    - Click "Apply & Restart"
 
 5. **Wait for Docker to Restart**
@@ -46,7 +46,7 @@ This will give Docker access to all projects in that directory.
 
 After configuring, verify with:
 ```bash
-docker run --rm -v /Users/sbecker11/workspace-react/react-app:/test alpine ls /test
+docker run --rm -v /Users/sbecker11/workspace-react/react-super-app:/test alpine ls /test
 ```
 
 This should list the files in your project directory without errors.
@@ -55,7 +55,7 @@ This should list the files in your project directory without errors.
 
 Run this to check if the folder is already shared:
 ```bash
-docker run --rm -v /Users/sbecker11/workspace-react/react-app:/test alpine ls /test/server/database/init.sql 2>&1
+docker run --rm -v /Users/sbecker11/workspace-react/react-super-app:/test alpine ls /test/server/database/init.sql 2>&1
 ```
 
 If it shows the file, file sharing is configured correctly!

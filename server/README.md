@@ -1,4 +1,4 @@
-# JD Analyzer Server
+# React Super App Server
 
 Express.js REST API server with PostgreSQL database.
 
@@ -32,9 +32,9 @@ PORT=3001
 
 DB_HOST=postgres
 DB_PORT=5432
-DB_USER=jduser
-DB_PASSWORD=jdpassword
-DB_NAME=jdanalyzer
+DB_USER=superapp_user
+DB_PASSWORD=superapp_password
+DB_NAME=react_super_app
 
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
 JWT_EXPIRES_IN=24h

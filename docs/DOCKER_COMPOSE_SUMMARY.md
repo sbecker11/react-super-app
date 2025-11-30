@@ -36,9 +36,9 @@
 ### PostgreSQL Database
 - **Image**: postgres:15-alpine
 - **Port**: 5432
-- **Database**: jdanalyzer
-- **User**: jduser
-- **Password**: jdpassword (change in production)
+- **Database**: react_super_app
+- **User**: superapp_user
+- **Password**: superapp_password (change in production)
 - **Volume**: Persistent data storage
 
 ### Express REST API Server
@@ -95,7 +95,7 @@ docker-compose up --build
 ## 📁 Project Structure
 
 ```
-react-app/
+react-super-app/
 ├── docker-compose.yml          # Docker orchestration
 ├── Dockerfile.client           # React client Dockerfile
 ├── .dockerignore              # Docker ignore rules

@@ -22,9 +22,9 @@ if [ -f "$PROJECT_ROOT/.env" ]; then
 fi
 
 # Database configuration with defaults
-POSTGRES_USER=${POSTGRES_USER:-jduser}
-POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-jdpassword}
-POSTGRES_DB=${POSTGRES_DB:-jdanalyzer}
+POSTGRES_USER=${POSTGRES_USER:-superapp_user}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-superapp_password}
+POSTGRES_DB=${POSTGRES_DB:-react_super_app}
 POSTGRES_PORT=${POSTGRES_PORT:-5432}
 DB_HOST=${DB_HOST:-localhost}
 

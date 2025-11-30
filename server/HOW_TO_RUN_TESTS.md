@@ -196,7 +196,7 @@ npm test -- api.test.js
 **Requirements:**
 - PostgreSQL database must be running
 - Database credentials configured in setup.js
-- Test database: `jdanalyzer_test` (or as configured)
+- Test database: `react_super_app_test` (or as configured)
 
 **Example:**
 ```javascript
@@ -228,10 +228,10 @@ npm test
 
 ```bash
 # Create test database
-createdb jdanalyzer_test
+createdb react_super_app_test
 
 # Set environment variables
-export TEST_DB_NAME=jdanalyzer_test
+export TEST_DB_NAME=react_super_app_test
 export TEST_DB_USER=your_user
 export TEST_DB_PASSWORD=your_password
 
@@ -246,9 +246,9 @@ Create `server/.env.test`:
 ```env
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=jduser
-DB_PASSWORD=jdpassword
-DB_NAME=jdanalyzer_test
+DB_USER=superapp_user
+DB_PASSWORD=superapp_password
+DB_NAME=react_super_app_test
 ```
 
 ## 📊 Test Execution Flow
@@ -291,7 +291,7 @@ npm install
 **Solution:**
 1. Ensure PostgreSQL is running
 2. Check database credentials in setup.js
-3. Verify database exists: `createdb jdanalyzer_test`
+3. Verify database exists: `createdb react_super_app_test`
 
 ### Issue: Tests timeout
 

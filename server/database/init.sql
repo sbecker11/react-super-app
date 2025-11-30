@@ -1,4 +1,4 @@
--- Initialize database schema for JD Analyzer
+-- Initialize database schema for React Super App
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

@@ -114,7 +114,7 @@ The application has the following routes:
 - `/` or `/home` - Home page
 - `/about` - About page
 - `/login-register` - Login/Register form
-- `/jd-analyzer` - Job Description Analyzer
+- `/analyzer` - Job Description Analyzer
 - `*` (any other path) - 404 Not Found page
 
 ## 📝 Key Features

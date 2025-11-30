@@ -1,6 +1,6 @@
 # 🚀 Quick Command Reference
 
-Quick reference guide for starting, testing, and running all components of the JD Analyzer application.
+Quick reference guide for starting, testing, and running all components of the React Super App application.
 
 For detailed explanations, troubleshooting, and more commands, see the [Documentation](#-more-information) section below.
 

@@ -28,7 +28,7 @@ npm run db:init
 
 1. **Starts PostgreSQL** - Uses Docker Compose to start the database container
 2. **Waits for readiness** - Waits up to 60 seconds for PostgreSQL to be ready
-3. **Creates database** - Creates `jdanalyzer` database if it doesn't exist
+3. **Creates database** - Creates `react_super_app` database if it doesn't exist
 4. **Creates UUID extension** - Enables `uuid-ossp` extension for UUID generation
 5. **Initializes schema** - Runs `server/database/init.sql` to create:
    - `users` table with indexes
@@ -39,9 +39,9 @@ npm run db:init
 ### Environment Variables
 
 The script uses environment variables from `.env` file or defaults:
-- `POSTGRES_USER` (default: `jduser`)
-- `POSTGRES_PASSWORD` (default: `jdpassword`)
-- `POSTGRES_DB` (default: `jdanalyzer`)
+- `POSTGRES_USER` (default: `superapp_user`)
+- `POSTGRES_PASSWORD` (default: `superapp_password`)
+- `POSTGRES_DB` (default: `react_super_app`)
 - `POSTGRES_PORT` (default: `5432`)
 
 ### Example Output
@@ -58,7 +58,7 @@ Step 2: Waiting for PostgreSQL to be ready...
 ✓ PostgreSQL is ready!
 
 Step 3: Checking database...
-✓ Database 'jdanalyzer' already exists
+✓ Database 'react_super_app' already exists
 
 Step 4: Checking UUID extension...
 ✓ UUID extension already exists

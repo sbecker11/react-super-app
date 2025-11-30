@@ -30,7 +30,7 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/home" element={<Home />} />
       <Route path="/login-register" element={<LoginRegister />} />
-      <Route path="/jd-analyzer" element={<JDAnalyzer />} />
+      <Route path="/analyzer" element={<JDAnalyzer />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

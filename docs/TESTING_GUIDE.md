@@ -20,7 +20,7 @@ This comprehensive guide covers all aspects of testing in the React application,
 
 ### Test Overview
 
-The JD Analyzer application has comprehensive test coverage for both client-side (React) and server-side (Express/Node.js) code.
+The React Super App application has comprehensive test coverage for both client-side (React) and server-side (Express/Node.js) code.
 
 #### Client-Side Tests (React)
 - **Total Tests**: 69+ tests
@@ -84,7 +84,7 @@ src/
 - `src/components/Header.test.js` - Header component tests
 - `src/components/Footer.test.js` - Footer component tests
 - `src/components/Left.test.js` - Sidebar navigation tests
-- `src/components/JDAnalyzer.test.js` - JD Analyzer component tests
+- `src/components/JDAnalyzer.test.js` - Analyzer component tests
 - `src/App.test.js` - Main app component tests
 
 ### Server Test Structure
@@ -554,7 +554,7 @@ beforeEach(() => {
 **Solution**: 
 1. Ensure PostgreSQL is running
 2. Set correct environment variables
-3. Use test database: `TEST_DB_NAME=jdanalyzer_test`
+3. Use test database: `TEST_DB_NAME=react_super_app_test`
 4. Use Docker Compose:
    ```bash
    docker-compose up postgres -d

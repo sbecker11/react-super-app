@@ -1,6 +1,6 @@
 # Complete Storage & Persistence Guide
 
-This comprehensive guide covers all aspects of data storage and persistence in the JD Analyzer application, including PostgreSQL database setup, schemas, REST API schemas, and client-side session storage.
+This comprehensive guide covers all aspects of data storage and persistence in the React Super App application, including PostgreSQL database setup, schemas, REST API schemas, and client-side session storage.
 
 ---
 
@@ -18,7 +18,7 @@ This comprehensive guide covers all aspects of data storage and persistence in t
 
 ## Overview
 
-The JD Analyzer application uses a multi-tier storage approach:
+The React Super App application uses a multi-tier storage approach:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -64,9 +64,9 @@ postgres:
   image: postgres:15-alpine
   container_name: jd_analyzer_postgres
   environment:
-    POSTGRES_USER: ${POSTGRES_USER:-jduser}
-    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jdpassword}
-    POSTGRES_DB: ${POSTGRES_DB:-jdanalyzer}
+    POSTGRES_USER: ${POSTGRES_USER:-superapp_user}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-superapp_password}
+    POSTGRES_DB: ${POSTGRES_DB:-react_super_app}
   ports:
     - "${POSTGRES_PORT:-5432}:5432"
   volumes:
@@ -75,7 +75,7 @@ postgres:
   networks:
     - jd_analyzer_network
   healthcheck:
-    test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jduser}"]
+    test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-superapp_user}"]
     interval: 10s
     timeout: 5s
     retries: 5
@@ -86,9 +86,9 @@ postgres:
 
 - **Image**: `postgres:15-alpine` (PostgreSQL 15 on Alpine Linux)
 - **Port**: `5432` (configurable via `POSTGRES_PORT`)
-- **Database Name**: `jdanalyzer` (configurable via `POSTGRES_DB`)
-- **Username**: `jduser` (configurable via `POSTGRES_USER`)
-- **Password**: `jdpassword` (configurable via `POSTGRES_PASSWORD`)
+- **Database Name**: `react_super_app` (configurable via `POSTGRES_DB`)
+- **Username**: `superapp_user` (configurable via `POSTGRES_USER`)
+- **Password**: `superapp_password` (configurable via `POSTGRES_PASSWORD`)
 - **Data Persistence**: Docker volume `postgres_data`
 
 ### Environment Variables
@@ -96,9 +96,9 @@ postgres:
 Set these in `.env` file (project root):
 
 ```env
-POSTGRES_USER=jduser
-POSTGRES_PASSWORD=jdpassword
-POSTGRES_DB=jdanalyzer
+POSTGRES_USER=superapp_user
+POSTGRES_PASSWORD=superapp_password
+POSTGRES_DB=react_super_app
 POSTGRES_PORT=5432
 ```
 
@@ -154,8 +154,8 @@ npm run db:shell      # Open PostgreSQL shell
 #### Database Initialization
 
 When the PostgreSQL container starts for the first time:
-1. Creates the database `jdanalyzer`
-2. Creates user `jduser` with password `jdpassword`
+1. Creates the database `react_super_app`
+2. Creates user `superapp_user` with password `superapp_password`
 3. Executes `init.sql` to create tables, indexes, and triggers
 4. Sets up UUID extension
 
@@ -165,16 +165,16 @@ When the PostgreSQL container starts for the first time:
 
 ```bash
 # Connect to PostgreSQL container
-docker-compose exec postgres psql -U jduser -d jdanalyzer
+docker-compose exec postgres psql -U superapp_user -d react_super_app
 
 # Run SQL commands directly
-docker-compose exec postgres psql -U jduser -d jdanalyzer -c "SELECT * FROM users;"
+docker-compose exec postgres psql -U superapp_user -d react_super_app -c "SELECT * FROM users;"
 
 # List all tables
-docker-compose exec postgres psql -U jduser -d jdanalyzer -c "\dt"
+docker-compose exec postgres psql -U superapp_user -d react_super_app -c "\dt"
 
 # Describe table structure
-docker-compose exec postgres psql -U jduser -d jdanalyzer -c "\d users"
+docker-compose exec postgres psql -U superapp_user -d react_super_app -c "\d users"
 ```
 
 #### Using Database Client
@@ -182,9 +182,9 @@ docker-compose exec postgres psql -U jduser -d jdanalyzer -c "\d users"
 Connect using any PostgreSQL client:
 - **Host**: `localhost`
 - **Port**: `5432`
-- **Database**: `jdanalyzer`
-- **Username**: `jduser`
-- **Password**: `jdpassword`
+- **Database**: `react_super_app`
+- **Username**: `superapp_user`
+- **Password**: `superapp_password`
 
 Popular clients:
 - pgAdmin (GUI)
@@ -208,20 +208,20 @@ docker-compose logs -f postgres
 
 ```bash
 # Create backup
-docker-compose exec postgres pg_dump -U jduser jdanalyzer > backup.sql
+docker-compose exec postgres pg_dump -U superapp_user react_super_app > backup.sql
 
 # Create compressed backup
-docker-compose exec postgres pg_dump -U jduser -F c jdanalyzer > backup.dump
+docker-compose exec postgres pg_dump -U superapp_user -F c react_super_app > backup.dump
 ```
 
 #### Restore
 
 ```bash
 # Restore from SQL file
-docker-compose exec -T postgres psql -U jduser jdanalyzer < backup.sql
+docker-compose exec -T postgres psql -U superapp_user react_super_app < backup.sql
 
 # Restore from compressed dump
-docker-compose exec postgres pg_restore -U jduser -d jdanalyzer backup.dump
+docker-compose exec postgres pg_restore -U superapp_user -d react_super_app backup.dump
 ```
 
 ### Database Data Persistence
@@ -929,9 +929,9 @@ const { Pool } = require('pg');
 const pool = new Pool({
   host: process.env.DB_HOST || 'postgres',
   port: process.env.DB_PORT || 5432,
-  user: process.env.DB_USER || 'jduser',
-  password: process.env.DB_PASSWORD || 'jdpassword',
-  database: process.env.DB_NAME || 'jdanalyzer',
+  user: process.env.DB_USER || 'superapp_user',
+  password: process.env.DB_PASSWORD || 'superapp_password',
+  database: process.env.DB_NAME || 'react_super_app',
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
@@ -952,9 +952,9 @@ Server database connection uses these environment variables:
 ```env
 DB_HOST=postgres          # Docker service name
 DB_PORT=5432             # PostgreSQL port
-DB_USER=jduser           # Database username
-DB_PASSWORD=jdpassword   # Database password
-DB_NAME=jdanalyzer       # Database name
+DB_USER=superapp_user           # Database username
+DB_PASSWORD=superapp_password   # Database password
+DB_NAME=react_super_app       # Database name
 ```
 
 These are automatically set by Docker Compose from the `.env` file.

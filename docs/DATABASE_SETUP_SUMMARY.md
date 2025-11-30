@@ -130,9 +130,9 @@ npm run db:stop
 
 The script uses these environment variables (from `.env` or defaults):
 
-- `POSTGRES_USER` → `jduser`
-- `POSTGRES_PASSWORD` → `jdpassword`
-- `POSTGRES_DB` → `jdanalyzer`
+- `POSTGRES_USER` → `superapp_user`
+- `POSTGRES_PASSWORD` → `superapp_password`
+- `POSTGRES_DB` → `react_super_app`
 - `POSTGRES_PORT` → `5432`
 
 ---
