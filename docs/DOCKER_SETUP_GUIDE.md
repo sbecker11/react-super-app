@@ -382,7 +382,7 @@ For production:
 
 ## 📚 Additional Resources
 
-- **Quick Commands**: See [`../COMMANDS.md`](../COMMANDS.md) for a quick command reference
+- **Quick Commands**: See [`COMMANDS.md`](./COMMANDS.md) for a quick command reference
 - **Getting Started**: See [`GETTING_STARTED.md`](./GETTING_STARTED.md) for complete setup guide
 - **Troubleshooting**: See [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md) for common issues and solutions
 - **Testing**: See [`TESTING_GUIDE.md`](./TESTING_GUIDE.md) for comprehensive testing information

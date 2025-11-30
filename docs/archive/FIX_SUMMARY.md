@@ -9,7 +9,7 @@
 /Users/sbecker11/workspace-react/react-app
 ```
 
-**Instructions:** See `DOCKER_FILE_SHARING_INSTRUCTIONS.md` for step-by-step guide.
+**Instructions:** See [`DOCKER_FILE_SHARING_INSTRUCTIONS.md`](./DOCKER_FILE_SHARING_INSTRUCTIONS.md) for step-by-step guide.
 
 **Note:** The init script has been updated to work WITHOUT file sharing by copying the SQL file directly into the container.
 
@@ -44,7 +44,7 @@ While the script works without it, configuring file sharing is still recommended
 - Hot-reloading capabilities
 - Easier development workflow
 
-Follow instructions in `DOCKER_FILE_SHARING_INSTRUCTIONS.md`:
+Follow instructions in [`DOCKER_FILE_SHARING_INSTRUCTIONS.md`](./DOCKER_FILE_SHARING_INSTRUCTIONS.md):
 1. Open Docker Desktop
 2. Settings → Resources → File Sharing
 3. Add: `/Users/sbecker11/workspace-react/react-app`

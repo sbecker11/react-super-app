@@ -438,7 +438,7 @@ docker-compose restart client
 
 ## 📖 Additional Documentation
 
-- **Quick Commands**: See [`../COMMANDS.md`](../COMMANDS.md) for a quick command reference
+- **Quick Commands**: See [`COMMANDS.md`](./COMMANDS.md) for a quick command reference
 - **Docker Setup**: See [`DOCKER_SETUP_GUIDE.md`](./DOCKER_SETUP_GUIDE.md) for detailed Docker information
 - **Troubleshooting**: See [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md) for common issues and solutions
 - **API Documentation**: See [`../server/README.md`](../server/README.md) for API details
