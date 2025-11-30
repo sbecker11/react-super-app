@@ -34,6 +34,10 @@ This web application includes:
 
 ## 🚀 Getting Started
 
+**Prerequisites:**
+- **Docker Desktop** must be installed and **running** before proceeding
+- Verify: `docker --version` and `docker-compose --version`
+
 **Quick Start:**
 
 1. **Clone the repository:**

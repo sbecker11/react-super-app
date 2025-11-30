@@ -4,7 +4,8 @@ This guide will help you get your React Super App application up and running wit
 
 ## 📋 Prerequisites
 
-- **Docker** (version 20.10 or higher) - [Install Docker](https://www.docker.com/get-started)
+- **Docker Desktop** (version 20.10 or higher) - [Install Docker](https://www.docker.com/get-started)
+  - **Must be running** before starting services
 - **Docker Compose** (usually comes with Docker Desktop)
 - **Git** (if cloning the repository)
 
@@ -12,6 +13,8 @@ Verify installations:
 ```bash
 docker --version
 docker-compose --version
+# Also verify Docker Desktop is running:
+docker info
 ```
 
 ---
