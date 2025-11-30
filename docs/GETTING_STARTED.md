@@ -18,7 +18,16 @@ docker-compose --version
 
 ## ⚡ Quick Start (5 Minutes)
 
-### Step 1: Create Environment File
+### Step 1: Clone the Repository
+
+Clone the repository to your local machine:
+
+```bash
+git clone https://github.com/sbecker11/react-super-app.git
+cd react-super-app
+```
+
+### Step 2: Create Environment File
 
 Create your `.env` file by copying the example template:
 
@@ -41,7 +50,7 @@ The `.env.example` file contains all default configuration:
 
 **Note**: The `.env` file is in `.gitignore` and won't be committed to Git. The `.env.example` file is version-controlled and serves as a template.
 
-### Step 2: Start All Services
+### Step 3: Start All Services
 
 **Option A: Start Everything (Recommended)**
 ```bash
@@ -73,7 +82,7 @@ client_1    | webpack compiled successfully
 **First run:** Takes 2-5 minutes (building images and installing dependencies)  
 **Subsequent runs:** Takes 30-60 seconds (containers start quickly)
 
-### Step 3: Verify Everything is Running
+### Step 4: Verify Everything is Running
 
 **Check services:**
 ```bash

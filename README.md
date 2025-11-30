@@ -36,9 +36,15 @@ This web application includes:
 
 **Quick Start:**
 
-1. Copy the environment template: `cp .env.example .env`
-2. (Optional) Update `NODE_ENV` and `REACT_APP_ENV` in `.env` if needed
-3. Start all services:
+1. **Clone the repository:**
+```bash
+git clone https://github.com/sbecker11/react-super-app.git
+cd react-super-app
+```
+
+2. Copy the environment template: `cp .env.example .env`
+3. (Optional) Update `NODE_ENV` and `REACT_APP_ENV` in `.env` if needed
+4. Start all services:
 ```bash
 docker-compose up --build
 ```
