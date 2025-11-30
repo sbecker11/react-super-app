@@ -61,7 +61,7 @@
 ## 🚀 Quick Start
 
 ```bash
-# 1. Create .env file (copy from .env.example or create manually)
+# 1. Create .env file: cp .env.example .env
 # 2. Start all services
 docker-compose up --build
 
@@ -119,7 +119,7 @@ react-app/
 
 ## 🔧 Next Steps
 
-1. **Create environment file**: Copy `.env.example` to `.env` and configure
+1. **Create environment file**: Copy `.env.example` to `.env` and configure (update `NODE_ENV` and `REACT_APP_ENV` as needed)
 2. **Start services**: Run `docker-compose up --build`
 3. **Test API**: Use curl or Postman to test endpoints
 4. **Integrate React**: Update LoginRegister component to use API

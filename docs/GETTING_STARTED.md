@@ -20,15 +20,26 @@ docker-compose --version
 
 ### Step 1: Create Environment File
 
-The `.env` file is already created! It contains:
+Create your `.env` file by copying the example template:
+
+```bash
+cp .env.example .env
+```
+
+**Important:** Update the following variables in your `.env` file based on your needs:
+
+- **`NODE_ENV`**: Set to `development` for local development, `testing` when running tests, or `production` for deployment
+- **`REACT_APP_ENV`**: Set to match `NODE_ENV` for consistency (options: `development`, `testing`, `production`)
+
+The `.env.example` file contains all default configuration:
 - Database configuration (PostgreSQL)
-- Server port configuration
-- Client port and API URL
-- JWT secret for authentication
+- Server and client port configuration
+- API URL configuration
+- JWT secret (⚠️ change this in production!)
 
 **Location**: `.env` in project root
 
-**Note**: The `.env` file is in `.gitignore` and won't be committed to Git.
+**Note**: The `.env` file is in `.gitignore` and won't be committed to Git. The `.env.example` file is version-controlled and serves as a template.
 
 ### Step 2: Start All Services
 

@@ -35,31 +35,30 @@ Make sure you're in the project root directory:
 cd /Users/sbecker11/workspace-react/react-app
 ```
 
-### 2. Create Environment Files
+### 2. Create Environment File
 
-Copy the example environment files:
+Copy the example environment template:
 ```bash
-# Create .env file for docker-compose (from root)
 cp .env.example .env
-
-# Create .env file for server (optional, docker-compose uses root .env)
-cp server/.env.example server/.env
 ```
 
-### 3. Configure Environment Variables (Optional)
+### 3. Configure Environment Variables
 
-Edit `.env` file if you want to change default values:
-```bash
-# Default values are fine for development
-POSTGRES_USER=jduser
-POSTGRES_PASSWORD=jdpassword
-POSTGRES_DB=jdanalyzer
-SERVER_PORT=3001
-CLIENT_PORT=3000
-REACT_APP_API_URL=http://localhost:3001/api
-```
+**Important:** Update the following in your `.env` file based on your environment:
 
-**⚠️ Important:** Change `JWT_SECRET` in production!
+- **`NODE_ENV`**: Set to `development` (default), `testing` (for running tests), or `production` (for deployment)
+- **`REACT_APP_ENV`**: Set to match `NODE_ENV` for consistency
+
+The `.env.example` file includes all default values:
+- Database configuration (PostgreSQL)
+- Server and client port configuration
+- API URL configuration
+- JWT secret (⚠️ change this in production!)
+
+**Default values are fine for development**, but you should:
+- Update `NODE_ENV` and `REACT_APP_ENV` to `testing` when running tests
+- Update `NODE_ENV` and `REACT_APP_ENV` to `production` for deployment
+- Change `JWT_SECRET` to a secure random string in production (use: `openssl rand -base64 32`)
 
 ### 4. Start All Services
 
