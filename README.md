@@ -34,28 +34,133 @@ This web application includes:
 
 ## 🚀 Getting Started
 
-**Prerequisites:**
-- **Docker Desktop** must be installed and **running** before proceeding
-- Verify: `docker --version` and `docker-compose --version`
+### Prerequisites
 
-**Quick Start:**
+Before you begin, ensure you have the following installed and running:
 
-1. **Clone the repository:**
+- **Docker Desktop** (version 20.10 or higher) - [Download here](https://www.docker.com/get-started)
+  - **Must be running** before starting services
+  - On macOS, our scripts can auto-start Docker Desktop for you
+  - Verify Docker is running: `docker info`
+  - Verify versions: `docker --version` and `docker-compose --version`
+- **Git** - For cloning the repository
+- **Ports Available**: Ensure ports 3000 (client), 3001 (server), and 5432 (database) are not in use
+
+**Quick Port Check:**
+```bash
+# After cloning, run this to verify ports are available
+npm run check-ports
+```
+
+### Quick Start
+
+**Step 1: Clone the repository**
 ```bash
 git clone https://github.com/sbecker11/react-super-app.git
 cd react-super-app
 ```
 
-2. Copy the environment template: `cp .env.example .env`
-3. (Optional) Update `NODE_ENV` and `REACT_APP_ENV` in `.env` if needed
-4. Start all services:
+**Step 2: Configure environment**
 ```bash
-docker-compose up --build
+# Copy the environment template
+cp .env.example .env
+
+# (Optional) Edit .env to customize settings
+# See Environment Variables section below for available options
 ```
 
-Access at: [http://localhost:3000](http://localhost:3000) (Client) | [http://localhost:3001](http://localhost:3001) (API)
+**Step 3: Initialize the database**
+```bash
+# This script will:
+# - Check/start Docker Desktop (auto-start on macOS)
+# - Start PostgreSQL container
+# - Create database and schema
+npm run db:init
+```
+
+**Step 4: Start all services**
+```bash
+# Start client, server, and database
+docker-compose up --build
+
+# Or use our helper script with port checking:
+npm run start:services
+
+# Or run in background (detached mode):
+npm run start:services:detached
+```
+
+**Step 5: Access the application**
+- **Client**: [http://localhost:3000](http://localhost:3000)
+- **API**: [http://localhost:3001](http://localhost:3001)
+- **API Health**: [http://localhost:3001/api/health](http://localhost:3001/api/health)
+
+**🎉 That's it!** The application is now running with all services.
 
 📖 **For complete setup instructions, prerequisites, troubleshooting, and alternative local development options, see [Getting Started Guide](./docs/GETTING_STARTED.md)**
+
+---
+
+## 🔧 Environment Variables
+
+The application uses environment variables for configuration. Copy `.env.example` to `.env` and customize as needed.
+
+### Database Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `POSTGRES_USER` | `superapp_user` | PostgreSQL username |
+| `POSTGRES_PASSWORD` | `superapp_password` | PostgreSQL password |
+| `POSTGRES_DB` | `react_super_app` | Database name |
+| `POSTGRES_PORT` | `5432` | PostgreSQL port |
+
+### Server Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SERVER_PORT` | `3001` | Express server port |
+| `NODE_ENV` | `development` | Node environment (`development`, `production`, `test`) |
+| `JWT_SECRET` | `your-super-secret-jwt-key-change-in-production` | **⚠️ CHANGE IN PRODUCTION!** JWT signing key |
+| `JWT_EXPIRES_IN` | `24h` | JWT token expiration time |
+
+### Client Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `CLIENT_PORT` | `3000` | React app port |
+| `REACT_APP_API_URL` | `http://localhost:3001/api` | Backend API URL |
+| `REACT_APP_ENV` | `development` | Client environment |
+
+### Example `.env` File
+
+```bash
+# Database
+POSTGRES_USER=superapp_user
+POSTGRES_PASSWORD=superapp_password
+POSTGRES_DB=react_super_app
+POSTGRES_PORT=5432
+
+# Server
+SERVER_PORT=3001
+NODE_ENV=development
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+JWT_EXPIRES_IN=24h
+
+# Client
+CLIENT_PORT=3000
+REACT_APP_API_URL=http://localhost:3001/api
+REACT_APP_ENV=development
+```
+
+**🔒 Security Note**: Never commit your `.env` file to version control. The `.env.example` file is provided as a template.
+
+**💾 Data Persistence**: Database data persists in a Docker volume between restarts. To reset the database completely:
+```bash
+docker-compose down -v  # Removes volumes
+npm run db:init         # Reinitialize database
+```
+
+---
 
 ## 📁 Project Structure
 
@@ -87,24 +192,64 @@ This command displays the directory tree structure (up to 3 levels deep), exclud
 
 ## 🛠️ Available Scripts
 
-### `npm start`
-Runs the app in development mode at [http://localhost:3000](http://localhost:3000).  
-The page will reload when you make changes.
+### Client Development Scripts
 
-### `npm test`
-Launches the test runner in interactive watch mode.  
-See the [testing documentation](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Script | Command | Description |
+|--------|---------|-------------|
+| **Start** | `npm start` | Run React app in development mode at [http://localhost:3000](http://localhost:3000) |
+| **Test** | `npm test` | Launch test runner in interactive watch mode |
+| **Coverage** | `npm run test:coverage` | Run all tests and generate coverage report |
+| **Build** | `npm run build` | Build optimized production bundle to `build/` folder |
+| **Eject** | `npm run eject` | ⚠️ **One-way operation!** Eject from Create React App |
 
-### `npm run test:coverage`
-Runs all tests and generates a coverage report. The report is displayed in the terminal and saved to the `coverage/` directory. Opens an interactive HTML report showing which parts of your code are covered by tests.
+### Docker & Service Management
 
-### `npm run build`
-Builds the app for production to the `build` folder.  
-The build is optimized and minified for best performance. Ready for deployment!
+| Script | Command | Description |
+|--------|---------|-------------|
+| **Check Ports** | `npm run check-ports` | Verify ports 3000, 3001, 5432 are available |
+| **Start Services** | `npm run start:services` | Start all Docker services with port checking |
+| **Start Detached** | `npm run start:services:detached` | Start services in background (detached mode) |
 
-### `npm run eject`
-**⚠️ Warning: This is a one-way operation!**  
-Ejects from Create React App configuration. You won't be able to go back!
+### Database Management Scripts
+
+| Script | Command | Description |
+|--------|---------|-------------|
+| **Initialize DB** | `npm run db:init` | 🚀 **Full database setup** - checks Docker, creates DB, runs schema |
+| **Start DB** | `npm run db:start` | Start PostgreSQL container only |
+| **Stop DB** | `npm run db:stop` | Stop PostgreSQL container |
+| **Restart DB** | `npm run db:restart` | Restart PostgreSQL container |
+| **DB Status** | `npm run db:status` | Check PostgreSQL container status |
+| **DB Logs** | `npm run db:logs` | View PostgreSQL logs (follow mode) |
+| **DB Shell** | `npm run db:shell` | Open PostgreSQL interactive shell |
+
+### Common Workflows
+
+**First-time setup:**
+```bash
+npm run db:init              # Initialize database
+docker-compose up --build    # Start all services
+```
+
+**Daily development:**
+```bash
+npm run start:services:detached  # Start in background
+npm start                        # Start client (if not using Docker)
+```
+
+**Troubleshooting:**
+```bash
+npm run check-ports          # Check for port conflicts
+npm run db:logs              # View database logs
+npm run db:status            # Check database status
+docker-compose down -v       # Reset everything (removes data!)
+npm run db:init              # Reinitialize
+```
+
+**Testing:**
+```bash
+npm test                     # Run tests in watch mode
+npm run test:coverage        # Generate coverage report
+```
 
 ## 🧪 Testing
 

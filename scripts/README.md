@@ -1,6 +1,59 @@
-# Database Scripts
+# Docker and Database Scripts
 
-This directory contains scripts for managing the PostgreSQL database.
+This directory contains scripts for Docker management and PostgreSQL database operations.
+
+## init-docker.sh
+
+Docker initialization and checking script that ensures Docker Desktop is properly configured and running.
+
+### Usage
+
+This script is primarily used by other scripts but can also be sourced directly:
+
+```bash
+# Source the script to use its functions
+source scripts/init-docker.sh
+
+# Initialize Docker (main function)
+init_docker
+
+# Check if Docker is running
+check_docker
+
+# Start Docker Desktop on macOS
+start_docker_desktop
+
+# Check docker-compose availability
+check_docker_compose
+```
+
+### Functions
+
+- **`init_docker()`** - Main initialization function that checks Docker status and attempts auto-start
+- **`check_docker()`** - Verifies Docker installation and daemon status
+- **`start_docker_desktop()`** - Attempts to start Docker Desktop on macOS automatically
+- **`check_docker_compose()`** - Verifies docker-compose availability and sets command
+
+### Features
+
+- **Auto-detection** - Detects Docker installation and daemon status
+- **Auto-start** - Attempts to start Docker Desktop automatically on macOS
+- **Cross-platform** - Provides manual instructions for non-macOS platforms
+- **Timeout handling** - Waits up to 60 seconds for Docker to start
+- **Clear feedback** - Provides detailed status messages and error handling
+
+### Example Output
+
+```
+Step 0: Checking Docker...
+Docker daemon is not running
+Attempting to start Docker Desktop...
+✓ Docker Desktop launch command sent
+Waiting for Docker Desktop to start (this may take 30-60 seconds)...
+✓ Docker Desktop is now running!
+✓ Docker is running
+✓ Using: docker compose
+```
 
 ## init-database.sh
 
@@ -26,6 +79,7 @@ npm run db:init
 
 ### What it does:
 
+0. **Initialize Docker** - Ensures Docker Desktop is installed and running (via `init-docker.sh`)
 1. **Starts PostgreSQL** - Uses Docker Compose to start the database container
 2. **Waits for readiness** - Waits up to 60 seconds for PostgreSQL to be ready
 3. **Creates database** - Creates `react_super_app` database if it doesn't exist
@@ -50,6 +104,10 @@ The script uses environment variables from `.env` file or defaults:
 ========================================
 Database Initialization Script
 ========================================
+
+Step 0: Checking Docker...
+✓ Docker is running
+✓ Using: docker compose
 
 Step 1: Starting PostgreSQL container...
 ✓ PostgreSQL container is already running
