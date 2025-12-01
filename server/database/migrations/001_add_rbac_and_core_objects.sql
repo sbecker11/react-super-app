@@ -3,8 +3,34 @@
 -- Date: 2024-12-01
 
 -- ============================================
--- PART 1: Enhance Users Table with RBAC
+-- PART 0: Enable Required Extensions
 -- ============================================
+
+-- Enable UUID extension for generating UUIDs
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Create trigger function for updating updated_at timestamps
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- ============================================
+-- PART 1: Create or Enhance Users Table with RBAC
+-- ============================================
+
+-- Create users table if it doesn't exist
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Add role column to users table
 ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) NOT NULL DEFAULT 'user';
@@ -265,8 +291,27 @@ CREATE TRIGGER update_cover_letters_updated_at BEFORE UPDATE ON cover_letters
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================
--- PART 8: Enhance Job Descriptions Table
+-- PART 8: Create or Enhance Job Descriptions Table
 -- ============================================
+
+-- Create job_descriptions table if it doesn't exist
+CREATE TABLE IF NOT EXISTS job_descriptions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    company VARCHAR(255),
+    description TEXT,
+    keywords TEXT[],
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create index on user_id
+CREATE INDEX IF NOT EXISTS idx_job_descriptions_user_id ON job_descriptions(user_id);
+
+-- Trigger for updated_at
+CREATE TRIGGER update_job_descriptions_updated_at BEFORE UPDATE ON job_descriptions
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Add new columns to existing job_descriptions table
 ALTER TABLE job_descriptions ADD COLUMN IF NOT EXISTS source_id UUID REFERENCES job_description_sources(id) ON DELETE SET NULL;
