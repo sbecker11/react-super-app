@@ -68,6 +68,15 @@ const LoginRegister = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [passwordRuleStatus, setPasswordRuleStatus] = useState({
+    minLength: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    specialChar: false,
+  });
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -120,6 +129,18 @@ const LoginRegister = () => {
     const { name, value } = e.target;
     setProfileData({ ...profileData, [name]: value });
     
+    // Update password rule status in real-time
+    if (name === 'password') {
+      const config = validationConfig.password;
+      setPasswordRuleStatus({
+        minLength: value.length >= config.minLength,
+        uppercase: /[A-Z]/.test(value),
+        lowercase: /[a-z]/.test(value),
+        number: /[0-9]/.test(value),
+        specialChar: config.specialChars.test(value),
+      });
+    }
+    
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prevErrors) => {
@@ -137,6 +158,23 @@ const LoginRegister = () => {
     const { name, value } = e.target;
     // Validate field on blur (including empty fields for required validation)
     validateField(name, value);
+    
+    // Hide password indicators on blur
+    if (name === 'password') {
+      setPasswordFocused(false);
+    }
+  };
+
+  /**
+   * Handle field focus event
+   */
+  const handleFocus = (e) => {
+    const { name } = e.target;
+    
+    // Show password indicators on focus
+    if (name === 'password') {
+      setPasswordFocused(true);
+    }
   };
 
   /**
@@ -264,25 +302,62 @@ const LoginRegister = () => {
             <label htmlFor="password">Password</label>
             {errors.password && <div className="error">{errors.password}</div>}
           </div>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={profileData.password}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            autoComplete="current-password"
-            required
-            className={errors.password ? 'error-input' : ''}
-          />
-          <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
-            <strong>Password must contain:</strong>
-            <ul style={{ margin: '5px 0', paddingLeft: '20px' }}>
-              {getPasswordRequirements().map((req, index) => (
-                <li key={index}>{req}</li>
-              ))}
-            </ul>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              value={profileData.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              onFocus={handleFocus}
+              autoComplete="current-password"
+              required
+              className={errors.password ? 'error-input' : ''}
+              style={{ paddingRight: '40px' }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '8px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '18px',
+                padding: '4px 8px',
+                color: '#666',
+              }}
+              title={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? '👁️' : '👁️‍🗨️'}
+            </button>
           </div>
+          {passwordFocused && (
+            <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+              <strong>Password must contain:</strong>
+              <ul style={{ margin: '5px 0', paddingLeft: '20px', listStyle: 'none' }}>
+                <li style={{ color: passwordRuleStatus.minLength ? '#28a745' : '#dc3545' }}>
+                  {passwordRuleStatus.minLength ? '✅' : '❌'} At least {validationConfig.password.minLength} characters
+                </li>
+                <li style={{ color: passwordRuleStatus.uppercase ? '#28a745' : '#dc3545' }}>
+                  {passwordRuleStatus.uppercase ? '✅' : '❌'} 1 uppercase letter
+                </li>
+                <li style={{ color: passwordRuleStatus.lowercase ? '#28a745' : '#dc3545' }}>
+                  {passwordRuleStatus.lowercase ? '✅' : '❌'} 1 lowercase letter
+                </li>
+                <li style={{ color: passwordRuleStatus.number ? '#28a745' : '#dc3545' }}>
+                  {passwordRuleStatus.number ? '✅' : '❌'} 1 digit
+                </li>
+                <li style={{ color: passwordRuleStatus.specialChar ? '#28a745' : '#dc3545' }}>
+                  {passwordRuleStatus.specialChar ? '✅' : '❌'} 1 symbol
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Display API errors */}
