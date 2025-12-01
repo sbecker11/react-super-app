@@ -29,7 +29,7 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
         )}
         {isDevelopment && (
           <li>
-            <a href="#" onClick={(e) => { e.preventDefault(); toggleDevPanel(); }} style={{ color: '#17a2b8' }}>
+            <a href="#" onClick={(e) => { e.preventDefault(); toggleDevPanel(); }}>
               🧪 Dev Tools
             </a>
           </li>
