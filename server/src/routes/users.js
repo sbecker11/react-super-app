@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { query } = require('../database/connection');
 const { authenticate } = require('../middleware/auth');
+const { requireOwnershipOrAdmin } = require('../middleware/rbac');
 
 const router = express.Router();
 
@@ -31,30 +32,38 @@ router.get('/', async (req, res) => {
  * NOTE: This must come before /:id route to avoid matching "me" as an ID
  */
 router.get('/me', (req, res) => {
-  res.json({ user: req.user });
+  // Return user with role
+  res.json({ 
+    user: {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+      isActive: req.user.is_active,
+      lastLoginAt: req.user.last_login_at,
+      createdAt: req.user.created_at,
+      updatedAt: req.user.updated_at
+    }
+  });
 });
 
 /**
  * GET /api/users/:id
  * Get user by ID
+ * Users can view their own profile, admins can view any profile
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', requireOwnershipOrAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     
     // Check if user exists first
     const result = await query(
-      'SELECT id, name, email, created_at, updated_at FROM users WHERE id = $1',
+      'SELECT id, name, email, role, is_active, last_login_at, created_at, updated_at FROM users WHERE id = $1',
       [id]
     );
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
-    }
-    
-    // Only allow users to view their own profile (unless admin)
-    if (req.user.id !== id) {
-      return res.status(403).json({ error: 'Access denied' });
     }
     
     res.json({ user: result.rows[0] });
@@ -66,9 +75,9 @@ router.get('/:id', async (req, res) => {
 
 /**
  * PUT /api/users/:id
- * Update user
+ * Update user (own profile only)
  */
-router.put('/:id', [
+router.put('/:id', requireOwnershipOrAdmin, [
   body('name')
     .optional()
     .trim()
@@ -91,12 +100,6 @@ router.put('/:id', [
     }
     
     const { id } = req.params;
-    
-    // Only allow users to update their own profile
-    if (req.user.id !== id) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
-    
     const { name, email } = req.body;
     const updates = [];
     const values = [];
@@ -127,13 +130,15 @@ router.put('/:id', [
       return res.status(400).json({ error: 'No fields to update' });
     }
     
-    values.push(id);
+    // Add updated_by and id to values
+    values.push(req.user.id);  // updated_by
+    values.push(id);            // WHERE id = 
     
     const result = await query(
       `UPDATE users 
-       SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP
-       WHERE id = $${paramCount}
-       RETURNING id, name, email, created_at, updated_at`,
+       SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP, updated_by = $${paramCount}
+       WHERE id = $${paramCount + 1}
+       RETURNING id, name, email, role, is_active, created_at, updated_at`,
       values
     );
     
@@ -153,16 +158,13 @@ router.put('/:id', [
 
 /**
  * DELETE /api/users/:id
- * Delete user
+ * Delete user (own profile only)
+ * Note: Users can only delete their own accounts
+ * Admins should use the deactivate endpoint instead
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireOwnershipOrAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    
-    // Only allow users to delete their own profile
-    if (req.user.id !== id) {
-      return res.status(403).json({ error: 'Access denied' });
-    }
     
     const result = await query(
       'DELETE FROM users WHERE id = $1 RETURNING id',

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const { query } = require('../database/connection');
+const { logAuthEvent } = require('../middleware/rbac');
 
 const router = express.Router();
 
@@ -57,19 +58,22 @@ router.post('/register', [
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
     
-    // Create user
+    // Create user (role defaults to 'user' in database)
     const result = await query(
       `INSERT INTO users (name, email, password_hash)
        VALUES ($1, $2, $3)
-       RETURNING id, name, email, created_at, updated_at`,
+       RETURNING id, name, email, role, created_at, updated_at`,
       [name, email, passwordHash]
     );
     
     const user = result.rows[0];
     
+    // Log registration event
+    await logAuthEvent(user.id, 'register', true, null, req);
+    
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
@@ -81,6 +85,7 @@ router.post('/register', [
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {
@@ -114,26 +119,44 @@ router.post('/login', [
     
     // Get user from database
     const result = await query(
-      'SELECT id, name, email, password_hash FROM users WHERE email = $1',
+      'SELECT id, name, email, password_hash, role, is_active FROM users WHERE email = $1',
       [email]
     );
     
     if (result.rows.length === 0) {
+      // Log failed login attempt (no user found)
+      await logAuthEvent(null, 'failed_login', false, 'User not found', req);
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     
     const user = result.rows[0];
     
+    // Check if account is active
+    if (!user.is_active) {
+      await logAuthEvent(user.id, 'failed_login', false, 'Account deactivated', req);
+      return res.status(401).json({ error: 'Account has been deactivated. Please contact support.' });
+    }
+    
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     
     if (!isValidPassword) {
+      await logAuthEvent(user.id, 'failed_login', false, 'Invalid password', req);
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     
+    // Update last login timestamp
+    await query(
+      'UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = $1',
+      [user.id]
+    );
+    
+    // Log successful login
+    await logAuthEvent(user.id, 'login', true, null, req);
+    
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
@@ -145,6 +168,7 @@ router.post('/login', [
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {

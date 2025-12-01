@@ -8,6 +8,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [elevatedToken, setElevatedToken] = useState(null);
+  const [elevatedExpiresAt, setElevatedExpiresAt] = useState(null);
 
   // Verify token validity on mount
   useEffect(() => {
@@ -47,6 +49,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+    setElevatedToken(null);
+    setElevatedExpiresAt(null);
     localStorage.removeItem('token');
     toast.info('You have been logged out.');
   };
@@ -56,15 +60,71 @@ export const AuthProvider = ({ children }) => {
     toast.success('Profile updated successfully!');
   };
 
+  // Role checking helpers
+  const isAdmin = () => {
+    return user?.role === 'admin';
+  };
+
+  const hasRole = (role) => {
+    return user?.role === role;
+  };
+
+  // Elevated session management (for admin sensitive operations)
+  const requestElevatedSession = async (password) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/admin/verify-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ password })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to verify password');
+      }
+
+      const data = await response.json();
+      setElevatedToken(data.elevatedToken);
+      setElevatedExpiresAt(data.expiresAt);
+      
+      toast.success('Elevated session granted (15 minutes)');
+      return true;
+    } catch (error) {
+      toast.error(error.message || 'Failed to verify password');
+      return false;
+    }
+  };
+
+  const clearElevatedSession = () => {
+    setElevatedToken(null);
+    setElevatedExpiresAt(null);
+  };
+
+  const hasElevatedSession = () => {
+    if (!elevatedToken || !elevatedExpiresAt) return false;
+    return new Date(elevatedExpiresAt) > new Date();
+  };
+
   const value = {
     user,
     token,
     loading,
     isAuthenticated: !!user,
+    isAdmin,
+    hasRole,
     login,
     register,
     logout,
     updateUser,
+    // Elevated session for admin operations
+    elevatedToken,
+    elevatedExpiresAt,
+    hasElevatedSession,
+    requestElevatedSession,
+    clearElevatedSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -15,6 +15,8 @@ import Home from "./components/Home";
 import LoginRegister from "./components/LoginRegister";
 import JDAnalyzer from './components/JDAnalyzer';
 import Profile from './components/Profile';
+import AdminDashboard from './components/AdminDashboard';
+import UserManagement from './components/UserManagement';
 import NotFound from './components/NotFound';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -48,6 +50,22 @@ function App() {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin" 
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/users" 
+        element={
+          <ProtectedRoute>
+            <UserManagement />
           </ProtectedRoute>
         } 
       />

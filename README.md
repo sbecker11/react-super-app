@@ -334,6 +334,7 @@ This project includes comprehensive documentation covering all aspects of develo
 ### 🧪 Testing
 
 - **[Testing Guide](./docs/TESTING_GUIDE.md)** - Comprehensive testing documentation including client-side tests, server-side tests, coverage analysis, and best practices
+- **[Manual Setup Guide](./docs/MANUAL_SETUP.md)** - Step-by-step manual commands for setup and troubleshooting
 
 ### ✅ Validation
 
@@ -342,6 +343,11 @@ This project includes comprehensive documentation covering all aspects of develo
 ### 📋 Project Planning
 
 - **[Features Summary](./docs/FEATURES_SUMMARY.md)** - Comprehensive overview of feature status including completed features, in-progress items, and planned improvements, organized by priority
+
+### 🔑 Credentials & Security
+
+- **[Credentials Reference](./CREDENTIALS.md)** - Quick access to all default credentials (PostgreSQL, Application Admin)
+- **[Database Isolation](./docs/DATABASE_ISOLATION.md)** - How the app uses its own isolated database
 
 ---
 

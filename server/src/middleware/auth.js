@@ -21,7 +21,7 @@ const authenticate = async (req, res, next) => {
     
     // Get user from database
     const result = await query(
-      'SELECT id, name, email, created_at, updated_at FROM users WHERE id = $1',
+      'SELECT id, name, email, role, is_active, created_at, updated_at FROM users WHERE id = $1',
       [decoded.userId]
     );
     
@@ -29,8 +29,15 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ error: 'User not found' });
     }
     
+    const user = result.rows[0];
+    
+    // Check if account is active
+    if (!user.is_active) {
+      return res.status(401).json({ error: 'Account has been deactivated' });
+    }
+    
     // Attach user to request object
-    req.user = result.rows[0];
+    req.user = user;
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
@@ -44,5 +51,9 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticate };
+// Export with both names for compatibility
+module.exports = { 
+  authenticate,
+  authenticateToken: authenticate // Alias for consistency with admin routes
+};
 
