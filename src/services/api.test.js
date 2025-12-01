@@ -403,5 +403,353 @@ describe('API Service', () => {
       await expect(authAPI.login('test@example.com', 'password')).rejects.toThrow();
     });
   });
+
+  describe('Enhanced Error Handling', () => {
+    describe('APIError class', () => {
+      it('should throw APIError with status and message', async () => {
+        fetch.mockResolvedValueOnce({
+          ok: false,
+          status: 400,
+          json: async () => ({ error: 'Bad Request' }),
+        });
+
+        try {
+          await authAPI.login('test@example.com', 'password');
+          fail('Should have thrown an error');
+        } catch (error) {
+          expect(error.message).toBe('Bad Request');
+        }
+      });
+
+      it('should extract error message from different formats', async () => {
+        // Test with 'message' field
+        fetch.mockResolvedValueOnce({
+          ok: false,
+          status: 400,
+          json: async () => ({ message: 'Error message' }),
+        });
+
+        await expect(authAPI.login('test@example.com', 'password'))
+          .rejects.toThrow('Error message');
+      });
+
+      it('should handle array of errors', async () => {
+        fetch.mockResolvedValueOnce({
+          ok: false,
+          status: 400,
+          json: async () => ({
+            errors: [
+              { message: 'Error 1' },
+              { message: 'Error 2' }
+            ]
+          }),
+        });
+
+        await expect(authAPI.login('test@example.com', 'password'))
+          .rejects.toThrow('Error 1, Error 2');
+      });
+
+      it('should handle string error', async () => {
+        fetch.mockResolvedValueOnce({
+          ok: false,
+          status: 400,
+          json: async () => 'Simple error string',
+        });
+
+        await expect(authAPI.login('test@example.com', 'password'))
+          .rejects.toThrow('Simple error string');
+      });
+    });
+
+    describe('Network error handling', () => {
+      it('should detect and handle network errors', async () => {
+        fetch.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+
+        await expect(authAPI.login('test@example.com', 'password'))
+          .rejects.toThrow(/network error|unable to connect/i);
+      });
+
+      it('should handle timeout errors', async () => {
+        const abortError = new Error('Aborted');
+        abortError.name = 'AbortError';
+        fetch.mockRejectedValueOnce(abortError);
+
+        await expect(authAPI.login('test@example.com', 'password'))
+          .rejects.toThrow(/timeout/i);
+      });
+
+      it('should provide user-friendly network error messages', async () => {
+        fetch.mockRejectedValueOnce(new TypeError('Network request failed'));
+
+        try {
+          await authAPI.login('test@example.com', 'password');
+          fail('Should have thrown');
+        } catch (error) {
+          expect(error.message).toMatch(/network|connection/i);
+        }
+      });
+    });
+
+    describe('Retry logic for 5xx errors', () => {
+      it('should retry on 500 error', async () => {
+        // First two calls fail with 500, third succeeds
+        fetch
+          .mockResolvedValueOnce({
+            ok: false,
+            status: 500,
+            json: async () => ({ error: 'Server error' }),
+          })
+          .mockResolvedValueOnce({
+            ok: false,
+            status: 500,
+            json: async () => ({ error: 'Server error' }),
+          })
+          .mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ success: true }),
+          });
+
+        const result = await authAPI.login('test@example.com', 'password');
+        
+        expect(fetch).toHaveBeenCalledTimes(3);
+        expect(result).toEqual({ success: true });
+      });
+
+      it('should stop retrying after 2 attempts', async () => {
+        // All three calls fail with 500
+        fetch
+          .mockResolvedValueOnce({
+            ok: false,
+            status: 500,
+            json: async () => ({ error: 'Server error' }),
+          })
+          .mockResolvedValueOnce({
+            ok: false,
+            status: 500,
+            json: async () => ({ error: 'Server error' }),
+          })
+          .mockResolvedValueOnce({
+            ok: false,
+            status: 500,
+            json: async () => ({ error: 'Server error' }),
+          });
+
+        await expect(authAPI.login('test@example.com', 'password'))
+          .rejects.toThrow('Server error');
+        
+        expect(fetch).toHaveBeenCalledTimes(3); // Initial + 2 retries
+      });
+
+      it('should not retry on 4xx errors', async () => {
+        fetch.mockResolvedValueOnce({
+          ok: false,
+          status: 400,
+          json: async () => ({ error: 'Bad request' }),
+        });
+
+        await expect(authAPI.login('test@example.com', 'password'))
+          .rejects.toThrow('Bad request');
+        
+        expect(fetch).toHaveBeenCalledTimes(1); // No retries
+      });
+
+      it('should not retry on 503 Service Unavailable', async () => {
+        fetch
+          .mockResolvedValueOnce({
+            ok: false,
+            status: 503,
+            json: async () => ({ error: 'Service unavailable' }),
+          })
+          .mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ success: true }),
+          });
+
+        const result = await authAPI.login('test@example.com', 'password');
+        
+        expect(fetch).toHaveBeenCalledTimes(2); // Retried once
+      });
+    });
+
+    describe('204 No Content handling', () => {
+      it('should handle 204 responses', async () => {
+        fetch.mockResolvedValueOnce({
+          ok: true,
+          status: 204,
+          json: async () => {
+            throw new Error('No content');
+          },
+        });
+
+        const result = await usersAPI.delete('123');
+        
+        expect(result).toEqual({ success: true });
+      });
+    });
+  });
+
+  describe('jobDescriptionsAPI', () => {
+    beforeEach(() => {
+      localStorageMock.getItem.mockReturnValue('mock-token');
+    });
+
+    describe('getAll', () => {
+      it('should get all job descriptions', async () => {
+        const mockJDs = {
+          jobDescriptions: [
+            { id: '1', title: 'Job 1' },
+            { id: '2', title: 'Job 2' },
+          ],
+        };
+
+        fetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockJDs,
+        });
+
+        const result = await require('./api').jobDescriptionsAPI.getAll();
+
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/job-descriptions'),
+          expect.objectContaining({
+            headers: expect.objectContaining({
+              'Authorization': 'Bearer mock-token',
+            }),
+          })
+        );
+        expect(result).toEqual(mockJDs);
+      });
+    });
+
+    describe('getById', () => {
+      it('should get job description by ID', async () => {
+        const mockJD = { jobDescription: { id: '1', title: 'Job 1' } };
+
+        fetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockJD,
+        });
+
+        const result = await require('./api').jobDescriptionsAPI.getById('1');
+
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/job-descriptions/1'),
+          expect.any(Object)
+        );
+        expect(result).toEqual(mockJD);
+      });
+    });
+
+    describe('create', () => {
+      it('should create new job description', async () => {
+        const newJD = {
+          title: 'Software Engineer',
+          description: 'Great job',
+        };
+        const mockResponse = { jobDescription: { id: '1', ...newJD } };
+
+        fetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse,
+        });
+
+        const result = await require('./api').jobDescriptionsAPI.create(newJD);
+
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/job-descriptions'),
+          expect.objectContaining({
+            method: 'POST',
+            body: JSON.stringify(newJD),
+          })
+        );
+        expect(result).toEqual(mockResponse);
+      });
+    });
+
+    describe('update', () => {
+      it('should update job description', async () => {
+        const updatedJD = { title: 'Updated Title' };
+        const mockResponse = { jobDescription: { id: '1', ...updatedJD } };
+
+        fetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse,
+        });
+
+        const result = await require('./api').jobDescriptionsAPI.update('1', updatedJD);
+
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/job-descriptions/1'),
+          expect.objectContaining({
+            method: 'PUT',
+            body: JSON.stringify(updatedJD),
+          })
+        );
+        expect(result).toEqual(mockResponse);
+      });
+    });
+
+    describe('delete', () => {
+      it('should delete job description', async () => {
+        fetch.mockResolvedValueOnce({
+          ok: true,
+          status: 204,
+        });
+
+        const result = await require('./api').jobDescriptionsAPI.delete('1');
+
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/job-descriptions/1'),
+          expect.objectContaining({
+            method: 'DELETE',
+          })
+        );
+        expect(result).toEqual({ success: true });
+      });
+    });
+  });
+
+  describe('authAPI.getCurrentUser', () => {
+    it('should get current user with token', async () => {
+      localStorageMock.getItem.mockReturnValue('mock-token');
+      
+      const mockUser = {
+        user: {
+          id: '123',
+          name: 'John Doe',
+          email: 'john@example.com',
+        },
+      };
+
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockUser,
+      });
+
+      const result = await authAPI.getCurrentUser();
+
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/users/me'),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Authorization': 'Bearer mock-token',
+          }),
+        })
+      );
+      expect(result).toEqual(mockUser);
+    });
+
+    it('should handle unauthorized error', async () => {
+      localStorageMock.getItem.mockReturnValue('invalid-token');
+
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        json: async () => ({ error: 'Unauthorized' }),
+      });
+
+      await expect(authAPI.getCurrentUser()).rejects.toThrow('Unauthorized');
+    });
+  });
 });
 

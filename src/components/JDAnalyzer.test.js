@@ -200,5 +200,416 @@ describe('JDAnalyzer', () => {
       expect(screen.getByText(/Job descriptions are now saved to the database/i)).toBeInTheDocument();
     });
   });
+
+  describe('CRUD Operations', () => {
+    describe('Load job descriptions', () => {
+      it('should load job descriptions on mount', async () => {
+        const mockJDs = [
+          {
+            id: '1',
+            job_title: 'Software Engineer',
+            date: '2024-01-01',
+            consulting_rate: '$100/hr',
+            description: 'Great job',
+          },
+        ];
+
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: mockJDs,
+        });
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(api.jobDescriptionsAPI.getAll).toHaveBeenCalled();
+        });
+
+        await waitFor(() => {
+          expect(screen.getByText('Software Engineer')).toBeInTheDocument();
+        });
+      });
+
+      it('should display error when loading fails', async () => {
+        api.jobDescriptionsAPI.getAll.mockRejectedValue(
+          new Error('Failed to load')
+        );
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(api.jobDescriptionsAPI.getAll).toHaveBeenCalled();
+        });
+      });
+
+      it('should handle empty job descriptions list', async () => {
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [],
+        });
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.queryByText(/Saved Job Descriptions/i)).not.toBeInTheDocument();
+        });
+      });
+    });
+
+    describe('Create job description', () => {
+      it('should create job description successfully', async () => {
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [],
+        });
+        api.jobDescriptionsAPI.create.mockResolvedValue({
+          jobDescription: { id: '1' },
+        });
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+        });
+
+        const jobTitleInput = screen.getByLabelText(/job title/i);
+        fireEvent.change(jobTitleInput, {
+          target: { value: 'Software Engineer' },
+        });
+
+        const saveButton = screen.getByText('Save & Analyze');
+        fireEvent.click(saveButton);
+
+        await waitFor(() => {
+          expect(api.jobDescriptionsAPI.create).toHaveBeenCalled();
+        });
+      });
+
+      it('should show error when create fails', async () => {
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [],
+        });
+        api.jobDescriptionsAPI.create.mockRejectedValue(
+          new Error('Failed to create')
+        );
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+        });
+
+        const saveButton = screen.getByText('Save & Analyze');
+        fireEvent.click(saveButton);
+
+        await waitFor(() => {
+          expect(api.jobDescriptionsAPI.create).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('Update job description', () => {
+      it('should enter edit mode when Edit clicked', async () => {
+        const mockJD = {
+          id: '1',
+          job_title: 'Software Engineer',
+          date: '2024-01-01',
+          contact_info: 'contact@example.com',
+          consulting_rate: '$100/hr',
+          description: 'Great job',
+        };
+
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [mockJD],
+        });
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText('Software Engineer')).toBeInTheDocument();
+        });
+
+        const editButton = screen.getByText('Edit');
+        fireEvent.click(editButton);
+
+        await waitFor(() => {
+          expect(screen.getByDisplayValue('Software Engineer')).toBeInTheDocument();
+        });
+
+        expect(screen.getByText('Update')).toBeInTheDocument();
+      });
+
+      it('should update job description successfully', async () => {
+        const mockJD = {
+          id: '1',
+          job_title: 'Software Engineer',
+          date: '2024-01-01',
+          description: 'Great job',
+        };
+
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [mockJD],
+        });
+        api.jobDescriptionsAPI.update.mockResolvedValue({
+          jobDescription: { ...mockJD, job_title: 'Senior Engineer' },
+        });
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText('Edit')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('Edit'));
+
+        await waitFor(() => {
+          expect(screen.getByDisplayValue('Software Engineer')).toBeInTheDocument();
+        });
+
+        const titleInput = screen.getByDisplayValue('Software Engineer');
+        fireEvent.change(titleInput, {
+          target: { value: 'Senior Engineer' },
+        });
+
+        fireEvent.click(screen.getByText('Update'));
+
+        await waitFor(() => {
+          expect(api.jobDescriptionsAPI.update).toHaveBeenCalledWith(
+            '1',
+            expect.any(Object)
+          );
+        });
+      });
+
+      it('should handle update error', async () => {
+        const mockJD = {
+          id: '1',
+          job_title: 'Software Engineer',
+          date: '2024-01-01',
+        };
+
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [mockJD],
+        });
+        api.jobDescriptionsAPI.update.mockRejectedValue(
+          new Error('Update failed')
+        );
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText('Edit')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('Edit'));
+        
+        await waitFor(() => {
+          expect(screen.getByText('Update')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('Update'));
+
+        await waitFor(() => {
+          expect(api.jobDescriptionsAPI.update).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('Delete job description', () => {
+      it('should show confirmation dialog before delete', async () => {
+        const mockJD = {
+          id: '1',
+          job_title: 'Software Engineer',
+          date: '2024-01-01',
+        };
+
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [mockJD],
+        });
+
+        // Mock window.confirm
+        global.confirm = jest.fn(() => false);
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText('Delete')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('Delete'));
+
+        expect(global.confirm).toHaveBeenCalledWith(
+          'Are you sure you want to delete this job description?'
+        );
+        expect(api.jobDescriptionsAPI.delete).not.toHaveBeenCalled();
+      });
+
+      it('should delete job description when confirmed', async () => {
+        const mockJD = {
+          id: '1',
+          job_title: 'Software Engineer',
+          date: '2024-01-01',
+        };
+
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [mockJD],
+        });
+        api.jobDescriptionsAPI.delete.mockResolvedValue({ success: true });
+
+        global.confirm = jest.fn(() => true);
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText('Delete')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('Delete'));
+
+        await waitFor(() => {
+          expect(api.jobDescriptionsAPI.delete).toHaveBeenCalledWith('1');
+        });
+      });
+
+      it('should handle delete error', async () => {
+        const mockJD = {
+          id: '1',
+          job_title: 'Software Engineer',
+          date: '2024-01-01',
+        };
+
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [mockJD],
+        });
+        api.jobDescriptionsAPI.delete.mockRejectedValue(
+          new Error('Delete failed')
+        );
+
+        global.confirm = jest.fn(() => true);
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText('Delete')).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText('Delete'));
+
+        await waitFor(() => {
+          expect(api.jobDescriptionsAPI.delete).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('Display saved job descriptions', () => {
+      it('should display list of saved job descriptions', async () => {
+        const mockJDs = [
+          {
+            id: '1',
+            job_title: 'Software Engineer',
+            date: '2024-01-01',
+            consulting_rate: '$100/hr',
+            consulting_period: '3 months',
+            contact_info: 'contact@example.com',
+            description: 'Great job opportunity',
+          },
+          {
+            id: '2',
+            job_title: 'Product Manager',
+            date: '2024-01-02',
+            consulting_rate: '$150/hr',
+          },
+        ];
+
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: mockJDs,
+        });
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText('Saved Job Descriptions (2)')).toBeInTheDocument();
+        });
+
+        expect(screen.getByText('Software Engineer')).toBeInTheDocument();
+        expect(screen.getByText('Product Manager')).toBeInTheDocument();
+        expect(screen.getByText('$100/hr')).toBeInTheDocument();
+        expect(screen.getByText('$150/hr')).toBeInTheDocument();
+      });
+
+      it('should truncate long descriptions', async () => {
+        const longDescription = 'A'.repeat(200);
+        const mockJD = {
+          id: '1',
+          job_title: 'Test Job',
+          date: '2024-01-01',
+          description: longDescription,
+        };
+
+        api.jobDescriptionsAPI.getAll.mockResolvedValue({
+          jobDescriptions: [mockJD],
+        });
+
+        render(
+          <TestRouter>
+            <JDAnalyzer />
+          </TestRouter>
+        );
+
+        await waitFor(() => {
+          expect(screen.getByText('Test Job')).toBeInTheDocument();
+        });
+
+        // Should show truncated version with ellipsis
+        const displayedText = screen.getByText(/A{150}\.\.\./, { exact: false });
+        expect(displayedText).toBeInTheDocument();
+      });
+    });
+  });
 });
 
