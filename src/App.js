@@ -1,7 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom"; // Import the router components and Routes
 import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Header from "./components/Header";
 import Left from "./components/Left";
 import Footer from "./components/Footer";
@@ -10,6 +14,7 @@ import About from "./components/About";
 import Home from "./components/Home";
 import LoginRegister from "./components/LoginRegister";
 import JDAnalyzer from './components/JDAnalyzer';
+import Profile from './components/Profile';
 import NotFound from './components/NotFound';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -30,38 +35,67 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/home" element={<Home />} />
       <Route path="/login-register" element={<LoginRegister />} />
-      <Route path="/analyzer" element={<JDAnalyzer />} />
+      <Route 
+        path="/analyzer" 
+        element={
+          <ProtectedRoute>
+            <JDAnalyzer />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } 
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
 
   return (
     <ErrorBoundary>
-      <Router
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-        }}
-      >
-        <div>
-          <Header
-            onHomeClick={handleHomeClick}
-            onAboutClick={handleAboutClick}
-            onLoginRegisterClick={handleLoginRegisterClick}
-          />
-          <div className="container">
-            <div className="left-column">
-              <Left
-                onHomeClick={handleHomeClick}
-                onAboutClick={handleAboutClick}
-                onLoginRegisterClick={handleLoginRegisterClick}
-              />
+      <AuthProvider>
+        <Router
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <div>
+            <Header
+              onHomeClick={handleHomeClick}
+              onAboutClick={handleAboutClick}
+              onLoginRegisterClick={handleLoginRegisterClick}
+            />
+            <div className="container">
+              <div className="left-column">
+                <Left
+                  onHomeClick={handleHomeClick}
+                  onAboutClick={handleAboutClick}
+                  onLoginRegisterClick={handleLoginRegisterClick}
+                />
+              </div>
+              <div className="body-content">{body_content}</div>
             </div>
-            <div className="body-content">{body_content}</div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
-      </Router>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+        </Router>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

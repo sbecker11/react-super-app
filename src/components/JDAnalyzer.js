@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { jobDescriptionsAPI } from '../services/api';
+import Loading from './Loading';
 
 const JDAnalyzer = () => {
   const [currentJD, setCurrentJD] = useState({
@@ -11,15 +14,61 @@ const JDAnalyzer = () => {
     description: '',
   });
 
+  const [savedJDs, setSavedJDs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
+  // Load saved job descriptions on mount
+  useEffect(() => {
+    loadJobDescriptions();
+  }, []);
+
+  const loadJobDescriptions = async () => {
+    setIsLoading(true);
+    try {
+      const response = await jobDescriptionsAPI.getAll();
+      setSavedJDs(response.jobDescriptions || []);
+    } catch (error) {
+      toast.error('Failed to load job descriptions: ' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCurrentJD({ ...currentJD, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('JD Data:', currentJD);
-    // TODO: Add functionality to save/analyze JD
+    
+    if (isSaving) return;
+    
+    setIsSaving(true);
+    try {
+      if (editingId) {
+        // Update existing job description
+        await jobDescriptionsAPI.update(editingId, currentJD);
+        toast.success('Job description updated successfully!');
+        setEditingId(null);
+      } else {
+        // Create new job description
+        await jobDescriptionsAPI.create(currentJD);
+        toast.success('Job description saved successfully!');
+      }
+      
+      // Reload the list
+      await loadJobDescriptions();
+      
+      // Clear the form
+      handleClear();
+    } catch (error) {
+      toast.error('Failed to save job description: ' + error.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleClear = () => {
@@ -32,7 +81,40 @@ const JDAnalyzer = () => {
       consultingPeriod: '',
       description: '',
     });
+    setEditingId(null);
   };
+
+  const handleEdit = (jd) => {
+    setCurrentJD({
+      date: jd.date || new Date().toISOString().split('T')[0],
+      contactInfo: jd.contact_info || '',
+      jobInfo: jd.job_info || '',
+      jobTitle: jd.job_title || '',
+      consultingRate: jd.consulting_rate || '',
+      consultingPeriod: jd.consulting_period || '',
+      description: jd.description || '',
+    });
+    setEditingId(jd.id);
+    toast.info('Editing job description');
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this job description?')) {
+      return;
+    }
+
+    try {
+      await jobDescriptionsAPI.delete(id);
+      toast.success('Job description deleted successfully!');
+      await loadJobDescriptions();
+    } catch (error) {
+      toast.error('Failed to delete job description: ' + error.message);
+    }
+  };
+
+  if (isLoading) {
+    return <Loading message="Loading job descriptions..." />;
+  }
 
   return (
     <div style={{ padding: '20px' }}>
@@ -166,24 +248,105 @@ const JDAnalyzer = () => {
             </button>
             <button
               type="submit"
+              disabled={isSaving}
               style={{
                 padding: '10px 20px',
-                backgroundColor: '#007bff',
+                backgroundColor: isSaving ? '#6c757d' : '#007bff',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: 'pointer'
+                cursor: isSaving ? 'not-allowed' : 'pointer'
               }}
             >
-              Save & Analyze
+              {isSaving ? 'Saving...' : (editingId ? 'Update' : 'Save & Analyze')}
             </button>
           </div>
         </form>
       </div>
       
+      {/* Saved Job Descriptions List */}
+      {savedJDs.length > 0 && (
+        <div style={{ marginTop: '30px' }}>
+          <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>
+            Saved Job Descriptions ({savedJDs.length})
+          </h3>
+          <div style={{ display: 'grid', gap: '15px' }}>
+            {savedJDs.map((jd) => (
+              <div
+                key={jd.id}
+                style={{
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  padding: '15px',
+                  backgroundColor: editingId === jd.id ? '#e7f3ff' : '#fff',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>
+                      {jd.job_title || 'Untitled Position'}
+                    </h4>
+                    <p style={{ margin: '5px 0', color: '#666', fontSize: '14px' }}>
+                      <strong>Date:</strong> {new Date(jd.date).toLocaleDateString()}
+                    </p>
+                    {jd.consulting_rate && (
+                      <p style={{ margin: '5px 0', color: '#666', fontSize: '14px' }}>
+                        <strong>Rate:</strong> {jd.consulting_rate} 
+                        {jd.consulting_period && ` (${jd.consulting_period})`}
+                      </p>
+                    )}
+                    {jd.contact_info && (
+                      <p style={{ margin: '5px 0', color: '#666', fontSize: '14px' }}>
+                        <strong>Contact:</strong> {jd.contact_info}
+                      </p>
+                    )}
+                    {jd.description && (
+                      <p style={{ margin: '10px 0 0 0', fontSize: '14px' }}>
+                        {jd.description.substring(0, 150)}
+                        {jd.description.length > 150 && '...'}
+                      </p>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px', marginLeft: '15px' }}>
+                    <button
+                      onClick={() => handleEdit(jd)}
+                      style={{
+                        padding: '5px 15px',
+                        backgroundColor: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(jd.id)}
+                      style={{
+                        padding: '5px 15px',
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e9ecef', borderRadius: '4px' }}>
         <p style={{ margin: 0, fontStyle: 'italic', color: '#6c757d' }}>
-          💡 Note: Analysis functionality is coming soon. Form data will be processed and analyzed.
+          💡 Note: Analysis functionality is coming soon. Job descriptions are now saved to the database.
         </p>
       </div>
     </div>

@@ -55,7 +55,11 @@ describe('API Service', () => {
           json: async () => mockResponse,
         });
 
-        const result = await authAPI.register('John Doe', 'john@example.com', 'Password123!');
+        const result = await authAPI.register({
+          name: 'John Doe',
+          email: 'john@example.com',
+          password: 'Password123!',
+        });
 
         expect(fetch).toHaveBeenCalledWith(
           expect.stringContaining('/auth/register'),

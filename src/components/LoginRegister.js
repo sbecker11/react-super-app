@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import { toast } from 'react-toastify';
 import './LoginRegister.css';
 import { 
   validationConfig, 
   validatePasswordRules, 
   getPasswordRequirements 
 } from './validationConfig';
+import { useAuth } from '../contexts/AuthContext';
+import { authAPI } from '../services/api';
+import Loading from './Loading';
 
 /**
  * Build Yup Validation Schema from centralized configuration
@@ -50,6 +55,9 @@ const buildValidationSchema = () => {
 const validationSchema = buildValidationSchema();
 
 const LoginRegister = () => {
+  const navigate = useNavigate();
+  const { register: registerUser, login: loginUser, isAuthenticated } = useAuth();
+  
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
@@ -58,6 +66,15 @@ const LoginRegister = () => {
 
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoginMode, setIsLoginMode] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/analyzer');
+    }
+  }, [isAuthenticated, navigate]);
 
   /**
    * Check if form is valid using Yup
@@ -128,6 +145,9 @@ const LoginRegister = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Prevent double submission
+    if (isSubmitting) return;
+    
     // Validate entire form using Yup schema
     try {
       // Use Yup to validate all fields
@@ -135,8 +155,31 @@ const LoginRegister = () => {
       
       // All Yup validations passed - clear errors and submit
       setErrors({});
-      console.log('Form is valid! Data:', profileData);
-      // You can add code here to send the profile data to the server or perform other actions.
+      setIsSubmitting(true);
+
+      try {
+        if (isLoginMode) {
+          // Login mode - only email and password required
+          const response = await authAPI.login(profileData.email, profileData.password);
+          loginUser(response.user, response.token);
+          navigate('/analyzer');
+        } else {
+          // Register mode - all fields required
+          const response = await authAPI.register({
+            name: profileData.name,
+            email: profileData.email,
+            password: profileData.password,
+          });
+          registerUser(response.user, response.token);
+          navigate('/analyzer');
+        }
+      } catch (apiError) {
+        // Handle API errors
+        toast.error(apiError.message || 'An error occurred. Please try again.');
+        setErrors({ api: apiError.message });
+      } finally {
+        setIsSubmitting(false);
+      }
     } catch (validationErrors) {
       // Yup validation failed - collect and display all errors
       const errorsObject = {};
@@ -144,7 +187,7 @@ const LoginRegister = () => {
         errorsObject[error.path] = error.message;
       });
       setErrors(errorsObject);
-      console.log('Form has validation errors:', errorsObject);
+      toast.error('Please fix the validation errors');
     }
   };
 
@@ -158,28 +201,45 @@ const LoginRegister = () => {
     setIsFormValid(false); // Form is invalid after clearing
   };
 
+  const toggleMode = () => {
+    setIsLoginMode(!isLoginMode);
+    setErrors({});
+    // Keep email and password, clear name when switching modes
+    if (!isLoginMode) {
+      setProfileData(prev => ({ ...prev, name: '' }));
+    }
+  };
+
+  // Show loading spinner while submitting
+  if (isSubmitting) {
+    return <Loading message={isLoginMode ? "Logging in..." : "Creating your account..."} />;
+  }
+
   return (
     <div>
-      <h2>LoginRegister</h2>
+      <h2>{isLoginMode ? 'Login' : 'Register'}</h2>
       <form onSubmit={handleSubmit} className="profile-form">
         
-        <div className={`input-container ${errors.name ? 'error' : ''}`}>
-          <div className="label-error-container">
-            <label htmlFor="name">Name</label>
-            {errors.name && <div className="error">{errors.name}</div>}
+        {/* Show name field only in register mode */}
+        {!isLoginMode && (
+          <div className={`input-container ${errors.name ? 'error' : ''}`}>
+            <div className="label-error-container">
+              <label htmlFor="name">Name</label>
+              {errors.name && <div className="error">{errors.name}</div>}
+            </div>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={profileData.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              autoComplete="name"
+              required
+              className={errors.name ? 'error-input' : ''}
+            />
           </div>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={profileData.name}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            autoComplete="name"
-            required
-            className={errors.name ? 'error-input' : ''}
-          />
-        </div>
+        )}
 
         <div className={`input-container ${errors.email ? 'error' : ''}`}>
           <div className="label-error-container">
@@ -225,9 +285,45 @@ const LoginRegister = () => {
           </div>
         </div>
 
+        {/* Display API errors */}
+        {errors.api && (
+          <div style={{ 
+            padding: '10px', 
+            backgroundColor: '#fee', 
+            border: '1px solid #fcc',
+            borderRadius: '4px',
+            marginTop: '10px',
+            color: '#c00'
+          }}>
+            {errors.api}
+          </div>
+        )}
+
         <div className="button-container">
           <button type="button" onClick={handleClear}>Clear</button>
-          <button type="submit" disabled={!isFormValid}>Save</button>
+          <button type="submit" disabled={!isFormValid || isSubmitting}>
+            {isLoginMode ? 'Login' : 'Register'}
+          </button>
+        </div>
+
+        {/* Toggle between login and register */}
+        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <button 
+            type="button" 
+            onClick={toggleMode}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#007bff',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            {isLoginMode 
+              ? "Don't have an account? Register here" 
+              : "Already have an account? Login here"}
+          </button>
         </div>
       </form>
     </div>

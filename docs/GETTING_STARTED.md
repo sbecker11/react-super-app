@@ -4,17 +4,20 @@ This guide will help you get your React Super App application up and running wit
 
 ## 📋 Prerequisites
 
-- **Docker Desktop** (version 20.10 or higher) - [Install Docker](https://www.docker.com/get-started)
-  - **Must be running** before starting services
-- **Docker Compose** (usually comes with Docker Desktop)
-- **Git** (if cloning the repository)
+Before you begin, ensure you have the following installed and running:
 
-Verify installations:
+- **Docker Desktop** (version 20.10 or higher) - [Download here](https://www.docker.com/get-started)
+  - **Must be running** before starting services
+  - On macOS, our scripts can auto-start Docker Desktop for you
+  - Verify Docker is running: `docker info`
+  - Verify versions: `docker --version` and `docker-compose --version`
+- **Git** - For cloning the repository
+- **Ports Available**: Ensure ports 3000 (client), 3001 (server), and 5432 (database) are not in use
+
+**Quick Port Check:**
 ```bash
-docker --version
-docker-compose --version
-# Also verify Docker Desktop is running:
-docker info
+# After cloning, run this to verify ports are available
+npm run check-ports
 ```
 
 ---
@@ -30,7 +33,7 @@ git clone https://github.com/sbecker11/react-super-app.git
 cd react-super-app
 ```
 
-### Step 2: Create Environment File
+### Step 2: Configure Environment
 
 Create your `.env` file by copying the example template:
 
@@ -38,41 +41,70 @@ Create your `.env` file by copying the example template:
 cp .env.example .env
 ```
 
-**Important:** Update the following variables in your `.env` file based on your needs:
+**Important:** The `.env.example` file contains all default configuration:
+- Database configuration (PostgreSQL user, password, database name, port)
+- Server configuration (port, NODE_ENV, JWT secret and expiration)
+- Client configuration (port, API URL, environment)
 
-- **`NODE_ENV`**: Set to `development` for local development, `testing` when running tests, or `production` for deployment
-- **`REACT_APP_ENV`**: Set to match `NODE_ENV` for consistency (options: `development`, `testing`, `production`)
-
-The `.env.example` file contains all default configuration:
-- Database configuration (PostgreSQL)
-- Server and client port configuration
-- API URL configuration
-- JWT secret (⚠️ change this in production!)
-
-**Location**: `.env` in project root
-
-**Note**: The `.env` file is in `.gitignore` and won't be committed to Git. The `.env.example` file is version-controlled and serves as a template.
-
-### Step 3: Start All Services
-
-**Option A: Start Everything (Recommended)**
+**⚠️ Security Note**: Change `JWT_SECRET` in production! Generate a strong secret with:
 ```bash
-docker-compose up --build
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
-**Option B: Start Database Only (for testing)**
+**Optional Customization**: Edit `.env` to change:
+- **`NODE_ENV`**: `development`, `production`, or `test`
+- **`REACT_APP_ENV`**: Should match `NODE_ENV`
+- **Port numbers**: If defaults (3000, 3001, 5432) conflict with other services
+
+**Note**: The `.env` file is in `.gitignore` and won't be committed to Git.
+
+### Step 3: Initialize the Database
+
+Run the database initialization script:
+
 ```bash
 npm run db:init
 ```
 
+**What this does:**
+- ✅ Checks if Docker Desktop is running (auto-starts on macOS if needed)
+- ✅ Starts PostgreSQL container
+- ✅ Creates database and schema
+- ✅ Verifies all tables and indexes
+
+**Expected output:**
+```
+Step 0: Checking Docker...
+✓ Docker is running
+✓ Using: docker compose
+Step 1: Starting PostgreSQL container...
+✓ PostgreSQL container started
+Step 2: Waiting for PostgreSQL to be ready...
+✓ PostgreSQL is ready!
+...
+Database Initialization Complete!
+```
+
+### Step 4: Start All Services
+
+Start all services (client, server, database):
+
+```bash
+# Option A: Standard docker-compose (recommended)
+docker-compose up --build
+
+# Option B: Using our helper script with port checking
+npm run start:services
+
+# Option C: Run in background (detached mode)
+npm run start:services:detached
+```
+
 **What happens:**
 - ✅ Builds Docker images for all services (first time only)
-- ✅ Starts PostgreSQL database container
-- ✅ Initializes database schema automatically
-- ✅ Starts Express REST API server (port 3001) - Option A only
-- ✅ Starts React development client (port 3000) - Option A only
-
-**Note**: Use `npm run db:init` if you only need the database for running server tests. This script ensures the database is properly initialized with all tables and indexes.
+- ✅ Starts PostgreSQL database container (port 5432)
+- ✅ Starts Express REST API server (port 3001)
+- ✅ Starts React development client (port 3000)
 
 **Expected output:**
 ```
@@ -82,10 +114,19 @@ client_1    | Compiled successfully!
 client_1    | webpack compiled successfully
 ```
 
-**First run:** Takes 2-5 minutes (building images and installing dependencies)  
-**Subsequent runs:** Takes 30-60 seconds (containers start quickly)
+**Timing:**
+- **First run**: 2-5 minutes (building images and installing dependencies)
+- **Subsequent runs**: 30-60 seconds (containers start quickly)
 
-### Step 4: Verify Everything is Running
+### Step 5: Access the Application
+
+- **Client (React App)**: [http://localhost:3000](http://localhost:3000)
+- **API (Express Server)**: [http://localhost:3001](http://localhost:3001)
+- **API Health Check**: [http://localhost:3001/api/health](http://localhost:3001/api/health)
+
+**🎉 That's it!** The application is now running with all services.
+
+### Step 6: Verify Everything is Running
 
 **Check services:**
 ```bash

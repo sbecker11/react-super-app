@@ -5,10 +5,42 @@ import React from 'react';
 import { TestRouter } from '../test-utils';
 import LoginRegister from './LoginRegister';
 
+// Mock useAuth hook
+jest.mock('../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    register: jest.fn(),
+    login: jest.fn(),
+    isAuthenticated: false,
+  }),
+}));
+
+// Mock useNavigate hook
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}));
+
+// Mock toast notifications
+jest.mock('react-toastify', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+  },
+}));
+
+// Mock API
+jest.mock('../services/api', () => ({
+  authAPI: {
+    register: jest.fn(),
+    login: jest.fn(),
+  },
+}));
+
 // Helper to get form element since it doesn't have role="form"
 const getForm = () => {
-    const saveButton = screen.getByText('Save');
-    return saveButton.closest('form');
+    const registerButton = screen.queryByText('Register') || screen.queryByText('Login');
+    return registerButton?.closest('form');
 };
 
 export const onLoginRegisterClick = jest.fn();
@@ -22,9 +54,9 @@ describe('LoginRegister', () => {
         render(<TestRouter><LoginRegister /></TestRouter>);
     });
 
-    it('displays the LoginRegister heading', () => {
+    it('displays the Register heading by default', () => {
         render(<TestRouter><LoginRegister /></TestRouter>);
-        expect(screen.getByText('LoginRegister')).toBeInTheDocument();
+        expect(screen.getByText('Register')).toBeInTheDocument();
     });
 
     it('renders name input field', () => {
