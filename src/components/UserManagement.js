@@ -42,11 +42,6 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [pendingAction, setPendingAction] = useState(null);
 
-  // Redirect non-admins
-  if (!isAdmin()) {
-    return <Navigate to="/" replace />;
-  }
-
   // Load users
   const loadUsers = async () => {
     setLoading(true);
@@ -77,6 +72,11 @@ const UserManagement = () => {
   useEffect(() => {
     loadUsers();
   }, [pagination.page, pagination.limit, sortBy, sortOrder, filters]);
+
+  // Redirect non-admins (must be after all hooks)
+  if (!isAdmin()) {
+    return <Navigate to="/" replace />;
+  }
 
   // Handle filter change
   const handleFilterChange = (key, value) => {
