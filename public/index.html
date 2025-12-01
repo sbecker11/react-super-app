@@ -76,10 +76,6 @@
           border-top-color: #404040 !important;
           color: #b0b0b0 !important;
         }
-        
-        #test-commands-toggle {
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
-        }
       }
       
       /* Custom scrollbar styling */
@@ -119,11 +115,6 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    
-    <!-- Toggle Button for Test Commands -->
-    <button id="test-commands-toggle" style="position: fixed; bottom: 10px; right: 10px; background: #007bff; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; z-index: 10000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: background-color 0.2s;">
-      🧪
-    </button>
     
     <!-- Developer Test Commands Section -->
     <div id="dev-test-commands" class="test-panel" style="display: none; position: fixed; bottom: 70px; right: 10px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; max-width: 500px; max-height: 80vh; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.1); color: #212529; overflow: hidden; flex-direction: column;">
@@ -312,37 +303,23 @@
       // Toggle developer test commands panel
       (function() {
         const panel = document.getElementById('dev-test-commands');
-        const toggleButton = document.getElementById('test-commands-toggle');
         const closeButton = document.getElementById('close-test-panel');
         let isVisible = false;
         
         // Function to toggle panel visibility
         function togglePanel() {
           isVisible = !isVisible;
-          if (isVisible) {
-            panel.style.display = 'flex'; // Use flex to enable scrolling
-            toggleButton.style.background = '#28a745';
-            toggleButton.textContent = '✓';
-          } else {
-            panel.style.display = 'none';
-            toggleButton.style.background = '#007bff';
-            toggleButton.textContent = '🧪';
-          }
+          panel.style.display = isVisible ? 'flex' : 'none';
         }
         
         // Show in development mode by default (localhost or 127.0.0.1)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '') {
-          isVisible = true;
-          panel.style.display = 'flex'; // Use flex to enable scrolling
-          toggleButton.style.background = '#28a745';
-          toggleButton.textContent = '✓';
+          isVisible = false; // Start hidden, user can toggle with Ctrl+Shift+D
+          panel.style.display = 'none';
         } else {
-          // Hide toggle button in production
-          toggleButton.style.display = 'none';
+          // Hide completely in production
+          panel.style.display = 'none';
         }
-        
-        // Toggle button click handler
-        toggleButton.addEventListener('click', togglePanel);
         
         // Close button click handler
         closeButton.addEventListener('click', togglePanel);
@@ -425,22 +402,6 @@
           if (e.ctrlKey && e.shiftKey && e.key === 'D') {
             e.preventDefault();
             togglePanel();
-          }
-        });
-        
-        // Hover effect on toggle button (adapts to dark mode)
-        toggleButton.addEventListener('mouseenter', function() {
-          if (isVisible) {
-            this.style.background = '#218838';
-          } else {
-            this.style.background = isDarkMode() ? '#0056b3' : '#0056b3';
-          }
-        });
-        toggleButton.addEventListener('mouseleave', function() {
-          if (isVisible) {
-            this.style.background = '#28a745';
-          } else {
-            this.style.background = isDarkMode() ? '#1976d2' : '#007bff';
           }
         });
         

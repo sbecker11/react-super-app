@@ -5,6 +5,19 @@ import { useAuth } from '../contexts/AuthContext';
 function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
   const { isAuthenticated, isAdmin } = useAuth();
 
+  const toggleDevPanel = () => {
+    const panel = document.getElementById('dev-test-commands');
+    if (panel) {
+      const isVisible = panel.style.display === 'flex';
+      panel.style.display = isVisible ? 'none' : 'flex';
+    }
+  };
+
+  // Only show dev tools in development
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' || 
+                        window.location.hostname === '';
+
   return (
     <div className="left">
       <ul>
@@ -13,6 +26,13 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
         <li><Link to="/about" onClick={onAboutClick}>About</Link></li>
         {!isAuthenticated && (
           <li><Link to="/login-register" onClick={onLoginRegisterClick}>Login/Register</Link></li>
+        )}
+        {isDevelopment && (
+          <li>
+            <a href="#" onClick={(e) => { e.preventDefault(); toggleDevPanel(); }} style={{ color: '#17a2b8' }}>
+              🧪 Dev Tools
+            </a>
+          </li>
         )}
         {isAuthenticated && (
           <>
