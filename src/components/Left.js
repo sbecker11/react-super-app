@@ -30,7 +30,7 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
         {isDevelopment && (
           <li>
             <a href="#" onClick={(e) => { e.preventDefault(); toggleDevPanel(); }}>
-              🧪 Dev Tools
+              Dev Tools
             </a>
           </li>
         )}
