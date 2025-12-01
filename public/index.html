@@ -312,6 +312,11 @@
           panel.style.display = isVisible ? 'flex' : 'none';
         }
         
+        // Expose global function for React components to use
+        window.toggleDevPanel = function() {
+          togglePanel();
+        };
+        
         // Show in development mode by default (localhost or 127.0.0.1)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '') {
           isVisible = false; // Start hidden, user can toggle with Ctrl+Shift+D

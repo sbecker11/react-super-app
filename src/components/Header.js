@@ -6,10 +6,8 @@ function Header({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
   const { isAuthenticated, isAdmin, user } = useAuth();
 
   const toggleDevPanel = () => {
-    const panel = document.getElementById('dev-test-commands');
-    if (panel) {
-      const isVisible = panel.style.display === 'flex';
-      panel.style.display = isVisible ? 'none' : 'flex';
+    if (window.toggleDevPanel) {
+      window.toggleDevPanel();
     }
   };
 
