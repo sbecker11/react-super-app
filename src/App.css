@@ -83,7 +83,7 @@ header {
     right: 0;
     bottom: 100px; /* Updated bottom margin based on reduced footer height */
     background-color: white;
-    overflow: hidden;
+    overflow: auto; /* Enable scrolling when content exceeds viewport */
     padding-left: 25px; /* Add padding to avoid overlapping with left-column */
     padding-right: 25px; /* Add padding to avoid overlapping with left-column */
   }
