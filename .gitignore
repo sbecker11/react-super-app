@@ -18,6 +18,8 @@
 .env.test.local
 .env.production.local
 .env
+.client.pid
+.server.pid
 
 # Docker
 .docker/
