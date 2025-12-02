@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Header from "./components/Header";
 import Left from "./components/Left";
@@ -74,9 +75,10 @@ function App() {
   );
 
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <Router
+    <ThemeProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <Router
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,
@@ -112,9 +114,10 @@ function App() {
             pauseOnHover
             theme="light"
           />
-        </Router>
-      </AuthProvider>
-    </ErrorBoundary>
+          </Router>
+        </AuthProvider>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 

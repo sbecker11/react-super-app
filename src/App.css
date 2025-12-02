@@ -1,9 +1,43 @@
 /* App.css */
+/* CSS Variables are now defined in index.css */
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  color: var(--link-color);
+  width: 40px;
+  height: 40px;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.2);
+}
+
+.theme-toggle:active {
+  transform: scale(0.9);
+}
+
+/* Scale down the moon icon to match sun size and make it dark grey */
+.moon-icon {
+  display: inline-block;
+  transform: scale(0.5);
+  transform-origin: center;
+  filter: grayscale(100%) brightness(0.3);
+}
 
 /* Styling for the Header */
 header {
-    background-color: darkgrey;
-    color: white;
+    background-color: var(--header-bg) !important;
+    color: var(--link-color) !important;
     height: 100px; /* Reduced header height */
     position: fixed;
     top: 0;
@@ -47,13 +81,21 @@ header {
   header a {
     margin-right: 25px; /* Add margin to header links */
     text-decoration: none; /* Remove underlines from links */
-    color: white;
+    color: var(--link-color) !important;
+  }
+  
+  /* Ensure all link states use the global variable */
+  header a:link,
+  header a:visited,
+  header a:hover,
+  header a:active {
+    color: var(--link-color) !important;
   }
   
   /* Styling for the Footer */
   footer {
-    background-color: darkgrey;
-    color: white;
+    background-color: var(--footer-bg) !important;
+    color: var(--link-color) !important;
     height: 100px; /* Reduced footer height */
     position: fixed;
     bottom: 0;
@@ -66,13 +108,32 @@ header {
   
   /* Styling for the left-column */
   .left-column {
-    background-color: lightgrey;
+    background-color: var(--sidebar-bg) !important;
+    color: var(--text-color) !important;
     width: 200px;
     position: fixed;
     top: 100px; /* Updated top margin based on reduced header height */
     bottom: 100px; /* Updated bottom margin based on reduced footer height */
     left: 0;
     overflow-y: auto;
+  }
+  
+  /* Styling for left sidebar links */
+  .left a,
+  .left-column a {
+    color: var(--link-color) !important;
+    text-decoration: none;
+  }
+  
+  .left a:link,
+  .left a:visited,
+  .left a:hover,
+  .left a:active,
+  .left-column a:link,
+  .left-column a:visited,
+  .left-column a:hover,
+  .left-column a:active {
+    color: var(--link-color) !important;
   }
   
   /* Styling for the body-content */
@@ -82,7 +143,8 @@ header {
     left: 200px;
     right: 0;
     bottom: 100px; /* Updated bottom margin based on reduced footer height */
-    background-color: white;
+    background-color: var(--body-bg) !important;
+    color: var(--text-color) !important;
     overflow: auto; /* Enable scrolling when content exceeds viewport */
     padding-left: 25px; /* Add padding to avoid overlapping with left-column */
     padding-right: 25px; /* Add padding to avoid overlapping with left-column */

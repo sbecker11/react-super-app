@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 function Header({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
   const { isAuthenticated, isAdmin, user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const toggleDevPanel = () => {
     if (window.toggleDevPanel) {
@@ -22,6 +24,14 @@ function Header({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
         <img src="./logo192.png" alt="Logo" className="header-logo" />
       </div>
       <div className="header-right">
+        <button 
+          className="theme-toggle" 
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+        >
+          {theme === 'light' ? <span className="moon-icon">🌙</span> : '☀️'}
+        </button>
         <nav>
           <ul>
             {/* Use Link components for navigation */}
@@ -42,7 +52,7 @@ function Header({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
                 <li><Link to="/analyzer">Analyzer</Link></li>
                 <li><Link to="/profile">Profile</Link></li>
                 {isAdmin() && (
-                  <li><Link to="/admin" style={{ color: '#ffc107', fontWeight: 'bold' }}>Admin</Link></li>
+                  <li><Link to="/admin" style={{ fontWeight: 'bold' }}>Admin</Link></li>
                 )}
               </>
             )}

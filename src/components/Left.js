@@ -37,7 +37,7 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
             <li><Link to="/analyzer">Analyzer</Link></li>
             <li><Link to="/profile">Profile</Link></li>
             {isAdmin() && (
-              <li><Link to="/admin" style={{ color: '#ffc107', fontWeight: 'bold' }}>⚙️ Admin</Link></li>
+              <li><Link to="/admin" style={{ fontWeight: 'bold' }}>⚙️ Admin</Link></li>
             )}
           </>
         )}
