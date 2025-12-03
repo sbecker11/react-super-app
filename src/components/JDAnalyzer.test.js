@@ -579,14 +579,18 @@ describe('JDAnalyzer', () => {
         expect(screen.getByText('Software Engineer')).toBeInTheDocument();
         expect(screen.getByText('Product Manager')).toBeInTheDocument();
         // The consulting_rate is displayed as "Rate: $100/hr" where "Rate:" is in <strong> and "$100/hr" is separate text
-        // So we need to look for the rate value separately, not as part of a regex pattern
-        // Use getByText with a function matcher to find text that contains the rate
-        expect(screen.getByText((content, element) => {
-          return element?.textContent?.includes('$100/hr') || false;
-        })).toBeInTheDocument();
-        expect(screen.getByText((content, element) => {
-          return element?.textContent?.includes('$150/hr') || false;
-        })).toBeInTheDocument();
+        // Use getAllByText and filter to find rates in saved job descriptions (not in form)
+        const allRate100 = screen.getAllByText((content, element) => {
+          const text = element?.textContent || '';
+          return text.includes('$100/hr') && !text.includes('Consulting Rate:');
+        });
+        expect(allRate100.length).toBeGreaterThan(0);
+        
+        const allRate150 = screen.getAllByText((content, element) => {
+          const text = element?.textContent || '';
+          return text.includes('$150/hr') && !text.includes('Consulting Rate:');
+        });
+        expect(allRate150.length).toBeGreaterThan(0);
       });
 
       it('should truncate long descriptions', async () => {
