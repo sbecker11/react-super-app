@@ -55,11 +55,15 @@ describe('Profile Component', () => {
   });
 
   describe('Positive Tests - View Mode', () => {
-    it('should render user profile information', () => {
+    it('should render user profile information', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       render(
@@ -68,17 +72,23 @@ describe('Profile Component', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText('User Profile')).toBeInTheDocument();
-      expect(screen.getByText('John Doe')).toBeInTheDocument();
-      expect(screen.getByText('john@example.com')).toBeInTheDocument();
-      expect(screen.getByText('123')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('User Profile')).toBeInTheDocument();
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('john@example.com')).toBeInTheDocument();
+        expect(screen.getByText('123')).toBeInTheDocument();
+      }, { timeout: 3000 });
     });
 
-    it('should display formatted member since date', () => {
+    it('should display formatted member since date', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       render(
@@ -86,16 +96,24 @@ describe('Profile Component', () => {
           <Profile />
         </RouterWrapper>
       );
+
+      await waitFor(() => {
+        expect(screen.getByText('User Profile')).toBeInTheDocument();
+      }, { timeout: 3000 });
 
       // Check that date is formatted (should contain month name)
       expect(screen.getByText(/January|February|March|April|May|June|July|August|September|October|November|December/)).toBeInTheDocument();
     });
 
-    it('should render Edit Profile button', () => {
+    it('should render Edit Profile button', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       render(
@@ -104,14 +122,20 @@ describe('Profile Component', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      }, { timeout: 3000 });
     });
 
-    it('should render Logout button', () => {
+    it('should render Logout button', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       render(
@@ -120,7 +144,9 @@ describe('Profile Component', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText('Logout')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Logout')).toBeInTheDocument();
+      }, { timeout: 3000 });
     });
   });
 
@@ -161,6 +187,10 @@ describe('Profile Component', () => {
         updateUser: jest.fn(),
       });
 
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
+      });
+
       render(
         <RouterWrapper>
           <Profile />
@@ -188,6 +218,10 @@ describe('Profile Component', () => {
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       render(
@@ -220,6 +254,10 @@ describe('Profile Component', () => {
         user: mockUser,
         logout: jest.fn(),
         updateUser: mockUpdateUser,
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       usersAPI.update.mockResolvedValue({ user: updatedUser });
@@ -256,7 +294,14 @@ describe('Profile Component', () => {
 
       await waitFor(() => {
         expect(mockUpdateUser).toHaveBeenCalled();
-      });
+      }, { timeout: 2000 });
+
+      // Check that updateUser was called with the updated user
+      expect(mockUpdateUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Jane Smith',
+        })
+      );
 
       expect(toast.success).toHaveBeenCalled();
     });
@@ -266,6 +311,10 @@ describe('Profile Component', () => {
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       render(
@@ -306,6 +355,10 @@ describe('Profile Component', () => {
         updateUser: jest.fn(),
       });
 
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
+      });
+
       const errorMessage = 'Failed to update profile';
       usersAPI.update.mockRejectedValue(new Error(errorMessage));
 
@@ -342,6 +395,10 @@ describe('Profile Component', () => {
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       usersAPI.update.mockRejectedValue(new Error('Network error'));
@@ -382,6 +439,10 @@ describe('Profile Component', () => {
         updateUser: jest.fn(),
       });
 
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
+      });
+
       // Delay the API response
       usersAPI.update.mockImplementation(
         () => new Promise(resolve => setTimeout(() => resolve({ user: mockUser }), 100))
@@ -411,14 +472,14 @@ describe('Profile Component', () => {
       const saveButton = screen.getByText('Save Changes');
       fireEvent.click(saveButton);
 
-      // Button text changes to "Saving..." when isSaving is true
+      // When isSaving is true, Profile shows Loading component with "Saving profile..." message
       await waitFor(() => {
-        expect(screen.getByText('Saving...')).toBeInTheDocument();
+        expect(screen.getByText('Saving profile...')).toBeInTheDocument();
       });
 
       await waitFor(() => {
-        expect(screen.queryByText('Saving...')).not.toBeInTheDocument();
-      });
+        expect(screen.queryByText('Saving profile...')).not.toBeInTheDocument();
+      }, { timeout: 2000 });
     });
 
     it('should prevent double submission', async () => {
@@ -426,6 +487,10 @@ describe('Profile Component', () => {
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       usersAPI.update.mockImplementation(
@@ -473,6 +538,10 @@ describe('Profile Component', () => {
         updateUser: jest.fn(),
       });
 
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
+      });
+
       render(
         <RouterWrapper>
           <Profile />
@@ -497,6 +566,10 @@ describe('Profile Component', () => {
         updateUser: jest.fn(),
       });
 
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
+      });
+
       render(
         <RouterWrapper>
           <Profile />
@@ -509,7 +582,7 @@ describe('Profile Component', () => {
 
       fireEvent.click(screen.getByText('Logout'));
 
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+      expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
     });
   });
 
@@ -530,7 +603,7 @@ describe('Profile Component', () => {
       expect(screen.getByText(/loading profile/i)).toBeInTheDocument();
     });
 
-    it('should handle user with minimal data', () => {
+    it('should handle user with minimal data', async () => {
       const minimalUser = {
         id: '1',
         name: 'User',
@@ -544,17 +617,23 @@ describe('Profile Component', () => {
         updateUser: jest.fn(),
       });
 
+      usersAPI.getCurrent.mockResolvedValue({
+        user: minimalUser,
+      });
+
       render(
         <RouterWrapper>
           <Profile />
         </RouterWrapper>
       );
 
-      expect(screen.getByText('User')).toBeInTheDocument();
-      expect(screen.getByText('user@test.com')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('User')).toBeInTheDocument();
+        expect(screen.getByText('user@test.com')).toBeInTheDocument();
+      }, { timeout: 3000 });
     });
 
-    it('should handle very long names', () => {
+    it('should handle very long names', async () => {
       const longNameUser = {
         ...mockUser,
         name: 'A'.repeat(100),
@@ -566,16 +645,22 @@ describe('Profile Component', () => {
         updateUser: jest.fn(),
       });
 
+      usersAPI.getCurrent.mockResolvedValue({
+        user: longNameUser,
+      });
+
       render(
         <RouterWrapper>
           <Profile />
         </RouterWrapper>
       );
 
-      expect(screen.getByText('A'.repeat(100))).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('A'.repeat(100))).toBeInTheDocument();
+      }, { timeout: 3000 });
     });
 
-    it('should handle special characters in name', () => {
+    it('should handle special characters in name', async () => {
       const specialCharUser = {
         ...mockUser,
         name: "O'Brien-Smith",
@@ -587,20 +672,8 @@ describe('Profile Component', () => {
         updateUser: jest.fn(),
       });
 
-      render(
-        <RouterWrapper>
-          <Profile />
-        </RouterWrapper>
-      );
-
-      expect(screen.getByText("O'Brien-Smith")).toBeInTheDocument();
-    });
-
-    it('should display password change note', () => {
-      AuthContext.useAuth.mockReturnValue({
-        user: mockUser,
-        logout: jest.fn(),
-        updateUser: jest.fn(),
+      usersAPI.getCurrent.mockResolvedValue({
+        user: specialCharUser,
       });
 
       render(
@@ -609,16 +682,44 @@ describe('Profile Component', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText(/Password changes are not yet implemented/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("O'Brien-Smith")).toBeInTheDocument();
+      }, { timeout: 3000 });
+    });
+
+    it('should display password change note', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: mockUser,
+        logout: jest.fn(),
+        updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
+      });
+
+      render(
+        <RouterWrapper>
+          <Profile />
+        </RouterWrapper>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Password changes are not yet implemented/i)).toBeInTheDocument();
+      }, { timeout: 3000 });
     });
   });
 
   describe('Form Validation', () => {
-    it('should require name field', () => {
+    it('should require name field', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       render(
@@ -627,17 +728,27 @@ describe('Profile Component', () => {
         </RouterWrapper>
       );
 
+      await waitFor(() => {
+        expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
       fireEvent.click(screen.getByText('Edit Profile'));
 
-      const nameInput = screen.getByDisplayValue('John Doe');
-      expect(nameInput).toHaveAttribute('required');
+      await waitFor(() => {
+        const nameInput = screen.getByDisplayValue('John Doe');
+        expect(nameInput).toHaveAttribute('required');
+      });
     });
 
-    it('should require email field', () => {
+    it('should require email field', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
         logout: jest.fn(),
         updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValue({
+        user: mockUser,
       });
 
       render(
@@ -646,11 +757,17 @@ describe('Profile Component', () => {
         </RouterWrapper>
       );
 
+      await waitFor(() => {
+        expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
       fireEvent.click(screen.getByText('Edit Profile'));
 
-      const emailInput = screen.getByDisplayValue('john@example.com');
-      expect(emailInput).toHaveAttribute('required');
-      expect(emailInput).toHaveAttribute('type', 'email');
+      await waitFor(() => {
+        const emailInput = screen.getByDisplayValue('john@example.com');
+        expect(emailInput).toHaveAttribute('required');
+        expect(emailInput).toHaveAttribute('type', 'email');
+      });
     });
   });
 });
