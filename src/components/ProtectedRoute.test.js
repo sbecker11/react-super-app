@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import * as AuthContext from '../contexts/AuthContext';
 
@@ -13,18 +13,23 @@ jest.mock('../contexts/AuthContext', () => ({
 const TestComponent = () => <div>Protected Content</div>;
 
 // Wrapper component for routing
-const RouterWrapper = ({ children }) => (
-  <BrowserRouter>
+// Note: ProtectedRoute uses Navigate which needs to be inside Routes
+// Use MemoryRouter for tests to avoid browser history issues
+// Use path="*" to catch all routes for Navigate to work correctly
+const RouterWrapper = ({ children, initialEntries = ['/'] }) => (
+  <MemoryRouter initialEntries={initialEntries}>
     <Routes>
-      <Route path="/" element={children} />
+      <Route path="*" element={children} />
       <Route path="/login-register" element={<div>Login Page</div>} />
     </Routes>
-  </BrowserRouter>
+  </MemoryRouter>
 );
 
 describe('ProtectedRoute', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Ensure AuthContext mock is reset before each test
+    AuthContext.useAuth.mockClear();
   });
 
   describe('Positive Tests - Authenticated User', () => {
@@ -212,7 +217,7 @@ describe('ProtectedRoute', () => {
       expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
     });
 
-    it('should show loading even with user data if still loading', () => {
+    it('should show loading even with user data if still loading', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: { id: '1', name: 'User' },
         loading: true,
@@ -226,14 +231,18 @@ describe('ProtectedRoute', () => {
         </RouterWrapper>
       );
 
-      // Loading component shows "Checking authentication..." (with capital C and ellipsis)
-      // Use a more flexible matcher in case the text is split across elements
-      // Also check for the Loading component's structure (spinner div)
-      const loadingMessage = screen.queryByText(/checking authentication/i);
-      const hasSpinner = container.querySelector('div[style*="border"]');
+      // When loading is true, ProtectedRoute should return Loading component
+      // Check for Loading component structure - it has a spinner div with border style
+      // and a message paragraph
+      await waitFor(() => {
+        const spinnerDivs = container.querySelectorAll('div[style*="border"]');
+        const hasSpinner = spinnerDivs.length > 0;
+        const loadingMessage = screen.queryByText(/checking authentication/i);
+        
+        // Either the message text is visible, or the spinner structure exists
+        expect(loadingMessage || hasSpinner).toBeTruthy();
+      });
       
-      // Either the message text is visible, or the spinner structure exists
-      expect(loadingMessage || hasSpinner).toBeTruthy();
       expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
     });
   });
@@ -245,7 +254,7 @@ describe('ProtectedRoute', () => {
         loading: false,
       });
 
-      render(
+      const { container } = render(
         <RouterWrapper>
           <ProtectedRoute>
             <TestComponent />
@@ -253,8 +262,14 @@ describe('ProtectedRoute', () => {
         </RouterWrapper>
       );
 
-      // Empty object is truthy, so should render
-      expect(screen.getByText('Protected Content')).toBeInTheDocument();
+      // Empty object {} is truthy in JavaScript, so !{} is false
+      // ProtectedRoute should render children, not Navigate
+      const protectedContent = screen.queryByText('Protected Content');
+      const loginPage = screen.queryByText('Login Page');
+      
+      // Empty object is truthy, so should render children
+      expect(protectedContent).toBeInTheDocument();
+      expect(loginPage).not.toBeInTheDocument();
     });
 
     it('should handle user with only id', () => {
@@ -263,7 +278,7 @@ describe('ProtectedRoute', () => {
         loading: false,
       });
 
-      render(
+      const { container } = render(
         <RouterWrapper>
           <ProtectedRoute>
             <TestComponent />
@@ -271,7 +286,12 @@ describe('ProtectedRoute', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText('Protected Content')).toBeInTheDocument();
+      // User object with id is truthy, so should render children
+      const protectedContent = screen.queryByText('Protected Content');
+      const loginPage = screen.queryByText('Login Page');
+      
+      expect(protectedContent).toBeInTheDocument();
+      expect(loginPage).not.toBeInTheDocument();
     });
 
     it('should handle false as user value', () => {
@@ -341,7 +361,7 @@ describe('ProtectedRoute', () => {
         </div>
       );
 
-      render(
+      const { container } = render(
         <RouterWrapper>
           <ProtectedRoute>
             <NestedComponent />
@@ -349,8 +369,14 @@ describe('ProtectedRoute', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText('Nested Content')).toBeInTheDocument();
-      expect(screen.getByText('Additional info')).toBeInTheDocument();
+      // User is authenticated, so ProtectedRoute should render NestedComponent
+      const nestedContent = screen.queryByText('Nested Content');
+      const additionalInfo = screen.queryByText('Additional info');
+      const loginPage = screen.queryByText('Login Page');
+      
+      expect(nestedContent).toBeInTheDocument();
+      expect(additionalInfo).toBeInTheDocument();
+      expect(loginPage).not.toBeInTheDocument();
     });
 
     it('should work with complex component trees', () => {
@@ -367,7 +393,7 @@ describe('ProtectedRoute', () => {
         </div>
       );
 
-      render(
+      const { container } = render(
         <RouterWrapper>
           <ProtectedRoute>
             <ComplexComponent />
@@ -375,9 +401,16 @@ describe('ProtectedRoute', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText('Header')).toBeInTheDocument();
-      expect(screen.getByText('Main Content')).toBeInTheDocument();
-      expect(screen.getByText('Footer')).toBeInTheDocument();
+      // User is authenticated, so ProtectedRoute should render ComplexComponent
+      const header = screen.queryByText('Header');
+      const mainContent = screen.queryByText('Main Content');
+      const footer = screen.queryByText('Footer');
+      const loginPage = screen.queryByText('Login Page');
+      
+      expect(header).toBeInTheDocument();
+      expect(mainContent).toBeInTheDocument();
+      expect(footer).toBeInTheDocument();
+      expect(loginPage).not.toBeInTheDocument();
     });
   });
 
