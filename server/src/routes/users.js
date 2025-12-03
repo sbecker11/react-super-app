@@ -53,7 +53,7 @@ router.get('/me', (req, res) => {
  * Get user by ID
  * Users can view their own profile, admins can view any profile
  */
-router.get('/:id', requireOwnershipOrAdmin, async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
@@ -65,6 +65,27 @@ router.get('/:id', requireOwnershipOrAdmin, async (req, res) => {
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Check ownership or admin access after confirming user exists
+    if (!req.user) {
+      return res.status(401).json({ 
+        error: 'Authentication required',
+        code: 'AUTH_REQUIRED'
+      });
+    }
+    
+    // Admin can access any user's data
+    if (req.user.role === 'admin') {
+      return res.json({ user: result.rows[0] });
+    }
+    
+    // Regular user can only access their own data
+    if (req.user.id !== id) {
+      return res.status(403).json({ 
+        error: 'Access denied. You can only access your own data.',
+        code: 'OWNERSHIP_REQUIRED'
+      });
     }
     
     res.json({ user: result.rows[0] });

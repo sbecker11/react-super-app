@@ -24,7 +24,15 @@ describe('API Integration Tests', () => {
   beforeAll(async () => {
     // Clean up any existing test users
     try {
-      await query('DELETE FROM users WHERE email = $1', [testUser.email]);
+      await query('DELETE FROM users WHERE email IN ($1, $2, $3, $4, $5, $6, $7)', [
+        testUser.email,
+        'other@example.com',
+        'duplicate@example.com',
+        'otheruser@example.com',
+        'otherdelete@example.com',
+        'updated@example.com',
+        'delete@example.com'
+      ]);
     } catch (error) {
       // Ignore if table doesn't exist yet
     }
@@ -33,7 +41,15 @@ describe('API Integration Tests', () => {
   afterAll(async () => {
     // Clean up test users
     try {
-      await query('DELETE FROM users WHERE email = $1', [testUser.email]);
+      await query('DELETE FROM users WHERE email IN ($1, $2, $3, $4, $5, $6, $7)', [
+        testUser.email,
+        'other@example.com',
+        'duplicate@example.com',
+        'otheruser@example.com',
+        'otherdelete@example.com',
+        'updated@example.com',
+        'delete@example.com'
+      ]);
     } catch (error) {
       // Ignore errors
     }
@@ -260,7 +276,7 @@ describe('API Integration Tests', () => {
         .set('Authorization', `Bearer ${otherUserToken}`)
         .expect(403);
 
-      expect(response.body).toHaveProperty('error', 'Access denied');
+      expect(response.body).toHaveProperty('error', 'Access denied. You can only access your own data.');
 
       // Clean up
       await query('DELETE FROM users WHERE id = $1', [otherUserId]);
@@ -364,7 +380,7 @@ describe('API Integration Tests', () => {
         })
         .expect(403);
 
-      expect(response.body).toHaveProperty('error', 'Access denied');
+      expect(response.body).toHaveProperty('error', 'Access denied. You can only access your own data.');
 
       // Clean up
       await query('DELETE FROM users WHERE id = $1', [otherUserId]);
@@ -422,7 +438,7 @@ describe('API Integration Tests', () => {
         .set('Authorization', `Bearer ${otherUserToken}`)
         .expect(403);
 
-      expect(response.body).toHaveProperty('error', 'Access denied');
+      expect(response.body).toHaveProperty('error', 'Access denied. You can only access your own data.');
 
       // Clean up
       await query('DELETE FROM users WHERE id = $1', [otherUserId]);

@@ -19,6 +19,9 @@
     "build": "react-scripts build",
     "test": "NODE_OPTIONS='--no-deprecation' react-scripts test",
     "test:coverage": "NODE_OPTIONS='--no-deprecation' react-scripts test --coverage --watchAll=false",
+    "test:integration": "./scripts/ensure-docker-services.sh && NODE_OPTIONS='--no-deprecation' REACT_APP_API_URL=http://localhost:3001/api react-scripts test --setupFilesAfterEnv=./src/setupTests.integration.js --testMatch='**/*.integration.test.js' --watchAll=false",
+    "test:integration:watch": "./scripts/ensure-docker-services.sh && NODE_OPTIONS='--no-deprecation' REACT_APP_API_URL=http://localhost:3001/api react-scripts test --setupFilesAfterEnv=./src/setupTests.integration.js --testMatch='**/*.integration.test.js'",
+    "test:all": "npm test -- --watchAll=false && npm run test:integration",
     "test:e2e": "./scripts/test-e2e-setup.sh",
     "eject": "react-scripts eject",
     "check-ports": "./scripts/check-ports.sh",
@@ -59,7 +62,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "node-fetch": "^2.7.0"
   },
   "jest": {
     "coverageThreshold": {

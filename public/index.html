@@ -128,19 +128,26 @@
         
         <!-- Start Services Section -->
         <div style="margin-bottom: 15px;">
-          <div style="font-weight: bold; color: #495057; font-size: 13px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #dee2e6;">🚀 Start Services</div>
+          <div style="font-weight: bold; color: #495057; font-size: 13px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #dee2e6;">🚀 Start Services (Docker)</div>
           
           <div style="margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-              <button class="copy-command-btn" data-command="npm run start:services" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
-              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm run start:services</code>
+              <button class="copy-command-btn" data-command="npm run start:services:detached" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm run start:services:detached</code>
             </div>
           </div>
           
           <div style="margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-              <button class="copy-command-btn" data-command="docker-compose up --build" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
-              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">docker-compose up --build</code>
+              <button class="copy-command-btn" data-command="docker compose up -d --build" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">docker compose up -d --build</code>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+              <button class="copy-command-btn" data-command="npm run stop:services" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm run stop:services</code>
             </div>
           </div>
           
@@ -165,22 +172,29 @@
           
           <div style="margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-              <button class="copy-command-btn" data-command="npm run test:coverage" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
-              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm run test:coverage</code>
+              <button class="copy-command-btn" data-command="npm run test:integration" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm run test:integration</code>
             </div>
           </div>
           
           <div style="margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-              <button class="copy-command-btn" data-command="npm test LoginRegister.test.js" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
-              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm test LoginRegister.test.js</code>
+              <button class="copy-command-btn" data-command="npm run test:all" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm run test:all</code>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+              <button class="copy-command-btn" data-command="npm run test:coverage" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm run test:coverage</code>
             </div>
           </div>
         </div>
         
         <!-- Server Tests Section -->
         <div style="margin-bottom: 15px;">
-          <div style="font-weight: bold; color: #495057; font-size: 13px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #dee2e6;">🔧 Server Tests</div>
+          <div style="font-weight: bold; color: #495057; font-size: 13px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #dee2e6;">🔧 Server Tests (Docker DB)</div>
           
           <div style="margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
@@ -198,13 +212,6 @@
           
           <div style="margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-              <button class="copy-command-btn" data-command="cd server && npm test -- middleware/auth.test.js" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
-              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">cd server && npm test -- middleware/auth.test.js</code>
-            </div>
-          </div>
-          
-          <div style="margin-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
               <button class="copy-command-btn" data-command="cd server && npm test -- api.test.js" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
               <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">cd server && npm test -- api.test.js</code>
             </div>
@@ -212,15 +219,15 @@
           
           <div style="margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-              <button class="copy-command-btn" data-command="cd server && npm test -- database/connection.test.js" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
-              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">cd server && npm test -- database/connection.test.js</code>
+              <button class="copy-command-btn" data-command="cd server && npm test -- middleware/auth.test.js" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">cd server && npm test -- middleware/auth.test.js</code>
             </div>
           </div>
         </div>
         
         <!-- Database Commands Section -->
         <div style="margin-bottom: 15px;">
-          <div style="font-weight: bold; color: #495057; font-size: 13px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #dee2e6;">🗄️ Database</div>
+          <div style="font-weight: bold; color: #495057; font-size: 13px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #dee2e6;">🗄️ Database (Docker)</div>
           
           <div style="margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
@@ -263,6 +270,13 @@
               <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">npm run db:logs</code>
             </div>
           </div>
+          
+          <div style="margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+              <button class="copy-command-btn" data-command="docker compose ps" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">docker compose ps</code>
+            </div>
+          </div>
         </div>
         
         <!-- API/Run Commands Section -->
@@ -271,8 +285,15 @@
           
           <div style="margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-              <button class="copy-command-btn" data-command="cd server && npm run dev" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
-              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">cd server && npm run dev</code>
+              <button class="copy-command-btn" data-command="docker compose exec server npm run dev" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">docker compose exec server npm run dev</code>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+              <button class="copy-command-btn" data-command="docker compose logs -f server" style="background: #007bff; color: white; border: none; border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer; white-space: nowrap;">Copy</button>
+              <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; flex: 1; font-family: 'Courier New', monospace;">docker compose logs -f server</code>
             </div>
           </div>
           

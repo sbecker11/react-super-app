@@ -24,36 +24,54 @@ function getFieldValidators(fieldType, options = {}) {
   
   const validators = [];
   
-  // Start with trim
-  validators.push(body(fieldType).trim());
-  
-  // Handle required/optional
-  if (optional) {
-    validators.push(body(fieldType).optional());
-  } else if (required) {
-    // Required is handled by individual validators
-  }
-  
   // Apply field-specific validators
   switch (fieldType) {
     case 'name':
-      validators.push(
-        body('name')
-          .isLength({ min: config.minLength, max: config.maxLength })
-          .withMessage(config.messages.minLength(config.minLength) + ' and ' + config.messages.maxLength(config.maxLength).replace('less than', 'at most'))
-          .matches(new RegExp(config.patternString))
-          .withMessage(config.messages.pattern)
-      );
+      if (optional) {
+        // For optional fields, chain validators with .optional() to skip if not present
+        validators.push(
+          body('name')
+            .optional()
+            .trim()
+            .isLength({ min: config.minLength, max: config.maxLength })
+            .withMessage(config.messages.minLength(config.minLength) + ' and ' + config.messages.maxLength(config.maxLength).replace('less than', 'at most'))
+            .matches(new RegExp(config.patternString))
+            .withMessage(config.messages.pattern)
+        );
+      } else {
+        validators.push(
+          body('name')
+            .trim()
+            .isLength({ min: config.minLength, max: config.maxLength })
+            .withMessage(config.messages.minLength(config.minLength) + ' and ' + config.messages.maxLength(config.maxLength).replace('less than', 'at most'))
+            .matches(new RegExp(config.patternString))
+            .withMessage(config.messages.pattern)
+        );
+      }
       break;
       
     case 'email':
-      validators.push(
-        body('email')
-          .isLength({ max: config.maxLength })
-          .withMessage(config.messages.maxLength(config.maxLength))
-          .matches(new RegExp(config.patternString))
-          .withMessage(config.messages.invalid(config.example))
-      );
+      if (optional) {
+        // For optional fields, chain validators with .optional() to skip if not present
+        validators.push(
+          body('email')
+            .optional()
+            .trim()
+            .isLength({ max: config.maxLength })
+            .withMessage(config.messages.maxLength(config.maxLength))
+            .matches(new RegExp(config.patternString))
+            .withMessage(config.messages.invalid(config.example))
+        );
+      } else {
+        validators.push(
+          body('email')
+            .trim()
+            .isLength({ max: config.maxLength })
+            .withMessage(config.messages.maxLength(config.maxLength))
+            .matches(new RegExp(config.patternString))
+            .withMessage(config.messages.invalid(config.example))
+        );
+      }
       // Note: express-validator's .isEmail() is less strict, so we use our pattern
       break;
       

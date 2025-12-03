@@ -96,6 +96,8 @@ describe('Authentication Middleware', () => {
           id: userId,
           name: 'Test User',
           email: email,
+          role: 'user',
+          is_active: true,
           created_at: new Date(),
           updated_at: new Date(),
         }],
@@ -104,7 +106,7 @@ describe('Authentication Middleware', () => {
       await authenticate(req, res, next);
 
       expect(query).toHaveBeenCalledWith(
-        'SELECT id, name, email, created_at, updated_at FROM users WHERE id = $1',
+        'SELECT id, name, email, role, is_active, created_at, updated_at FROM users WHERE id = $1',
         [userId]
       );
       expect(req.user).toHaveProperty('id', userId);

@@ -109,12 +109,16 @@ const requireOwnershipOrAdmin = (req, res, next) => {
     });
   }
 
-  // Admin can access any user's data
+  // Admin can access any user's data (including non-existent users for 404)
   if (req.user.role === 'admin') {
     return next();
   }
 
   // Regular user can only access their own data
+  // Allow the route handler to check if user exists first (for 404)
+  // If the user exists but is not the owner, return 403
+  // If the user doesn't exist and it's not the owner, still return 403 (security)
+  // The route handler will check existence and return 404 if needed
   if (req.user.id !== targetUserId) {
     return res.status(403).json({ 
       error: 'Access denied. You can only access your own data.',

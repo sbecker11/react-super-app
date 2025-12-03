@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for routes/users.js</title>
+    <title>Code coverage report for middleware/rbac.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">routes</a> users.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">middleware</a> rbac.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">40.81% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>56/70</span>
+                <span class='fraction'>20/49</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.72% </span>
+                <span class="strong">26.31% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>16/22</span>
+                <span class='fraction'>10/38</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">33.33% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>2/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">40.81% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>56/70</span>
+                <span class='fraction'>20/49</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -262,29 +262,79 @@
 <a name='L197'></a><a href='#L197'>197</a>
 <a name='L198'></a><a href='#L198'>198</a>
 <a name='L199'></a><a href='#L199'>199</a>
-<a name='L200'></a><a href='#L200'>200</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -295,18 +345,55 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -314,50 +401,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -369,66 +420,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -439,11 +441,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -451,214 +471,248 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const express = require('express');
-const { validationResult } = require('express-validator');
-const { query } = require('../database/connection');
-const { authenticate } = require('../middleware/auth');
-const { requireOwnershipOrAdmin } = require('../middleware/rbac');
-const { getProfileUpdateValidators } = require('../validation/validationHelpers');
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Role-Based Access Control (RBAC) Middleware
+ * 
+ * Provides middleware functions for:
+ * - Checking user roles
+ * - Requiring admin privileges
+ * - Requiring elevated admin sessions
+ * - Logging admin actions
+ */
 &nbsp;
-const router = express.Router();
-&nbsp;
-// All routes require authentication
-router.use(authenticate);
+const jwt = require('jsonwebtoken');
+const pool = require('../database/connection');
 &nbsp;
 /**
- * GET /api/users
- * Get all users (admin only - can be enhanced later)
+ * Middleware to require admin role
+ * Must be used after auth middleware (which sets req.user)
  */
-router.get('/', async (req, res) =&gt; {
-  try {
-    const result = await query(
-      'SELECT id, name, email, created_at, updated_at FROM users ORDER BY created_at DESC'
-    );
-    
-    res.json({ users: result.rows });
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Get users error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'Failed to fetch users' });</span>
-  }
-});
-&nbsp;
-/**
- * GET /api/users/me
- * Get current authenticated user
- * NOTE: This must come before /:id route to avoid matching "me" as an ID
- */
-router.get('/me', (req, res) =&gt; {
-  // Return user with role
-  res.json({ 
-    user: {
-      id: req.user.id,
-      name: req.user.name,
-      email: req.user.email,
-      role: req.user.role,
-      isActive: req.user.is_active,
-      lastLoginAt: req.user.last_login_at,
-      createdAt: req.user.created_at,
-      updatedAt: req.user.updated_at
-    }
-  });
-});
-&nbsp;
-/**
- * GET /api/users/:id
- * Get user by ID
- * Users can view their own profile, admins can view any profile
- */
-router.get('/:id', async (req, res) =&gt; {
-  try {
-    const { id } = req.params;
-    
-    // Check if user exists first
-    const result = await query(
-      'SELECT id, name, email, role, is_active, last_login_at, created_at, updated_at FROM users WHERE id = $1',
-      [id]
-    );
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    // Check ownership or admin access after confirming user exists
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!req.user) {
-<span class="cstat-no" title="statement not covered" >      return res.status(401).json({ </span>
-        error: 'Authentication required',
-        code: 'AUTH_REQUIRED'
-      });
-    }
-    
-    // Admin can access any user's data
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (req.user.role === 'admin') {
-<span class="cstat-no" title="statement not covered" >      return res.json({ user: result.rows[0] });</span>
-    }
-    
-    // Regular user can only access their own data
-    if (req.user.id !== id) {
-      return res.status(403).json({ 
-        error: 'Access denied. You can only access your own data.',
-        code: 'OWNERSHIP_REQUIRED'
-      });
-    }
-    
-    res.json({ user: result.rows[0] });
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Get user error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'Failed to fetch user' });</span>
-  }
-});
-&nbsp;
-/**
- * PUT /api/users/:id
- * Update user (own profile only)
- */
-/**
- * PUT /api/users/:id
- * Update user (own profile only)
- * Uses shared validation config via validationHelpers
- */
-router.put('/:id', requireOwnershipOrAdmin, getProfileUpdateValidators(), async (req, res) =&gt; {
-  try {
-    // Check for validation errors
-    const errors = validationResult(req);
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!errors.isEmpty()) {
-<span class="cstat-no" title="statement not covered" >      return res.status(400).json({ errors: errors.array() });</span>
-    }
-    
-    const { id } = req.params;
-    const { name, email } = req.body;
-    const updates = [];
-    const values = [];
-    let paramCount = 1;
-    
-    // Build dynamic update query
-    if (name !== undefined) {
-      updates.push(`name = $${paramCount++}`);
-      values.push(name);
-    }
-    
-    if (email !== undefined) {
-      // Check if email is already taken by another user
-      const existingUser = await query(
-        'SELECT id FROM users WHERE email = $1 AND id != $2',
-        [email, id]
-      );
-      
-      if (existingUser.rows.length &gt; 0) {
-        return res.status(400).json({ error: 'Email already in use' });
-      }
-      
-      updates.push(`email = $${paramCount++}`);
-      values.push(email);
-    }
-    
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (updates.length === 0) {
-<span class="cstat-no" title="statement not covered" >      return res.status(400).json({ error: 'No fields to update' });</span>
-    }
-    
-    // Add updated_by and id to values
-    values.push(req.user.id);  // updated_by
-    values.push(id);            // WHERE id = 
-    
-    const result = await query(
-      `UPDATE users 
-       SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP, updated_by = $${paramCount}
-       WHERE id = $${paramCount + 1}
-       RETURNING id, name, email, role, is_active, created_at, updated_at`,
-      values
-    );
-    
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (result.rows.length === 0) {
-<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ error: 'User not found' });</span>
-    }
-    
-    res.json({
-      message: 'User updated successfully',
-      user: result.rows[0],
+const requireAdmin = <span class="fstat-no" title="function not covered" >(r</span>eq, res, next) =&gt; {
+<span class="cstat-no" title="statement not covered" >  if (!req.user) {</span>
+<span class="cstat-no" title="statement not covered" >    return res.status(401).json({ </span>
+      error: 'Authentication required',
+      code: 'AUTH_REQUIRED'
     });
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Update user error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'Failed to update user' });</span>
   }
-});
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (req.user.role !== 'admin') {</span>
+<span class="cstat-no" title="statement not covered" >    return res.status(403).json({ </span>
+      error: 'Admin access required',
+      code: 'ADMIN_REQUIRED'
+    });
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  next();</span>
+};
 &nbsp;
 /**
- * DELETE /api/users/:id
- * Delete user (own profile only)
- * Note: Users can only delete their own accounts
- * Admins should use the deactivate endpoint instead
+ * Middleware to require elevated admin session
+ * Used for sensitive operations like changing user roles or passwords
+ * Admin must re-authenticate to get elevated token
  */
-router.delete('/:id', requireOwnershipOrAdmin, async (req, res) =&gt; {
-  try {
-    const { id } = req.params;
-    
-    const result = await query(
-      'DELETE FROM users WHERE id = $1 RETURNING id',
-      [id]
-    );
-    
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (result.rows.length === 0) {
-<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ error: 'User not found' });</span>
-    }
-    
-    res.json({ message: 'User deleted successfully' });
-  } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('Delete user error:', error);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'Failed to delete user' });</span>
-  }
-});
+const requireElevatedSession = <span class="fstat-no" title="function not covered" >(r</span>eq, res, next) =&gt; {
+  const elevatedToken = <span class="cstat-no" title="statement not covered" >req.headers['x-elevated-token'];</span>
 &nbsp;
-module.exports = router;
+<span class="cstat-no" title="statement not covered" >  if (!elevatedToken) {</span>
+<span class="cstat-no" title="statement not covered" >    return res.status(403).json({ </span>
+      error: 'Elevated session required. Please re-authenticate.',
+      code: 'ELEVATED_SESSION_REQUIRED',
+      action: 'reauthenticate'
+    });
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    // Verify elevated token
+    const decoded = <span class="cstat-no" title="statement not covered" >jwt.verify(elevatedToken, process.env.JWT_SECRET);</span>
+&nbsp;
+    // Check if token has expired
+<span class="cstat-no" title="statement not covered" >    if (Date.now() &gt; decoded.expiresAt) {</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(403).json({ </span>
+        error: 'Elevated session expired. Please re-authenticate.',
+        code: 'ELEVATED_SESSION_EXPIRED',
+        action: 'reauthenticate'
+      });
+    }
+&nbsp;
+    // Verify user is still admin
+<span class="cstat-no" title="statement not covered" >    if (decoded.role !== 'admin') {</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(403).json({ </span>
+        error: 'Admin access required',
+        code: 'ADMIN_REQUIRED'
+      });
+    }
+&nbsp;
+    // Store elevated session info in request
+<span class="cstat-no" title="statement not covered" >    req.elevatedSession = {</span>
+      userId: decoded.userId,
+      expiresAt: decoded.expiresAt
+    };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    next();</span>
+  } catch (error) {
+<span class="cstat-no" title="statement not covered" >    return res.status(403).json({ </span>
+      error: 'Invalid elevated session token',
+      code: 'INVALID_ELEVATED_TOKEN',
+      action: 'reauthenticate'
+    });
+  }
+};
+&nbsp;
+/**
+ * Middleware to check if user can access a specific user's data
+ * Admins can access any user's data
+ * Regular users can only access their own data
+ */
+const requireOwnershipOrAdmin = (req, res, next) =&gt; {
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (!req.user) {
+<span class="cstat-no" title="statement not covered" >    return res.status(401).json({ </span>
+      error: 'Authentication required',
+      code: 'AUTH_REQUIRED'
+    });
+  }
+&nbsp;
+  // Get target user ID from route params or body
+  const targetUserId = req.params.userId || req.params.id || <span class="branch-2 cbranch-no" title="branch not covered" >req.body.userId;</span>
+&nbsp;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (!targetUserId) {
+<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ </span>
+      error: 'User ID required',
+      code: 'USER_ID_REQUIRED'
+    });
+  }
+&nbsp;
+  // Admin can access any user's data (including non-existent users for 404)
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (req.user.role === 'admin') {
+<span class="cstat-no" title="statement not covered" >    return next();</span>
+  }
+&nbsp;
+  // Regular user can only access their own data
+  // Allow the route handler to check if user exists first (for 404)
+  // If the user exists but is not the owner, return 403
+  // If the user doesn't exist and it's not the owner, still return 403 (security)
+  // The route handler will check existence and return 404 if needed
+  if (req.user.id !== targetUserId) {
+    return res.status(403).json({ 
+      error: 'Access denied. You can only access your own data.',
+      code: 'OWNERSHIP_REQUIRED'
+    });
+  }
+&nbsp;
+  next();
+};
+&nbsp;
+/**
+ * Log admin action to audit trail
+ * @param {string} action - Action type (e.g., 'role_change', 'password_reset')
+ * @param {string} targetUserId - ID of user being acted upon
+ * @param {string} performedBy - ID of admin performing action
+ * @param {object} metadata - Additional context
+ * @param {object} req - Express request object (for IP and user agent)
+ */
+const logAdminAction = <span class="fstat-no" title="function not covered" >as</span>ync (action, targetUserId, performedBy, metadata = <span class="branch-0 cbranch-no" title="branch not covered" >{},</span> req = <span class="branch-0 cbranch-no" title="branch not covered" >null)</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const ipAddress = <span class="cstat-no" title="statement not covered" >req ? (req.ip || req.connection.remoteAddress) : null;</span>
+    const userAgent = <span class="cstat-no" title="statement not covered" >req ? req.get('user-agent') : null;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    await pool.query(</span>
+      `INSERT INTO user_auth_logs 
+       (user_id, action, ip_address, user_agent, success, performed_by, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [targetUserId, action, ipAddress, userAgent, true, performedBy, JSON.stringify(metadata)]
+    );
+  } catch (error) {
+<span class="cstat-no" title="statement not covered" >    console.error('Error logging admin action:', error);</span>
+    // Don't throw - logging failure shouldn't break the operation
+  }
+};
+&nbsp;
+/**
+ * Log authentication event
+ * @param {string} userId - User ID
+ * @param {string} action - Action type (e.g., 'login', 'logout', 'failed_login')
+ * @param {boolean} success - Whether action was successful
+ * @param {string} failureReason - Reason for failure (if applicable)
+ * @param {object} req - Express request object
+ */
+const logAuthEvent = async (userId, action, success = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span> failureReason = <span class="branch-0 cbranch-no" title="branch not covered" >null,</span> req = <span class="branch-0 cbranch-no" title="branch not covered" >null)</span> =&gt; {
+  try {
+    const ipAddress = req ? (req.ip || <span class="branch-1 cbranch-no" title="branch not covered" >req.connection.remoteAddress)</span> : <span class="branch-1 cbranch-no" title="branch not covered" >null;</span>
+    const userAgent = req ? req.get('user-agent') : <span class="branch-1 cbranch-no" title="branch not covered" >null;</span>
+&nbsp;
+    await pool.query(
+      `INSERT INTO user_auth_logs 
+       (user_id, action, ip_address, user_agent, success, failure_reason)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [userId, action, ipAddress, userAgent, success, failureReason]
+    );
+  } catch (error) {
+<span class="cstat-no" title="statement not covered" >    console.error('Error logging auth event:', error);</span>
+    // Don't throw - logging failure shouldn't break the operation
+  }
+};
+&nbsp;
+/**
+ * Generate elevated session token
+ * Valid for 15 minutes
+ * @param {string} userId - Admin user ID
+ * @param {string} role - User role (should be 'admin')
+ * @returns {object} - { token, expiresAt }
+ */
+const generateElevatedToken = <span class="fstat-no" title="function not covered" >(u</span>serId, role) =&gt; {
+  const expiresAt = <span class="cstat-no" title="statement not covered" >Date.now() + (15 * 60 * 1000);</span> // 15 minutes from now
+&nbsp;
+  const token = <span class="cstat-no" title="statement not covered" >jwt.sign(</span>
+    {
+      userId,
+      role,
+      expiresAt,
+      elevated: true
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return {</span>
+    token,
+    expiresAt: new Date(expiresAt).toISOString()
+  };
+};
+&nbsp;
+module.exports = {
+  requireAdmin,
+  requireElevatedSession,
+  requireOwnershipOrAdmin,
+  logAdminAction,
+  logAuthEvent,
+  generateElevatedToken
+};
 &nbsp;
 &nbsp;</pre></td></tr></table></pre>
 
