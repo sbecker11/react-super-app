@@ -18,6 +18,7 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('../services/api', () => ({
   usersAPI: {
+    getCurrent: jest.fn(),
     update: jest.fn(),
   },
 }));
@@ -47,6 +48,10 @@ describe('Profile Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     require('react-router-dom').useNavigate.mockReturnValue(mockNavigate);
+    // Mock usersAPI.getCurrent to return user data
+    usersAPI.getCurrent.mockResolvedValue({
+      user: mockUser,
+    });
   });
 
   describe('Positive Tests - View Mode', () => {
