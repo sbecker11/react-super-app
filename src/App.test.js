@@ -29,7 +29,9 @@ describe('App', () => {
     render(<App />);
     // Wait for AuthProvider to finish loading
     await waitFor(() => {
-      expect(screen.getByText('Home')).toBeInTheDocument();
+      // There are multiple "Home" links (header and sidebar), so use getAllByText
+      const homeLinks = screen.getAllByText('Home');
+      expect(homeLinks.length).toBeGreaterThanOrEqual(1);
     }, { timeout: 3000 });
   });
 
@@ -82,14 +84,18 @@ describe('App', () => {
     render(<App />);
     
     await waitFor(() => {
-      expect(screen.getByText('Home')).toBeInTheDocument();
+      // There are multiple "Home" links (header and sidebar), so use getAllByText
+      const homeLinks = screen.getAllByText('Home');
+      expect(homeLinks.length).toBeGreaterThanOrEqual(1);
     }, { timeout: 3000 });
     
     const loginLink = screen.getAllByText(/login\/register/i)[0];
     fireEvent.click(loginLink);
     
     await waitFor(() => {
-      expect(screen.getByText('Register')).toBeInTheDocument();
+      // There may be multiple "Register" elements, so use getAllByText
+      const registerElements = screen.getAllByText('Register');
+      expect(registerElements.length).toBeGreaterThanOrEqual(1);
     });
   });
 
