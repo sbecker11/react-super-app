@@ -1,37 +1,34 @@
 // FILEPATH: /Users/sbecker11/workspace-react/react-super-app/src/components/Header.test.js
 
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import { TestRouterWithAllProviders } from "../test-utils";
 import Header from "./Header";
-import { authAPI } from "../services/api";
+import * as api from "../services/api";
 
 import { onHomeClick } from "./Home.test";
 import { onAboutClick } from "./About.test";
 import { onLoginRegisterClick } from "./LoginRegister.test";
 
 // Mock authAPI.getCurrentUser to prevent real API calls in AuthProvider
-// This mock is scoped to this test file only
-beforeEach(() => {
-  jest.spyOn(require('../services/api').authAPI, 'getCurrentUser').mockRejectedValue(
-    new Error('Not authenticated')
-  );
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
+jest.mock('../services/api', () => {
+  const actual = jest.requireActual('../services/api');
+  return {
+    ...actual,
+    authAPI: {
+      ...actual.authAPI,
+      getCurrentUser: jest.fn().mockRejectedValue(new Error('Not authenticated')),
+    },
+  };
 });
 
 describe("Header", () => {
   beforeEach(() => {
-    jest.spyOn(authAPI, 'getCurrentUser').mockRejectedValue(
-      new Error('Not authenticated')
-    );
     localStorage.removeItem('token');
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
     localStorage.clear();
   });
 

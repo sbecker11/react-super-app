@@ -1,81 +1,135 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import App from './App';
+import * as api from './services/api';
+
+// Mock authAPI.getCurrentUser to prevent real API calls in AuthProvider
+jest.mock('./services/api', () => {
+  const actual = jest.requireActual('./services/api');
+  return {
+    ...actual,
+    authAPI: {
+      ...actual.authAPI,
+      getCurrentUser: jest.fn().mockRejectedValue(new Error('Not authenticated')),
+    },
+  };
+});
 
 describe('App', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.removeItem('token');
   });
 
-  it('renders without crashing', () => {
-    render(<App />);
+  afterEach(() => {
+    localStorage.clear();
   });
 
-  it('renders Header component', () => {
+  it('renders without crashing', async () => {
     render(<App />);
-    const homeLinks = screen.getAllByText('Home');
-    expect(homeLinks.length).toBeGreaterThan(0);
+    // Wait for AuthProvider to finish loading
+    await waitFor(() => {
+      expect(screen.getByText('Home')).toBeInTheDocument();
+    }, { timeout: 3000 });
+  });
+
+  it('renders Header component', async () => {
+    render(<App />);
+    await waitFor(() => {
+      const homeLinks = screen.getAllByText('Home');
+      expect(homeLinks.length).toBeGreaterThan(0);
+    }, { timeout: 3000 });
     const aboutLinks = screen.getAllByText('About');
     expect(aboutLinks.length).toBeGreaterThan(0);
     const loginLinks = screen.getAllByText('Login/Register');
     expect(loginLinks.length).toBeGreaterThan(0);
   });
 
-  it('renders Footer component', () => {
+  it('renders Footer component', async () => {
     render(<App />);
-    const currentYear = new Date().getFullYear();
-    expect(screen.getByText(new RegExp(currentYear.toString()))).toBeInTheDocument();
+    await waitFor(() => {
+      const currentYear = new Date().getFullYear();
+      expect(screen.getByText(new RegExp(currentYear.toString()))).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 
-  it('displays Home page by default', () => {
+  it('displays Home page by default', async () => {
     render(<App />);
-    expect(screen.getByText('Welcome to Our Website')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Welcome to Our Website')).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 
-  it('navigates to About page when About link is clicked', () => {
+  it('navigates to About page when About link is clicked', async () => {
     render(<App />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Home')).toBeInTheDocument();
+    }, { timeout: 3000 });
     
     const aboutLink = screen.getAllByText(/about/i)[0];
     fireEvent.click(aboutLink);
     
-    expect(screen.getByText('About Us')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('About Us')).toBeInTheDocument();
+    });
   });
 
-  it('navigates to Login/Register page when link is clicked', () => {
+  it('navigates to Login/Register page when link is clicked', async () => {
     render(<App />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Home')).toBeInTheDocument();
+    }, { timeout: 3000 });
     
     const loginLink = screen.getAllByText(/login\/register/i)[0];
     fireEvent.click(loginLink);
     
-    expect(screen.getByText('LoginRegister')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Register')).toBeInTheDocument();
+    });
   });
 
-  it('navigates back to Home when Home link is clicked', () => {
+  it('navigates back to Home when Home link is clicked', async () => {
     render(<App />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Home')).toBeInTheDocument();
+    }, { timeout: 3000 });
     
     // Navigate away from home first
     const aboutLink = screen.getAllByText(/about/i)[0];
     fireEvent.click(aboutLink);
     
+    await waitFor(() => {
+      expect(screen.getByText('About Us')).toBeInTheDocument();
+    });
+    
     // Then navigate back to home
     const homeLink = screen.getAllByText(/home/i)[0];
     fireEvent.click(homeLink);
     
-    expect(screen.getByText('Welcome to Our Website')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Welcome to Our Website')).toBeInTheDocument();
+    });
   });
 
-  it('renders Left sidebar with navigation links', () => {
+  it('renders Left sidebar with navigation links', async () => {
     render(<App />);
-    // Left sidebar should have the same links as header
-    // Since both Header and Left have the same links, we should find at least 2 of each (one in header, one in sidebar)
-    const homeLinks = screen.getAllByText('Home');
-    expect(homeLinks.length).toBeGreaterThanOrEqual(2);
+    await waitFor(() => {
+      // Left sidebar should have the same links as header
+      // Since both Header and Left have the same links, we should find at least 2 of each (one in header, one in sidebar)
+      const homeLinks = screen.getAllByText('Home');
+      expect(homeLinks.length).toBeGreaterThanOrEqual(2);
+    }, { timeout: 3000 });
   });
 
-  it('has correct container structure', () => {
+  it('has correct container structure', async () => {
     const { container } = render(<App />);
-    expect(container.querySelector('.container')).toBeInTheDocument();
-    expect(container.querySelector('.left-column')).toBeInTheDocument();
-    expect(container.querySelector('.body-content')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(container.querySelector('.container')).toBeInTheDocument();
+      expect(container.querySelector('.left-column')).toBeInTheDocument();
+      expect(container.querySelector('.body-content')).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 });

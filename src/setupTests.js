@@ -4,18 +4,6 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-// Mock authAPI to prevent real API calls in tests
-jest.mock('./services/api', () => {
-  const actual = jest.requireActual('./services/api');
-  return {
-    ...actual,
-    authAPI: {
-      ...actual.authAPI,
-      getCurrentUser: jest.fn().mockRejectedValue(new Error('Not authenticated')),
-    },
-  };
-});
-
 // Suppress ReactDOMTestUtils.act deprecation warnings from React Testing Library
 // This warning comes from the library's internal code, not from our tests
 const originalError = console.error;
