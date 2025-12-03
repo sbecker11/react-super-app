@@ -36,8 +36,9 @@ describe('App', () => {
   it('renders Header component', async () => {
     render(<App />);
     await waitFor(() => {
+      // There are multiple "Home" links (header and sidebar), so use getAllByText
       const homeLinks = screen.getAllByText('Home');
-      expect(homeLinks.length).toBeGreaterThan(0);
+      expect(homeLinks.length).toBeGreaterThanOrEqual(1);
     }, { timeout: 3000 });
     const aboutLinks = screen.getAllByText('About');
     expect(aboutLinks.length).toBeGreaterThan(0);
@@ -64,7 +65,9 @@ describe('App', () => {
     render(<App />);
     
     await waitFor(() => {
-      expect(screen.getByText('Home')).toBeInTheDocument();
+      // Wait for at least one Home link to appear (there are multiple)
+      const homeLinks = screen.getAllByText(/home/i);
+      expect(homeLinks.length).toBeGreaterThan(0);
     }, { timeout: 3000 });
     
     const aboutLink = screen.getAllByText(/about/i)[0];
@@ -94,7 +97,9 @@ describe('App', () => {
     render(<App />);
     
     await waitFor(() => {
-      expect(screen.getByText('Home')).toBeInTheDocument();
+      // Wait for at least one Home link to appear (there are multiple)
+      const homeLinks = screen.getAllByText(/home/i);
+      expect(homeLinks.length).toBeGreaterThan(0);
     }, { timeout: 3000 });
     
     // Navigate away from home first
