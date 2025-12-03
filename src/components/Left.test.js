@@ -1,8 +1,23 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { TestRouter } from "../test-utils";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { TestRouterWithAllProviders } from "../test-utils";
+import { authAPI } from "../services/api";
 
 import Left from "./Left";
+
+// Mock authAPI.getCurrentUser to prevent real API calls in AuthProvider
+// This mock is scoped to this test file only
+beforeEach(() => {
+  jest.spyOn(authAPI, 'getCurrentUser').mockRejectedValue(
+    new Error('Not authenticated')
+  );
+  localStorage.removeItem('token');
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+  localStorage.clear();
+});
 
 import { onHomeClick } from "./Home.test";
 import { onAboutClick } from "./About.test";
@@ -13,115 +28,140 @@ describe("Left", () => {
     jest.clearAllMocks();
   });
 
-  it("renders without crashing", () => {
+  it("renders without crashing", async () => {
     render(
-      <TestRouter>
+      <TestRouterWithAllProviders>
         <Left
           onHomeClick={() => {}}
           onAboutClick={() => {}}
           onLoginRegisterClick={() => {}}
         />
-      </TestRouter>
+      </TestRouterWithAllProviders>
     );
+    await waitFor(() => {
+      expect(screen.getByText("Home")).toBeInTheDocument();
+    });
   });
 
-  it("displays home link", () => {
+  it("displays home link", async () => {
     render(
-      <TestRouter>
+      <TestRouterWithAllProviders>
         <Left
           onHomeClick={() => {}}
           onAboutClick={() => {}}
           onLoginRegisterClick={() => {}}
         />
-      </TestRouter>
+      </TestRouterWithAllProviders>
     );
-    expect(screen.getByText("Home")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Home")).toBeInTheDocument();
+    });
   });
 
-  it("displays about link", () => {
+  it("displays about link", async () => {
     render(
-      <TestRouter>
+      <TestRouterWithAllProviders>
         <Left
           onHomeClick={() => {}}
           onAboutClick={() => {}}
           onLoginRegisterClick={() => {}}
         />
-      </TestRouter>
+      </TestRouterWithAllProviders>
     );
-    expect(screen.getByText("About")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("About")).toBeInTheDocument();
+    });
   });
 
-  it("displays login/register link", () => {
+  it("displays login/register link", async () => {
     render(
-      <TestRouter>
+      <TestRouterWithAllProviders>
         <Left
           onHomeClick={() => {}}
           onAboutClick={() => {}}
           onLoginRegisterClick={() => {}}
         />
-      </TestRouter>
+      </TestRouterWithAllProviders>
     );
-    expect(screen.getByText("Login/Register")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Login/Register")).toBeInTheDocument();
+    });
   });
 
-  it("calls onHomeClick when home link is clicked", () => {
+  it("calls onHomeClick when home link is clicked", async () => {
     render(
-      <TestRouter>
+      <TestRouterWithAllProviders>
         <Left
           onHomeClick={onHomeClick}
           onAboutClick={() => {}}
           onLoginRegisterClick={() => {}}
         />
-      </TestRouter>
+      </TestRouterWithAllProviders>
     );
+
+    await waitFor(() => {
+      expect(screen.getByText(/home/i)).toBeInTheDocument();
+    });
 
     const homeLink = screen.getByText(/home/i);
     fireEvent.click(homeLink);
     expect(onHomeClick).toHaveBeenCalled();
   });
 
-  it("calls onAboutClick when about link is clicked", () => {
+  it("calls onAboutClick when about link is clicked", async () => {
     render(
-      <TestRouter>
+      <TestRouterWithAllProviders>
         <Left
           onHomeClick={() => {}}
           onAboutClick={onAboutClick}
           onLoginRegisterClick={() => {}}
         />
-      </TestRouter>
+      </TestRouterWithAllProviders>
     );
+
+    await waitFor(() => {
+      expect(screen.getByText(/about/i)).toBeInTheDocument();
+    });
 
     const aboutLink = screen.getByText(/about/i);
     fireEvent.click(aboutLink);
     expect(onAboutClick).toHaveBeenCalled();
   });
 
-  it("calls onLoginRegisterClick when login/register link is clicked", () => {
+  it("calls onLoginRegisterClick when login/register link is clicked", async () => {
     render(
-      <TestRouter>
+      <TestRouterWithAllProviders>
         <Left
           onHomeClick={() => {}}
           onAboutClick={() => {}}
           onLoginRegisterClick={onLoginRegisterClick}
         />
-      </TestRouter>
+      </TestRouterWithAllProviders>
     );
+    
+    await waitFor(() => {
+      expect(screen.getByText(/login\/register/i)).toBeInTheDocument();
+    });
+
     const loginRegisterLink = screen.getByText(/login\/register/i);
     fireEvent.click(loginRegisterLink);
     expect(onLoginRegisterClick).toHaveBeenCalled();
   });
 
-  it("has the correct container class", () => {
+  it("has the correct container class", async () => {
     const { container } = render(
-      <TestRouter>
+      <TestRouterWithAllProviders>
         <Left
           onHomeClick={() => {}}
           onAboutClick={() => {}}
           onLoginRegisterClick={() => {}}
         />
-      </TestRouter>
+      </TestRouterWithAllProviders>
     );
-    const leftElement = container.querySelector('.left');
-    expect(leftElement).toBeInTheDocument();
+    
+    await waitFor(() => {
+      const leftElement = container.querySelector('.left');
+      expect(leftElement).toBeInTheDocument();
+    });
   });
 });

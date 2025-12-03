@@ -1,8 +1,10 @@
 // Test utilities for React Testing Library
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
-// Mock AuthContext for testing
+// Mock AuthContext for testing (legacy support)
 const MockAuthContext = React.createContext({
   user: null,
   token: null,
@@ -66,6 +68,76 @@ export const TestRouterWithAuth = ({ children, authValue }) => {
         {children}
       </BrowserRouter>
     </MockAuthProvider>
+  );
+};
+
+/**
+ * Comprehensive wrapper with all providers (Auth, Theme, Router)
+ * Use this for components that need multiple contexts
+ */
+export const renderWithProviders = (ui, options = {}) => {
+  const {
+    authValue = {},
+    themeValue = {},
+    ...renderOptions
+  } = options;
+
+  const Wrapper = ({ children }) => {
+    return (
+      <ThemeProvider {...themeValue}>
+        <AuthProvider {...authValue}>
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            {children}
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    );
+  };
+
+  const { render } = require('@testing-library/react');
+  return render(ui, { wrapper: Wrapper, ...renderOptions });
+};
+
+/**
+ * Router wrapper with ThemeProvider for components that need theme context
+ */
+export const TestRouterWithTheme = ({ children, themeValue = {} }) => {
+  return (
+    <ThemeProvider {...themeValue}>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        {children}
+      </BrowserRouter>
+    </ThemeProvider>
+  );
+};
+
+/**
+ * Router wrapper with both Auth and Theme providers
+ */
+export const TestRouterWithAllProviders = ({ children, authValue = {}, themeValue = {} }) => {
+  return (
+    <ThemeProvider {...themeValue}>
+      <AuthProvider {...authValue}>
+        <BrowserRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          {children}
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

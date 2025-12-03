@@ -23,7 +23,7 @@ describe('Footer', () => {
 
     it('displays company name', () => {
         render(<TestRouter><Footer /></TestRouter>);
-        expect(screen.getByText(/Your Company Name/i)).toBeInTheDocument();
+        expect(screen.getByText(/Spexture.com/i)).toBeInTheDocument();
     });
 
     it('renders footer element', () => {

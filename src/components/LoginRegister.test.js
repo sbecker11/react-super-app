@@ -39,8 +39,15 @@ jest.mock('../services/api', () => ({
 
 // Helper to get form element since it doesn't have role="form"
 const getForm = () => {
-    const registerButton = screen.queryByText('Register') || screen.queryByText('Login');
-    return registerButton?.closest('form');
+    // Get the submit button (type="submit") which is inside the form
+    // There are two "Register" buttons - one in the tab and one as submit button
+    // We want the submit button which has type="submit"
+    const submitButtons = screen.queryAllByRole('button');
+    const submitButton = submitButtons.find(btn => 
+        btn.type === 'submit' && 
+        (btn.textContent === 'Register' || btn.textContent === 'Login')
+    );
+    return submitButton?.closest('form');
 };
 
 export const onLoginRegisterClick = jest.fn();
@@ -83,7 +90,7 @@ describe('LoginRegister', () => {
     it('renders Clear and Save buttons', () => {
         render(<TestRouter><LoginRegister /></TestRouter>);
         expect(screen.getByText('Clear')).toBeInTheDocument();
-        const saveButton = screen.getByText('Save');
+        const saveButton = screen.getByText('Register');
         expect(saveButton).toBeInTheDocument();
         // Button should be disabled initially (form is empty/invalid)
         expect(saveButton).toBeDisabled();
@@ -115,7 +122,7 @@ describe('LoginRegister', () => {
         const nameInput = screen.getByLabelText(/^name$/i);
         const emailInput = screen.getByLabelText(/email/i);
         const passwordInput = screen.getByLabelText(/password/i);
-        const saveButton = screen.getByText('Save');
+        const saveButton = screen.getByText('Register');
         
         fireEvent.change(nameInput, { target: { value: 'John Doe' } });
         fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -136,7 +143,7 @@ describe('LoginRegister', () => {
         const nameInput = screen.getByLabelText(/^name$/i);
         const emailInput = screen.getByLabelText(/email/i);
         const passwordInput = screen.getByLabelText(/password/i);
-        const saveButton = screen.getByText('Save');
+        const saveButton = screen.getByText('Register');
         
         // Button should be disabled when form is invalid
         expect(saveButton).toBeDisabled();
@@ -164,7 +171,7 @@ describe('LoginRegister', () => {
     it('shows email validation error for invalid email', async () => {
         render(<TestRouter><LoginRegister /></TestRouter>);
         const emailInput = screen.getByLabelText(/email/i);
-        const saveButton = screen.getByText('Save');
+        const saveButton = screen.getByText('Register');
         
         // Button should be disabled initially
         expect(saveButton).toBeDisabled();
@@ -188,7 +195,7 @@ describe('LoginRegister', () => {
     it('shows password validation error for weak password', async () => {
         render(<TestRouter><LoginRegister /></TestRouter>);
         const passwordInput = screen.getByLabelText(/password/i);
-        const saveButton = screen.getByText('Save');
+        const saveButton = screen.getByText('Register');
         
         // Button should be disabled initially
         expect(saveButton).toBeDisabled();
@@ -216,7 +223,7 @@ describe('LoginRegister', () => {
     it('validates password requirements', async () => {
         render(<TestRouter><LoginRegister /></TestRouter>);
         const passwordInput = screen.getByLabelText(/password/i);
-        const saveButton = screen.getByText('Save');
+        const saveButton = screen.getByText('Register');
         
         // Button should be disabled initially
         expect(saveButton).toBeDisabled();
@@ -241,7 +248,7 @@ describe('LoginRegister', () => {
         const nameInput = screen.getByLabelText(/^name$/i);
         const emailInput = screen.getByLabelText(/email/i);
         const passwordInput = screen.getByLabelText(/password/i);
-        const saveButton = screen.getByText('Save');
+        const saveButton = screen.getByText('Register');
         
         // Button should be disabled initially (form is empty/invalid)
         expect(saveButton).toBeDisabled();
@@ -293,7 +300,7 @@ describe('LoginRegister', () => {
         const nameInput = screen.getByLabelText(/^name$/i);
         const emailInput = screen.getByLabelText(/email/i);
         const passwordInput = screen.getByLabelText(/password/i);
-        const saveButton = screen.getByText('Save');
+        const saveButton = screen.getByText('Register');
         
         // Button should be disabled when form is empty
         expect(saveButton).toBeDisabled();
@@ -328,7 +335,7 @@ describe('LoginRegister', () => {
         const nameInput = screen.getByLabelText(/^name$/i);
         const emailInput = screen.getByLabelText(/email/i);
         const passwordInput = screen.getByLabelText(/password/i);
-        const saveButton = screen.getByText('Save');
+        const saveButton = screen.getByText('Register');
         
         // Button should be disabled initially
         expect(saveButton).toBeDisabled();
@@ -368,7 +375,7 @@ describe('LoginRegister', () => {
         it('shows error for name that is too short (1 character)', async () => {
             render(<TestRouter><LoginRegister /></TestRouter>);
             const nameInput = screen.getByLabelText(/^name$/i);
-            const saveButton = screen.getByText('Save');
+            const saveButton = screen.getByText('Register');
             
             fireEvent.change(nameInput, { target: { value: 'J' } });
             fireEvent.blur(nameInput);
@@ -422,7 +429,7 @@ describe('LoginRegister', () => {
             const nameInput = screen.getByLabelText(/^name$/i);
             const emailInput = screen.getByLabelText(/email/i);
             const passwordInput = screen.getByLabelText(/password/i);
-            const saveButton = screen.getByText('Save');
+            const saveButton = screen.getByText('Register');
             
             fireEvent.change(nameInput, { target: { value: "Mary-Jane O'Brien" } });
             fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -660,7 +667,7 @@ describe('LoginRegister', () => {
             const nameInput = screen.getByLabelText(/^name$/i);
             const emailInput = screen.getByLabelText(/email/i);
             const passwordInput = screen.getByLabelText(/password/i);
-            const saveButton = screen.getByText('Save');
+            const saveButton = screen.getByText('Register');
             
             fireEvent.change(nameInput, { target: { value: 'J' } }); // Too short
             fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
@@ -683,7 +690,7 @@ describe('LoginRegister', () => {
             const nameInput = screen.getByLabelText(/^name$/i);
             const emailInput = screen.getByLabelText(/email/i);
             const passwordInput = screen.getByLabelText(/password/i);
-            const saveButton = screen.getByText('Save');
+            const saveButton = screen.getByText('Register');
             
             fireEvent.change(nameInput, { target: { value: '' } });
             fireEvent.change(emailInput, { target: { value: 'bademail' } }); // Invalid email format
@@ -789,7 +796,7 @@ describe('LoginRegister', () => {
             const nameInput = screen.getByLabelText(/^name$/i);
             const emailInput = screen.getByLabelText(/email/i);
             const passwordInput = screen.getByLabelText(/password/i);
-            const saveButton = screen.getByText('Save');
+            const saveButton = screen.getByText('Register');
             
             fireEvent.change(nameInput, { target: { value: 'J' } }); // Invalid
             fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -805,7 +812,7 @@ describe('LoginRegister', () => {
             const nameInput = screen.getByLabelText(/^name$/i);
             const emailInput = screen.getByLabelText(/email/i);
             const passwordInput = screen.getByLabelText(/password/i);
-            const saveButton = screen.getByText('Save');
+            const saveButton = screen.getByText('Register');
             
             fireEvent.change(nameInput, { target: { value: 'John Doe' } });
             fireEvent.change(emailInput, { target: { value: 'invalid-email' } }); // Invalid
@@ -821,7 +828,7 @@ describe('LoginRegister', () => {
             const nameInput = screen.getByLabelText(/^name$/i);
             const emailInput = screen.getByLabelText(/email/i);
             const passwordInput = screen.getByLabelText(/password/i);
-            const saveButton = screen.getByText('Save');
+            const saveButton = screen.getByText('Register');
             
             fireEvent.change(nameInput, { target: { value: 'John Doe' } });
             fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -837,7 +844,7 @@ describe('LoginRegister', () => {
             const nameInput = screen.getByLabelText(/^name$/i);
             const emailInput = screen.getByLabelText(/email/i);
             const passwordInput = screen.getByLabelText(/password/i);
-            const saveButton = screen.getByText('Save');
+            const saveButton = screen.getByText('Register');
             
             fireEvent.change(nameInput, { target: { value: 'J' } }); // Invalid
             fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -900,7 +907,7 @@ describe('LoginRegister', () => {
             const emailInput = screen.getByLabelText(/email/i);
             const passwordInput = screen.getByLabelText(/password/i);
             const clearButton = screen.getByText('Clear');
-            const saveButton = screen.getByText('Save');
+            const saveButton = screen.getByText('Register');
             
             // Fill with invalid values
             fireEvent.change(nameInput, { target: { value: 'J' } });
