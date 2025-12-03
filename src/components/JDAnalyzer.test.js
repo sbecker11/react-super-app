@@ -578,9 +578,12 @@ describe('JDAnalyzer', () => {
 
         expect(screen.getByText('Software Engineer')).toBeInTheDocument();
         expect(screen.getByText('Product Manager')).toBeInTheDocument();
-        // The consulting_rate is displayed as "Rate: $100/hr" or "Rate: $100/hr (3 months)"
-        expect(screen.getByText(/Rate:.*\$100\/hr/i)).toBeInTheDocument();
-        expect(screen.getByText(/Rate:.*\$150\/hr/i)).toBeInTheDocument();
+        // The consulting_rate is displayed as "Rate: $100/hr" where "Rate:" is in <strong> and "$100/hr" is separate text
+        // So we need to look for the rate value separately, not as part of a regex pattern
+        expect(screen.getByText(/\$100\/hr/i)).toBeInTheDocument();
+        expect(screen.getByText(/\$150\/hr/i)).toBeInTheDocument();
+        // Also verify that "Rate:" label is present
+        expect(screen.getByText(/Rate:/i)).toBeInTheDocument();
       });
 
       it('should truncate long descriptions', async () => {
