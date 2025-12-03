@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PageContainer from './PageContainer';
 
 function About() {
     // Define a state variable 'count' and its corresponding setter function 'setCount'
@@ -15,17 +16,17 @@ function About() {
     };
 
     return (
-        <div>
-        <h2>About Us</h2>
-        <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-            Nulla gravida, est eget interdum hendrerit, nulla arcu placerat est, 
-            non feugiat dui quam ac nulla. Sed nec bibendum nunc. 
-            Nulla varius mi ut odio varius, vel dictum velit dictum.
-        </p>
-        <p>Count: {count}</p>
+        <PageContainer>
+            <h2>About Us</h2>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                Nulla gravida, est eget interdum hendrerit, nulla arcu placerat est, 
+                non feugiat dui quam ac nulla. Sed nec bibendum nunc. 
+                Nulla varius mi ut odio varius, vel dictum velit dictum.
+            </p>
+            <p>Count: {count}</p>
             <button onClick={increment}>Increment</button>
-        </div>
+        </PageContainer>
     );
 }
 

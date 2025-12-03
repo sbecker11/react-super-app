@@ -33,10 +33,20 @@ const getHeaders = (elevatedToken = null) => {
  * @returns {Promise<object>} Parsed JSON response
  */
 const handleResponse = async (response) => {
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    // If JSON parsing fails, throw a more descriptive error
+    throw new Error(`Server returned invalid response (status: ${response.status})`);
+  }
 
   if (!response.ok) {
-    throw new Error(data.error || data.message || 'Request failed');
+    const errorMessage = data.error || data.message || `Request failed with status ${response.status}`;
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.data = data;
+    throw error;
   }
 
   return data;
@@ -66,12 +76,20 @@ export const adminAPI = {
    * @returns {Promise<object>} { users, pagination }
    */
   listUsers: async (params = {}) => {
-    const queryString = new URLSearchParams(params).toString();
-    const response = await fetch(`${API_BASE_URL}/admin/users?${queryString}`, {
-      method: 'GET',
-      headers: getHeaders(),
-    });
-    return handleResponse(response);
+    try {
+      const queryString = new URLSearchParams(params).toString();
+      const response = await fetch(`${API_BASE_URL}/admin/users?${queryString}`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      // Handle network errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error: Cannot connect to server. Please check if the server is running.');
+      }
+      throw error;
+    }
   },
 
   /**

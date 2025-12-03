@@ -1,8 +1,9 @@
 import React from 'react';
+import PageContainer from './PageContainer';
 
 function Home() {
   return (
-    <div className="home-container">
+    <PageContainer>
       <h1>Welcome to Our Website</h1>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla viverra libero et eros bibendum,
@@ -16,7 +17,7 @@ function Home() {
         Don't hesitate to reach out if you have any questions or need assistance. We're here to help you
         make the most of your experience with us.
       </p>
-    </div>
+    </PageContainer>
   );
 }
 

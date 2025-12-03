@@ -76,9 +76,9 @@ function App() {
 
   return (
     <ThemeProvider>
-      <ErrorBoundary>
-        <AuthProvider>
-          <Router
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,
@@ -114,9 +114,9 @@ function App() {
             pauseOnHover
             theme="light"
           />
-          </Router>
-        </AuthProvider>
-      </ErrorBoundary>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
     </ThemeProvider>
   );
 }

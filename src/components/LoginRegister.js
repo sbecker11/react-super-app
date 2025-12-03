@@ -6,53 +6,20 @@ import './LoginRegister.css';
 import { 
   validationConfig, 
   validatePasswordRules, 
-  getPasswordRequirements 
-} from './validationConfig';
+  getPasswordRequirements,
+  registerSchema,
+  loginSchema
+} from '../validation';
 import { useAuth } from '../contexts/AuthContext';
 import { authAPI } from '../services/api';
 import Loading from './Loading';
 
 /**
- * Build Yup Validation Schema from centralized configuration
- * 
- * This ensures validation rules and error messages stay in sync.
- * All rules come from validationConfig - update rules there to update everywhere.
+ * Use pre-built schemas from validation repository
+ * These schemas are built from validationConfig to ensure consistency
  */
-const buildValidationSchema = () => {
-  const nameConfig = validationConfig.name;
-  const emailConfig = validationConfig.email;
-  
-  return Yup.object().shape({
-    name: Yup.string()
-      .required(nameConfig.messages.required)
-      .min(nameConfig.minLength, nameConfig.messages.minLength(nameConfig.minLength))
-      .max(nameConfig.maxLength, nameConfig.messages.maxLength(nameConfig.maxLength))
-      .matches(nameConfig.pattern, nameConfig.messages.pattern),
-    
-    email: Yup.string()
-      .required(emailConfig.messages.required)
-      .test('email-format', emailConfig.messages.invalid(emailConfig.example), function(value) {
-        if (!value) return true; // Required check is handled by .required() above
-        // Use Yup's built-in email validation
-        return Yup.string().email().isValidSync(value);
-      }),
-    
-    password: Yup.string()
-      .required(validationConfig.password.messages.required)
-      .test('password-rules', function(value) {
-        if (!value || value.length === 0) {
-          return true; // Required check is handled by .required() above
-        }
-        const brokenRules = validatePasswordRules(value);
-        if (brokenRules) {
-          return this.createError({ message: brokenRules });
-        }
-        return true;
-      }),
-  });
-};
-
-const validationSchema = buildValidationSchema();
+const buildRegisterSchema = () => registerSchema();
+const buildLoginSchema = () => loginSchema();
 
 const LoginRegister = () => {
   const navigate = useNavigate();
@@ -81,9 +48,55 @@ const LoginRegister = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/analyzer');
+      navigate('/', { replace: true });
     }
   }, [isAuthenticated, navigate]);
+
+  // Clear form data when component mounts or when user is not authenticated
+  useEffect(() => {
+    // Always clear form when component mounts or when not authenticated
+    setProfileData({
+      name: '',
+      email: '',
+      password: '',
+    });
+    setErrors({});
+    setIsFormValid(false);
+    setPasswordFocused(false);
+    setPasswordRuleStatus({
+      minLength: false,
+      uppercase: false,
+      lowercase: false,
+      number: false,
+      specialChar: false,
+    });
+  }, []); // Run only on mount
+
+  // Also clear when authentication state changes to not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setProfileData({
+        name: '',
+        email: '',
+        password: '',
+      });
+      setErrors({});
+      setIsFormValid(false);
+      setPasswordFocused(false);
+      setPasswordRuleStatus({
+        minLength: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        specialChar: false,
+      });
+    }
+  }, [isAuthenticated]);
+
+  // Get the appropriate validation schema based on mode
+  const getValidationSchema = () => {
+    return isLoginMode ? buildLoginSchema() : buildRegisterSchema();
+  };
 
   /**
    * Check if form is valid using Yup
@@ -92,7 +105,8 @@ const LoginRegister = () => {
   useEffect(() => {
     const checkFormValidity = async () => {
       try {
-        const isValid = await validationSchema.isValid(profileData);
+        const schema = getValidationSchema();
+        const isValid = await schema.isValid(profileData);
         setIsFormValid(isValid);
       } catch (error) {
         setIsFormValid(false);
@@ -100,7 +114,7 @@ const LoginRegister = () => {
     };
     
     checkFormValidity();
-  }, [profileData]);
+  }, [profileData, isLoginMode]);
 
   /**
    * Validate a single field using Yup
@@ -108,8 +122,9 @@ const LoginRegister = () => {
    */
   const validateField = async (fieldName, value) => {
     try {
-      // Validate single field using Yup
-      await validationSchema.validateAt(fieldName, { [fieldName]: value });
+      // Validate single field using Yup with appropriate schema
+      const schema = getValidationSchema();
+      await schema.validateAt(fieldName, { [fieldName]: value });
       // Clear error for this field if validation passes
       setErrors((prevErrors) => {
         const newErrors = { ...prevErrors };
@@ -188,8 +203,9 @@ const LoginRegister = () => {
     
     // Validate entire form using Yup schema
     try {
-      // Use Yup to validate all fields
-      await validationSchema.validate(profileData, { abortEarly: false });
+      // Use Yup to validate all fields with appropriate schema
+      const schema = getValidationSchema();
+      await schema.validate(profileData, { abortEarly: false });
       
       // All Yup validations passed - clear errors and submit
       setErrors({});
@@ -200,7 +216,9 @@ const LoginRegister = () => {
           // Login mode - only email and password required
           const response = await authAPI.login(profileData.email, profileData.password);
           loginUser(response.user, response.token);
-          navigate('/analyzer');
+          // Clear form data after successful login
+          setProfileData({ name: '', email: '', password: '' });
+          navigate('/', { replace: true });
         } else {
           // Register mode - all fields required
           const response = await authAPI.register({
@@ -209,7 +227,9 @@ const LoginRegister = () => {
             password: profileData.password,
           });
           registerUser(response.user, response.token);
-          navigate('/analyzer');
+          // Clear form data after successful registration
+          setProfileData({ name: '', email: '', password: '' });
+          navigate('/', { replace: true });
         }
       } catch (apiError) {
         // Handle API errors
@@ -239,6 +259,11 @@ const LoginRegister = () => {
     setIsFormValid(false); // Form is invalid after clearing
   };
 
+  const handleCancel = () => {
+    // Navigate away from login/register page
+    navigate('/', { replace: true });
+  };
+
   const toggleMode = () => {
     setIsLoginMode(!isLoginMode);
     setErrors({});
@@ -255,8 +280,67 @@ const LoginRegister = () => {
 
   return (
     <div>
-      <h2>{isLoginMode ? 'Login' : 'Register'}</h2>
-      <form onSubmit={handleSubmit} className="profile-form">
+      {/* Tab-style mode selector */}
+      <div style={{ 
+        display: 'flex', 
+        marginBottom: '20px', 
+        borderBottom: '2px solid #e0e0e0' 
+      }}>
+        <button
+          type="button"
+          onClick={() => {
+            if (isLoginMode) {
+              toggleMode();
+            }
+          }}
+          style={{
+            flex: 1,
+            padding: '12px 20px',
+            background: !isLoginMode ? '#007bff' : 'transparent',
+            color: !isLoginMode ? 'white' : '#666',
+            border: 'none',
+            borderBottom: !isLoginMode ? '2px solid #007bff' : '2px solid transparent',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: !isLoginMode ? 'bold' : 'normal',
+            transition: 'all 0.2s'
+          }}
+        >
+          Register
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (!isLoginMode) {
+              toggleMode();
+            }
+          }}
+          style={{
+            flex: 1,
+            padding: '12px 20px',
+            background: isLoginMode ? '#007bff' : 'transparent',
+            color: isLoginMode ? 'white' : '#666',
+            border: 'none',
+            borderBottom: isLoginMode ? '2px solid #007bff' : '2px solid transparent',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: isLoginMode ? 'bold' : 'normal',
+            transition: 'all 0.2s'
+          }}
+        >
+          Login
+        </button>
+      </div>
+      
+      <form 
+        onSubmit={handleSubmit} 
+        className="profile-form" 
+        autoComplete="off"
+        noValidate
+      >
+        {/* Hidden dummy fields to confuse autofill */}
+        <input type="text" name="fake-username" autoComplete="off" style={{ display: 'none' }} tabIndex="-1" aria-hidden="true" />
+        <input type="password" name="fake-password" autoComplete="off" style={{ display: 'none' }} tabIndex="-1" aria-hidden="true" />
         
         {/* Show name field only in register mode */}
         {!isLoginMode && (
@@ -272,7 +356,13 @@ const LoginRegister = () => {
               value={profileData.name}
               onChange={handleChange}
               onBlur={handleBlur}
-              autoComplete="name"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+              data-form-type="other"
+              data-lpignore="true"
+              data-validation-field-type="name"
               required
               className={errors.name ? 'error-input' : ''}
             />
@@ -291,7 +381,13 @@ const LoginRegister = () => {
             value={profileData.email}
             onChange={handleChange}
             onBlur={handleBlur}
-            autoComplete="email"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
+            data-form-type="other"
+            data-lpignore="true"
+            data-validation-field-type="email"
             required
             className={errors.email ? 'error-input' : ''}
           />
@@ -311,7 +407,13 @@ const LoginRegister = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               onFocus={handleFocus}
-              autoComplete="current-password"
+              autoComplete="new-password"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+              data-form-type="other"
+              data-lpignore="true"
+              data-validation-field-type="password"
               required
               className={errors.password ? 'error-input' : ''}
               style={{ paddingRight: '40px' }}
@@ -336,7 +438,7 @@ const LoginRegister = () => {
               {showPassword ? '👁️' : '👁️‍🗨️'}
             </button>
           </div>
-          {passwordFocused && (
+          {passwordFocused && !isLoginMode && (
             <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
               <strong>Password must contain:</strong>
               <ul style={{ margin: '5px 0', paddingLeft: '20px', listStyle: 'none' }}>
@@ -375,32 +477,35 @@ const LoginRegister = () => {
         )}
 
         <div className="button-container">
+          <button type="button" onClick={handleCancel}>Cancel</button>
           <button type="button" onClick={handleClear}>Clear</button>
           <button type="submit" disabled={!isFormValid || isSubmitting}>
             {isLoginMode ? 'Login' : 'Register'}
           </button>
         </div>
-
-        {/* Toggle between login and register */}
-        <div style={{ marginTop: '20px', textAlign: 'center' }}>
-          <button 
-            type="button" 
-            onClick={toggleMode}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#007bff',
-              textDecoration: 'underline',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
-          >
-            {isLoginMode 
-              ? "Don't have an account? Register here" 
-              : "Already have an account? Login here"}
-          </button>
-        </div>
       </form>
+
+      {/* Toggle between login and register - outside form since it's not part of form submission */}
+      <div style={{ marginTop: '20px', textAlign: 'center', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+        <span style={{ fontSize: '14px', color: '#666' }}>
+          {isLoginMode ? "Don't have an account? " : "Already have an account? "}
+        </span>
+        <button 
+          type="button" 
+          onClick={toggleMode}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#007bff',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold'
+          }}
+        >
+          {isLoginMode ? "Register here" : "Login here"}
+        </button>
+      </div>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import { adminAPI } from '../services/adminAPI';
 import AdminAuthModal from './AdminAuthModal';
 import UserEditModal from './UserEditModal';
 import { toast } from 'react-toastify';
+import PageContainer from './PageContainer';
 import './UserManagement.css';
 
 const UserManagement = () => {
@@ -43,7 +44,12 @@ const UserManagement = () => {
   const [pendingAction, setPendingAction] = useState(null);
 
   // Load users
-  const loadUsers = async () => {
+  const loadUsers = React.useCallback(async () => {
+    // Don't load if user is not admin
+    if (!isAdmin()) {
+      return;
+    }
+
     setLoading(true);
     try {
       const params = {
@@ -63,15 +69,34 @@ const UserManagement = () => {
       setUsers(data.users);
       setPagination(data.pagination);
     } catch (error) {
-      toast.error(error.message || 'Failed to load users');
+      console.error('Failed to load users:', error);
+      // Extract error message from various error formats
+      let errorMessage = 'Failed to load users';
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.error) {
+        errorMessage = error.error;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      // Check if this is a network error or API error
+      if (errorMessage.includes('Network') || errorMessage.includes('fetch') || errorMessage.includes('Failed to fetch')) {
+        toast.error('Cannot connect to server. Please check if the server is running on port 3001.');
+      } else {
+        toast.error(`Failed to list users: ${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, sortBy, sortOrder, filters]);
 
   useEffect(() => {
-    loadUsers();
-  }, [pagination.page, pagination.limit, sortBy, sortOrder, filters]);
+    // Only load if user is admin
+    if (isAdmin()) {
+      loadUsers();
+    }
+  }, [loadUsers]);
 
   // Redirect non-admins (must be after all hooks)
   if (!isAdmin()) {
@@ -144,7 +169,7 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="user-management">
+    <PageContainer>
       <div className="user-management-header">
         <h1>User Management</h1>
         <p>Manage user accounts, roles, and permissions</p>
@@ -320,7 +345,7 @@ const UserManagement = () => {
           }}
         />
       )}
-    </div>
+    </PageContainer>
   );
 };
 

@@ -52,7 +52,8 @@ const extractErrorMessage = (error) => {
   if (error.message) return error.message;
   if (error.error) return error.error;
   if (error.errors && Array.isArray(error.errors)) {
-    return error.errors.map(e => e.message || e).join(', ');
+    // Handle express-validator format (msg) and other formats (message)
+    return error.errors.map(e => e.msg || e.message || e).join(', ');
   }
   return 'An unexpected error occurred';
 };

@@ -7,7 +7,8 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "jest",
-    "migrate": "node src/database/migrate.js"
+    "migrate": "node src/database/migrate.js",
+    "status": "curl -s http://localhost:3001/health 2>/dev/null && echo '✓ Server is running' || echo '✗ Server is not responding'"
   },
   "keywords": [
     "express",

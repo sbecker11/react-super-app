@@ -77,7 +77,7 @@ router.post('/verify-password', authenticateToken, requireAdmin, async (req, res
 /**
  * GET /api/admin/users
  * List all users with filtering, sorting, and pagination
- * Admin only
+ * Admin only - Returns ALL users including other admins (no role filtering by default)
  */
 router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
   try {
@@ -92,6 +92,7 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
     } = req.query;
 
     // Build WHERE clause
+    // Note: By default, returns ALL users (including admins) unless role filter is specified
     const conditions = [];
     const params = [];
     let paramIndex = 1;
@@ -125,48 +126,65 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     // Get total count
-    const countResult = await pool.query(
-      `SELECT COUNT(*) FROM users ${whereClause}`,
-      params
-    );
+    const countQuery = `SELECT COUNT(*) FROM users ${whereClause}`;
+    const countParams = params;
+    console.log('📊 [Admin Users] Count Query:', countQuery);
+    console.log('📊 [Admin Users] Count Params:', countParams);
+    const countResult = await pool.query(countQuery, countParams);
     const totalCount = parseInt(countResult.rows[0].count);
+    console.log('📊 [Admin Users] Total Count Result:', totalCount);
 
     // Get users
-    const usersResult = await pool.query(
-      `SELECT 
-        id, name, email, role, is_active, last_login_at, created_at, updated_at,
-        created_by, updated_by
-       FROM users
-       ${whereClause}
-       ORDER BY ${sortColumn} ${sortDirection}
-       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
-      [...params, parseInt(limit), offset]
-    );
+    const usersQuery = `SELECT 
+      id, name, email, role, is_active, last_login_at, created_at, updated_at,
+      created_by, updated_by
+     FROM users
+     ${whereClause}
+     ORDER BY ${sortColumn} ${sortDirection}
+     LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    const usersParams = [...params, parseInt(limit), offset];
+    console.log('📊 [Admin Users] Users Query:', usersQuery);
+    console.log('📊 [Admin Users] Users Params:', usersParams);
+    const usersResult = await pool.query(usersQuery, usersParams);
+    console.log('📊 [Admin Users] Users Result Count:', usersResult.rows.length);
+    console.log('📊 [Admin Users] Users Result:', JSON.stringify(usersResult.rows, null, 2));
 
     // Get user stats (JD count, resume count, etc.)
+    // Note: Returns stats for ALL users including admins
     const userIds = usersResult.rows.map(u => u.id);
-    const statsResult = await pool.query(
-      `SELECT 
-        user_id,
-        COUNT(DISTINCT jd.id) as job_descriptions_count,
-        COUNT(DISTINCT r.id) as resumes_count,
-        COUNT(DISTINCT cl.id) as cover_letters_count
-       FROM users u
-       LEFT JOIN job_descriptions jd ON u.id = jd.user_id
-       LEFT JOIN resumes r ON u.id = r.user_id
-       LEFT JOIN cover_letters cl ON u.id = cl.user_id
-       WHERE u.id = ANY($1)
-       GROUP BY u.id`,
-      [userIds]
-    );
+    let statsResult = { rows: [] };
+    
+    // Only query stats if there are users
+    // Wrap in try-catch to handle missing tables gracefully
+    if (userIds.length > 0) {
+      try {
+        // Only query job_descriptions since resumes and cover_letters tables may not exist yet
+        const statsQuery = `SELECT 
+          u.id as user_id,
+          COUNT(DISTINCT jd.id) as job_descriptions_count
+         FROM users u
+         LEFT JOIN job_descriptions jd ON u.id = jd.user_id
+         WHERE u.id = ANY($1)
+         GROUP BY u.id`;
+        const statsParams = [userIds];
+        console.log('📊 [Admin Users] Stats Query:', statsQuery);
+        console.log('📊 [Admin Users] Stats Params (userIds):', userIds);
+        statsResult = await pool.query(statsQuery, statsParams);
+        console.log('📊 [Admin Users] Stats Result:', JSON.stringify(statsResult.rows, null, 2));
+      } catch (statsError) {
+        console.warn('⚠️ [Admin Users] Stats query failed (tables may not exist):', statsError.message);
+        // Continue with empty stats - don't fail the entire request
+        statsResult = { rows: [] };
+      }
+    }
 
     // Merge stats with users
     const statsMap = {};
     statsResult.rows.forEach(stat => {
       statsMap[stat.user_id] = {
-        jobDescriptionsCount: parseInt(stat.job_descriptions_count),
-        resumesCount: parseInt(stat.resumes_count),
-        coverLettersCount: parseInt(stat.cover_letters_count)
+        jobDescriptionsCount: parseInt(stat.job_descriptions_count || 0),
+        resumesCount: 0, // Table doesn't exist yet
+        coverLettersCount: 0 // Table doesn't exist yet
       };
     });
 
@@ -179,7 +197,7 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
       }
     }));
 
-    res.json({
+    const response = {
       users,
       pagination: {
         page: parseInt(page),
@@ -187,11 +205,21 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
         totalCount,
         totalPages: Math.ceil(totalCount / parseInt(limit))
       }
-    });
+    };
+
+    console.log('📊 [Admin Users] Final Response:', JSON.stringify({
+      userCount: users.length,
+      users: users.map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role })),
+      pagination: response.pagination
+    }, null, 2));
+
+    res.json(response);
   } catch (error) {
     console.error('Error listing users:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       error: 'Failed to list users',
+      message: error.message,
       code: 'LIST_USERS_ERROR'
     });
   }
@@ -224,30 +252,28 @@ router.get('/users/:id', authenticateToken, requireAdmin, async (req, res) => {
 
     const user = result.rows[0];
 
-    // Get user stats
-    const statsResult = await pool.query(
-      `SELECT 
-        COUNT(DISTINCT jd.id) as job_descriptions_count,
-        COUNT(DISTINCT r.id) as resumes_count,
-        COUNT(DISTINCT cl.id) as cover_letters_count,
-        COUNT(DISTINCT c.id) as companies_count,
-        COUNT(DISTINCT rec.id) as recruiters_count
-       FROM users u
-       LEFT JOIN job_descriptions jd ON u.id = jd.user_id
-       LEFT JOIN resumes r ON u.id = r.user_id
-       LEFT JOIN cover_letters cl ON u.id = cl.user_id
-       LEFT JOIN companies c ON u.id = c.user_id
-       LEFT JOIN recruiters rec ON u.id = rec.user_id
-       WHERE u.id = $1`,
-      [id]
-    );
+    // Get user stats (only query tables that exist)
+    let statsResult;
+    try {
+      statsResult = await pool.query(
+        `SELECT 
+          COUNT(DISTINCT jd.id) as job_descriptions_count
+         FROM users u
+         LEFT JOIN job_descriptions jd ON u.id = jd.user_id
+         WHERE u.id = $1`,
+        [id]
+      );
+    } catch (statsError) {
+      console.warn('⚠️ [Admin Users] Stats query failed (tables may not exist):', statsError.message);
+      statsResult = { rows: [{ job_descriptions_count: 0 }] };
+    }
 
     user.stats = {
-      jobDescriptionsCount: parseInt(statsResult.rows[0].job_descriptions_count),
-      resumesCount: parseInt(statsResult.rows[0].resumes_count),
-      coverLettersCount: parseInt(statsResult.rows[0].cover_letters_count),
-      companiesCount: parseInt(statsResult.rows[0].companies_count),
-      recruitersCount: parseInt(statsResult.rows[0].recruiters_count)
+      jobDescriptionsCount: parseInt(statsResult.rows[0]?.job_descriptions_count || 0),
+      resumesCount: 0, // Table doesn't exist yet
+      coverLettersCount: 0, // Table doesn't exist yet
+      companiesCount: 0, // Table doesn't exist yet
+      recruitersCount: 0 // Table doesn't exist yet
     };
 
     // Get recent activity

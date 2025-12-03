@@ -28,10 +28,26 @@
   }
   
   .profile-form input {
-    padding: 5px;
-    border: 1px solid #ccc; /* Grey border initially */
+    width: 100%;
+    height: 38px; /* Consistent height for all inputs */
+    padding: 8px 12px; /* Consistent padding */
+    border: 1px solid rgb(128, 128, 128); /* Grey border initially */
     border-radius: 3px;
+    font-size: 16px; /* Consistent font size */
+    font-family: inherit;
+    line-height: 1.5; /* Consistent line height */
     transition: border-color 0.2s ease; /* Smooth transition for border color */
+    background-color: var(--body-bg);
+    color: var(--text-color);
+    box-sizing: border-box; /* Include padding and border in width calculation */
+  }
+  
+  /* Password input with show/hide button - maintain same height and font size */
+  .profile-form input[type="password"],
+  .profile-form input[type="text"][name="password"] {
+    height: 38px; /* Same height as other inputs */
+    font-size: 16px; /* Same font size as other inputs */
+    padding-right: 40px; /* Extra padding for show/hide button */
   }
   
   .profile-form input:focus {
@@ -61,21 +77,48 @@
   }
   
   .button-container {
-    margin-top: 10px; /* Add margin to separate buttons from inputs */
+    display: flex;
+    gap: 10px;
+    margin-top: 20px; /* Match Profile page margin */
   }
   
   .button-container button {
-    margin-right: 10px; /* Add margin between buttons */
+    padding: 10px 20px; /* Match Profile page padding */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: inherit;
+    flex: 1; /* Match Profile page flex layout */
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+  }
+  
+  /* Cancel and Clear buttons - grey background */
+  .button-container button[type="button"] {
+    background-color: #6c757d;
+  }
+  
+  .button-container button[type="button"]:hover {
+    background-color: #5a6268;
+  }
+  
+  /* Submit button (Login/Register) - green when enabled, grey when disabled */
+  .button-container button[type="submit"] {
+    background-color: #28a745; /* Green for enabled state */
+  }
+  
+  .button-container button[type="submit"]:hover:not(:disabled) {
+    background-color: #218838;
   }
   
   .button-container button[type="submit"]:disabled {
-    opacity: 0.6;
+    background-color: #6c757d; /* Grey when disabled */
+    opacity: 0.5;
     cursor: not-allowed;
-    background-color: #6c757d;
-    color: #fff;
   }
   
-  .button-container button[type="submit"]:not(:disabled) {
+  .button-container button:not(:disabled) {
     cursor: pointer;
   }
   

@@ -4,37 +4,16 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const { query } = require('../database/connection');
 const { logAuthEvent } = require('../middleware/rbac');
+const { getRegisterValidators } = require('../validation/validationHelpers');
 
 const router = express.Router();
 
 /**
  * POST /api/auth/register
  * Register a new user
+ * Uses shared validation config via validationHelpers
  */
-router.post('/register', [
-  body('name')
-    .trim()
-    .isLength({ min: 2, max: 50 })
-    .withMessage('Name must be between 2 and 50 characters')
-    .matches(/^[a-zA-Z\s'-]+$/)
-    .withMessage('Name can only contain letters, spaces, hyphens, and apostrophes'),
-  body('email')
-    .trim()
-    .isEmail()
-    .withMessage('Invalid email address')
-    .normalizeEmail(),
-  body('password')
-    .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters')
-    .matches(/[A-Z]/)
-    .withMessage('Password must contain at least one uppercase letter')
-    .matches(/[a-z]/)
-    .withMessage('Password must contain at least one lowercase letter')
-    .matches(/[0-9]/)
-    .withMessage('Password must contain at least one number')
-    .matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
-    .withMessage('Password must contain at least one special character'),
-], async (req, res) => {
+router.post('/register', getRegisterValidators(), async (req, res) => {
   try {
     // Check for validation errors
     const errors = validationResult(req);

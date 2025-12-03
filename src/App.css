@@ -116,6 +116,32 @@ header {
     bottom: 100px; /* Updated bottom margin based on reduced footer height */
     left: 0;
     overflow-y: auto;
+    border-right: 1px solid var(--sidebar-bg) !important;
+  }
+
+  /* Styling for left-column scrollbar */
+  .left-column {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: var(--body-bg) var(--sidebar-bg); /* Firefox: thumb and track */
+  }
+
+  .left-column::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  .left-column::-webkit-scrollbar-track {
+    background: var(--sidebar-bg) !important;
+    background-color: var(--sidebar-bg) !important;
+  }
+
+  .left-column::-webkit-scrollbar-thumb {
+    background: var(--body-bg) !important;
+    background-color: var(--body-bg) !important;
+    border-radius: 6px;
+  }
+
+  .left-column::-webkit-scrollbar-thumb:hover {
+    opacity: 0.8;
   }
   
   /* Styling for left sidebar links */
@@ -148,6 +174,31 @@ header {
     overflow: auto; /* Enable scrolling when content exceeds viewport */
     padding-left: 25px; /* Add padding to avoid overlapping with left-column */
     padding-right: 25px; /* Add padding to avoid overlapping with left-column */
+  }
+
+  /* Styling for body-content scrollbar */
+  .body-content {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: var(--body-bg) var(--sidebar-bg); /* Firefox: thumb and track */
+  }
+
+  .body-content::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  .body-content::-webkit-scrollbar-track {
+    background: var(--sidebar-bg) !important;
+    background-color: var(--sidebar-bg) !important;
+  }
+
+  .body-content::-webkit-scrollbar-thumb {
+    background: var(--body-bg) !important;
+    background-color: var(--body-bg) !important;
+    border-radius: 6px;
+  }
+
+  .body-content::-webkit-scrollbar-thumb:hover {
+    opacity: 0.8;
   }
 
   /* Styling for the logo image in the Header */

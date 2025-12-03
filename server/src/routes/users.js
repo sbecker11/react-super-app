@@ -1,8 +1,9 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 const { query } = require('../database/connection');
 const { authenticate } = require('../middleware/auth');
 const { requireOwnershipOrAdmin } = require('../middleware/rbac');
+const { getProfileUpdateValidators } = require('../validation/validationHelpers');
 
 const router = express.Router();
 
@@ -77,21 +78,12 @@ router.get('/:id', requireOwnershipOrAdmin, async (req, res) => {
  * PUT /api/users/:id
  * Update user (own profile only)
  */
-router.put('/:id', requireOwnershipOrAdmin, [
-  body('name')
-    .optional()
-    .trim()
-    .isLength({ min: 2, max: 50 })
-    .withMessage('Name must be between 2 and 50 characters')
-    .matches(/^[a-zA-Z\s'-]+$/)
-    .withMessage('Name can only contain letters, spaces, hyphens, and apostrophes'),
-  body('email')
-    .optional()
-    .trim()
-    .isEmail()
-    .withMessage('Invalid email address')
-    .normalizeEmail(),
-], async (req, res) => {
+/**
+ * PUT /api/users/:id
+ * Update user (own profile only)
+ * Uses shared validation config via validationHelpers
+ */
+router.put('/:id', requireOwnershipOrAdmin, getProfileUpdateValidators(), async (req, res) => {
   try {
     // Check for validation errors
     const errors = validationResult(req);

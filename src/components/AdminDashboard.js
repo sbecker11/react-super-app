@@ -8,6 +8,7 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, Navigate } from 'react-router-dom';
+import PageContainer from './PageContainer';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -19,11 +20,8 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="admin-dashboard">
-      <div className="admin-header">
-        <h1>Admin Dashboard</h1>
-        <p className="admin-subtitle">Welcome, {user?.name}</p>
-      </div>
+    <PageContainer>
+      <h1>Admin Dashboard</h1>
 
       <div className="admin-cards">
         <Link to="/admin/users" className="admin-card">
@@ -80,7 +78,7 @@ const AdminDashboard = () => {
           </p>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 };
 
