@@ -578,8 +578,9 @@ describe('JDAnalyzer', () => {
 
         expect(screen.getByText('Software Engineer')).toBeInTheDocument();
         expect(screen.getByText('Product Manager')).toBeInTheDocument();
-        expect(screen.getByText('$100/hr')).toBeInTheDocument();
-        expect(screen.getByText('$150/hr')).toBeInTheDocument();
+        // The consulting_rate is displayed as "Rate: $100/hr" or "Rate: $100/hr (3 months)"
+        expect(screen.getByText(/Rate:.*\$100\/hr/i)).toBeInTheDocument();
+        expect(screen.getByText(/Rate:.*\$150\/hr/i)).toBeInTheDocument();
       });
 
       it('should truncate long descriptions', async () => {

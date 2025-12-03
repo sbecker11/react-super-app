@@ -183,7 +183,8 @@ describe('ProtectedRoute', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText(/checking authentication/i)).toBeInTheDocument();
+      // Loading component shows "Checking authentication..." (with capital C and ellipsis)
+      expect(screen.getByText('Checking authentication...')).toBeInTheDocument();
       expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
     });
 
@@ -218,7 +219,8 @@ describe('ProtectedRoute', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText(/checking authentication/i)).toBeInTheDocument();
+      // Loading component shows "Checking authentication..." (with capital C and ellipsis)
+      expect(screen.getByText('Checking authentication...')).toBeInTheDocument();
     });
   });
 
