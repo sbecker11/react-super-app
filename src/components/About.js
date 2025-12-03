@@ -25,7 +25,20 @@ function About() {
                 Nulla varius mi ut odio varius, vel dictum velit dictum.
             </p>
             <p>Count: {count}</p>
-            <button onClick={increment}>Increment</button>
+            <button 
+              onClick={increment}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: 'var(--button-border-radius)',
+                fontSize: 'var(--button-font-size)',
+                cursor: 'pointer'
+              }}
+            >
+              Increment
+            </button>
         </PageContainer>
     );
 }

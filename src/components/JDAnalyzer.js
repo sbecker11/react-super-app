@@ -240,7 +240,8 @@ const JDAnalyzer = () => {
                 padding: '10px 20px',
                 backgroundColor: '#f0f0f0',
                 border: '1px solid #ccc',
-                borderRadius: '4px',
+                borderRadius: 'var(--button-border-radius)',
+                fontSize: 'var(--button-font-size)',
                 cursor: 'pointer'
               }}
             >
@@ -254,7 +255,8 @@ const JDAnalyzer = () => {
                 backgroundColor: isSaving ? '#6c757d' : '#007bff',
                 color: 'white',
                 border: 'none',
-                borderRadius: '4px',
+                borderRadius: 'var(--button-border-radius)',
+                fontSize: 'var(--button-font-size)',
                 cursor: isSaving ? 'not-allowed' : 'pointer'
               }}
             >
@@ -315,9 +317,9 @@ const JDAnalyzer = () => {
                         backgroundColor: '#28a745',
                         color: 'white',
                         border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '14px'
+                        borderRadius: 'var(--button-border-radius)',
+                        fontSize: 'var(--button-font-size)',
+                        cursor: 'pointer'
                       }}
                     >
                       Edit
@@ -329,9 +331,9 @@ const JDAnalyzer = () => {
                         backgroundColor: '#dc3545',
                         color: 'white',
                         border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '14px'
+                        borderRadius: 'var(--button-border-radius)',
+                        fontSize: 'var(--button-font-size)',
+                        cursor: 'pointer'
                       }}
                     >
                       Delete

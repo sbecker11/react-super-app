@@ -27,8 +27,8 @@ const NotFound = () => {
           backgroundColor: '#007bff',
           color: 'white',
           textDecoration: 'none',
-          borderRadius: '4px',
-          fontSize: '16px',
+          borderRadius: 'var(--button-border-radius)',
+          fontSize: 'var(--button-font-size)',
           fontWeight: 'bold',
           transition: 'background-color 0.3s'
         }}

@@ -284,7 +284,8 @@ const Profile = () => {
                   backgroundColor: '#007bff',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: 'var(--button-border-radius)',
+                  fontSize: 'var(--button-font-size)',
                   cursor: 'pointer',
                   flex: 1
                 }}
@@ -298,7 +299,8 @@ const Profile = () => {
                   backgroundColor: '#dc3545',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: 'var(--button-border-radius)',
+                  fontSize: 'var(--button-font-size)',
                   cursor: 'pointer',
                   flex: 1
                 }}
@@ -367,7 +369,8 @@ const Profile = () => {
                   backgroundColor: '#6c757d',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: 'var(--button-border-radius)',
+                  fontSize: 'var(--button-font-size)',
                   cursor: 'pointer',
                   flex: 1
                 }}
@@ -383,7 +386,8 @@ const Profile = () => {
                   backgroundColor: !hasChanges ? '#a0a0a0' : '#6c757d',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: 'var(--button-border-radius)',
+                  fontSize: 'var(--button-font-size)',
                   cursor: !hasChanges ? 'not-allowed' : 'pointer',
                   opacity: !hasChanges ? 0.5 : 1,
                   flex: 1
@@ -399,7 +403,8 @@ const Profile = () => {
                   backgroundColor: (isSaving || !hasChanges || hasValidationErrors) ? '#6c757d' : '#28a745',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: 'var(--button-border-radius)',
+                  fontSize: 'var(--button-font-size)',
                   cursor: (isSaving || !hasChanges || hasValidationErrors) ? 'not-allowed' : 'pointer',
                   opacity: (isSaving || !hasChanges || hasValidationErrors) ? 0.5 : 1,
                   flex: 1

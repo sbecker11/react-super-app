@@ -82,6 +82,7 @@ header {
     margin-right: 25px; /* Add margin to header links */
     text-decoration: none; /* Remove underlines from links */
     color: var(--link-color) !important;
+    transition: all 0.2s ease;
   }
   
   /* Ensure all link states use the global variable */
@@ -90,6 +91,13 @@ header {
   header a:hover,
   header a:active {
     color: var(--link-color) !important;
+  }
+
+  /* Active link styling for header */
+  header a.active {
+    font-weight: bold;
+    text-decoration: underline;
+    opacity: 1;
   }
   
   /* Styling for the Footer */
@@ -149,6 +157,7 @@ header {
   .left-column a {
     color: var(--link-color) !important;
     text-decoration: none;
+    transition: all 0.2s ease;
   }
   
   .left a:link,
@@ -160,6 +169,14 @@ header {
   .left-column a:hover,
   .left-column a:active {
     color: var(--link-color) !important;
+  }
+
+  /* Active link styling for left sidebar */
+  .left a.active,
+  .left-column a.active {
+    font-weight: bold;
+    text-decoration: underline;
+    opacity: 1;
   }
   
   /* Styling for the body-content */

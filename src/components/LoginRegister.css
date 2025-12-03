@@ -86,9 +86,9 @@
     padding: 10px 20px; /* Match Profile page padding */
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--button-border-radius);
     cursor: pointer;
-    font-size: 16px;
+    font-size: var(--button-font-size);
     font-family: inherit;
     flex: 1; /* Match Profile page flex layout */
     transition: opacity 0.2s ease, background-color 0.2s ease;

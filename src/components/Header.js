@@ -1,11 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation from react-router-dom
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 
 function Header({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
   const { isAuthenticated, isAdmin, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation();
 
   const toggleDevPanel = () => {
     if (window.toggleDevPanel) {
@@ -17,6 +18,14 @@ function Header({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
   const isDevelopment = window.location.hostname === 'localhost' || 
                         window.location.hostname === '127.0.0.1' || 
                         window.location.hostname === '';
+
+  // Determine active route
+  const isHomeActive = location.pathname === '/' || location.pathname === '/home';
+  const isAboutActive = location.pathname === '/about';
+  const isLoginRegisterActive = location.pathname === '/login-register';
+  const isAnalyzerActive = location.pathname === '/analyzer';
+  const isProfileActive = location.pathname === '/profile';
+  const isAdminActive = location.pathname.startsWith('/admin');
 
   return (
     <header>
@@ -35,10 +44,34 @@ function Header({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
         <nav>
           <ul>
             {/* Use Link components for navigation */}
-            <li><Link to="/" onClick={onHomeClick}>Home</Link></li>
-            <li><Link to="/about" onClick={onAboutClick}>About</Link></li>
+            <li>
+              <Link 
+                to="/" 
+                onClick={onHomeClick}
+                className={isHomeActive ? 'active' : ''}
+              >
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link 
+                to="/about" 
+                onClick={onAboutClick}
+                className={isAboutActive ? 'active' : ''}
+              >
+                About
+              </Link>
+            </li>
             {!isAuthenticated && (
-              <li><Link to="/login-register" onClick={onLoginRegisterClick}>Login/Register</Link></li>
+              <li>
+                <Link 
+                  to="/login-register" 
+                  onClick={onLoginRegisterClick}
+                  className={isLoginRegisterActive ? 'active' : ''}
+                >
+                  Login/Register
+                </Link>
+              </li>
             )}
             {isDevelopment && (
               <li>
@@ -49,10 +82,32 @@ function Header({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
             )}
             {isAuthenticated && (
               <>
-                <li><Link to="/analyzer">Analyzer</Link></li>
-                <li><Link to="/profile">Profile</Link></li>
+                <li>
+                  <Link 
+                    to="/analyzer"
+                    className={isAnalyzerActive ? 'active' : ''}
+                  >
+                    Analyzer
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/profile"
+                    className={isProfileActive ? 'active' : ''}
+                  >
+                    Profile
+                  </Link>
+                </li>
                 {isAdmin() && (
-                  <li><Link to="/admin" style={{ fontWeight: 'bold' }}>Admin</Link></li>
+                  <li>
+                    <Link 
+                      to="/admin" 
+                      className={isAdminActive ? 'active' : ''}
+                      style={{ fontWeight: 'bold' }}
+                    >
+                      Admin
+                    </Link>
+                  </li>
                 )}
               </>
             )}

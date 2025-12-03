@@ -84,8 +84,8 @@ class ErrorBoundary extends React.Component {
               backgroundColor: '#007bff',
               color: 'white',
               border: 'none',
-              borderRadius: '4px',
-              fontSize: '16px',
+              borderRadius: 'var(--button-border-radius)',
+              fontSize: 'var(--button-font-size)',
               fontWeight: 'bold',
               cursor: 'pointer',
               marginRight: '10px'
@@ -102,8 +102,8 @@ class ErrorBoundary extends React.Component {
               backgroundColor: '#6c757d',
               color: 'white',
               textDecoration: 'none',
-              borderRadius: '4px',
-              fontSize: '16px',
+              borderRadius: 'var(--button-border-radius)',
+              fontSize: 'var(--button-font-size)',
               fontWeight: 'bold'
             }}
           >
