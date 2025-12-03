@@ -422,15 +422,24 @@ describe('LoginRegister', () => {
             });
         });
 
-        it('shows error for name with invalid characters (numbers)', async () => {
+        it('accepts name with numbers (numbers are allowed)', async () => {
             render(<TestRouter><LoginRegister /></TestRouter>);
             const nameInput = screen.getByLabelText(/^name$/i);
+            const emailInput = screen.getByLabelText(/email/i);
+            const passwordInput = screen.getByLabelText(/password/i);
+            // Get submit button (there are multiple "Register" buttons - tab and submit)
+            const submitButtons = screen.getAllByRole('button');
+            const saveButton = submitButtons.find(btn => btn.type === 'submit' && btn.textContent === 'Register');
             
             fireEvent.change(nameInput, { target: { value: 'John123' } });
+            fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+            fireEvent.change(passwordInput, { target: { value: 'ValidPass123!' } });
             fireEvent.blur(nameInput);
             
             await waitFor(() => {
-                expect(screen.getByText(/Name can only contain letters, spaces, hyphens, and apostrophes/i)).toBeInTheDocument();
+                // Numbers are allowed, so no error should appear
+                expect(screen.queryByText(/Name can only contain/i)).not.toBeInTheDocument();
+                expect(saveButton).not.toBeDisabled();
             });
         });
 
@@ -442,7 +451,8 @@ describe('LoginRegister', () => {
             fireEvent.blur(nameInput);
             
             await waitFor(() => {
-                expect(screen.getByText(/Name can only contain letters, spaces, hyphens, and apostrophes/i)).toBeInTheDocument();
+                // Updated message includes "numbers" - "letters, numbers, spaces, hyphens, and apostrophes"
+                expect(screen.getByText(/Name can only contain letters, numbers, spaces, hyphens, and apostrophes/i)).toBeInTheDocument();
             });
         });
 
