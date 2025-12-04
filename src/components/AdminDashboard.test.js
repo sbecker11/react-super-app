@@ -5,7 +5,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import AdminDashboard from './AdminDashboard';
-import { renderWithProviders } from '../test-utils';
+import { TestRouter } from '../test-utils';
 
 // Mock PageContainer to avoid dependency issues
 jest.mock('./PageContainer', () => {
@@ -14,75 +14,121 @@ jest.mock('./PageContainer', () => {
   };
 });
 
-describe('AdminDashboard', () => {
-  const mockAdminUser = {
-    id: '1',
-    name: 'Admin User',
-    email: 'admin@example.com',
-    role: 'admin',
-  };
+// Mock useAuth hook
+const mockIsAdmin = jest.fn(() => true);
+const mockAdminUser = {
+  id: '1',
+  name: 'Admin User',
+  email: 'admin@example.com',
+  role: 'admin',
+};
 
-  const mockAuthContext = {
+jest.mock('../contexts/AuthContext', () => ({
+  useAuth: () => ({
     user: mockAdminUser,
-    isAdmin: jest.fn(() => true),
-  };
+    isAdmin: mockIsAdmin,
+  }),
+}));
+
+describe('AdminDashboard', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockIsAdmin.mockReturnValue(true);
+  });
 
   it('should render dashboard for admin user', () => {
-    renderWithProviders(<AdminDashboard />, { authValue: mockAuthContext });
+    const { render } = require('@testing-library/react');
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
     expect(screen.getByText('User Management')).toBeInTheDocument();
   });
 
   it('should redirect non-admin users', () => {
-    const mockUserContext = {
-      user: { id: '2', role: 'user' },
-      isAdmin: jest.fn(() => false),
-    };
-
-    renderWithProviders(<AdminDashboard />, {
-      authValue: mockUserContext,
-    });
+    mockIsAdmin.mockReturnValue(false);
+    const { render } = require('@testing-library/react');
+    
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     // Navigate component redirects, so dashboard content should not be visible
     expect(screen.queryByText('Admin Dashboard')).not.toBeInTheDocument();
   });
 
   it('should display user management card', () => {
-    renderWithProviders(<AdminDashboard />, { authValue: mockAuthContext });
+    const { render } = require('@testing-library/react');
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     expect(screen.getByText('User Management')).toBeInTheDocument();
     expect(screen.getByText(/Manage user accounts, roles, and permissions/)).toBeInTheDocument();
   });
 
   it('should have link to user management', () => {
-    renderWithProviders(<AdminDashboard />, { authValue: mockAuthContext });
+    const { render } = require('@testing-library/react');
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     const link = screen.getByText('User Management').closest('a');
     expect(link).toHaveAttribute('href', '/admin/users');
   });
 
   it('should display analytics card as disabled', () => {
-    renderWithProviders(<AdminDashboard />, { authValue: mockAuthContext });
+    const { render } = require('@testing-library/react');
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     expect(screen.getByText('Analytics')).toBeInTheDocument();
-    expect(screen.getByText('Coming Soon')).toBeInTheDocument();
+    // There are multiple "Coming Soon" texts, so use getAllByText
+    const comingSoonTexts = screen.getAllByText('Coming Soon');
+    expect(comingSoonTexts.length).toBeGreaterThan(0);
   });
 
   it('should display system settings card as disabled', () => {
-    renderWithProviders(<AdminDashboard />, { authValue: mockAuthContext });
+    const { render } = require('@testing-library/react');
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     expect(screen.getByText('System Settings')).toBeInTheDocument();
   });
 
   it('should display audit logs card as disabled', () => {
-    renderWithProviders(<AdminDashboard />, { authValue: mockAuthContext });
+    const { render } = require('@testing-library/react');
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     expect(screen.getByText('Audit Logs')).toBeInTheDocument();
   });
 
   it('should display security info card', () => {
-    renderWithProviders(<AdminDashboard />, { authValue: mockAuthContext });
+    const { render } = require('@testing-library/react');
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     expect(screen.getByText('🔐 Security')).toBeInTheDocument();
     expect(
@@ -91,7 +137,12 @@ describe('AdminDashboard', () => {
   });
 
   it('should display audit trail info card', () => {
-    renderWithProviders(<AdminDashboard />, { authValue: mockAuthContext });
+    const { render } = require('@testing-library/react');
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     expect(screen.getByText('📋 Audit Trail')).toBeInTheDocument();
     expect(
@@ -100,19 +151,26 @@ describe('AdminDashboard', () => {
   });
 
   it('should render all admin cards', () => {
-    renderWithProviders(<AdminDashboard />, { authValue: mockAuthContext });
+    const { render } = require('@testing-library/react');
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
 
     const cards = screen.getAllByText(/User Management|Analytics|System Settings|Audit Logs/);
     expect(cards.length).toBeGreaterThanOrEqual(4);
   });
 
   it('should handle null user gracefully', () => {
-    const nullUserContext = {
-      user: null,
-      isAdmin: () => false,
-    };
-
-    renderWithProviders(<AdminDashboard />, { authValue: nullUserContext });
+    mockIsAdmin.mockReturnValue(false);
+    const { render } = require('@testing-library/react');
+    
+    render(
+      <TestRouter>
+        <AdminDashboard />
+      </TestRouter>
+    );
     
     // Should redirect
     expect(screen.queryByText('Admin Dashboard')).not.toBeInTheDocument();

@@ -5,16 +5,18 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AdminAuthModal from './AdminAuthModal';
-import { renderWithProviders } from '../test-utils';
+import { TestRouter } from '../test-utils';
 
 // Mock AuthContext
 const mockRequestElevatedSession = jest.fn();
 
-const mockAuthContext = {
-  requestElevatedSession: mockRequestElevatedSession,
-  user: { id: '1', role: 'admin' },
-  isAdmin: () => true,
-};
+jest.mock('../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    requestElevatedSession: mockRequestElevatedSession,
+    user: { id: '1', role: 'admin' },
+    isAdmin: () => true,
+  }),
+}));
 
 describe('AdminAuthModal', () => {
   beforeEach(() => {
@@ -23,18 +25,20 @@ describe('AdminAuthModal', () => {
   });
 
   it('should not render when isOpen is false', () => {
-    renderWithProviders(
-      <AdminAuthModal isOpen={false} onClose={jest.fn()} onSuccess={jest.fn()} />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal isOpen={false} onClose={jest.fn()} onSuccess={jest.fn()} />
+      </TestRouter>
     );
 
     expect(screen.queryByText('Admin Authentication Required')).not.toBeInTheDocument();
   });
 
   it('should render when isOpen is true', () => {
-    renderWithProviders(
-      <AdminAuthModal isOpen={true} onClose={jest.fn()} onSuccess={jest.fn()} />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal isOpen={true} onClose={jest.fn()} onSuccess={jest.fn()} />
+      </TestRouter>
     );
 
     expect(screen.getByText('Admin Authentication Required')).toBeInTheDocument();
@@ -42,23 +46,25 @@ describe('AdminAuthModal', () => {
   });
 
   it('should render with custom title', () => {
-    renderWithProviders(
-      <AdminAuthModal
-        isOpen={true}
-        onClose={jest.fn()}
-        onSuccess={jest.fn()}
-        title="Custom Title"
-      />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal
+          isOpen={true}
+          onClose={jest.fn()}
+          onSuccess={jest.fn()}
+          title="Custom Title"
+        />
+      </TestRouter>
     );
 
     expect(screen.getByText('Custom Title')).toBeInTheDocument();
   });
 
   it('should display authentication message', () => {
-    renderWithProviders(
-      <AdminAuthModal isOpen={true} onClose={jest.fn()} onSuccess={jest.fn()} />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal isOpen={true} onClose={jest.fn()} onSuccess={jest.fn()} />
+      </TestRouter>
     );
 
     expect(
@@ -67,9 +73,10 @@ describe('AdminAuthModal', () => {
   });
 
   it('should update password input value', () => {
-    renderWithProviders(
-      <AdminAuthModal isOpen={true} onClose={jest.fn()} onSuccess={jest.fn()} />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal isOpen={true} onClose={jest.fn()} onSuccess={jest.fn()} />
+      </TestRouter>
     );
 
     const passwordInput = screen.getByLabelText('Password');
@@ -83,9 +90,10 @@ describe('AdminAuthModal', () => {
     const onSuccess = jest.fn();
     const onClose = jest.fn();
 
-    renderWithProviders(
-      <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />
+      </TestRouter>
     );
 
     const passwordInput = screen.getByLabelText('Password');
@@ -104,9 +112,10 @@ describe('AdminAuthModal', () => {
     const onSuccess = jest.fn();
     const onClose = jest.fn();
 
-    renderWithProviders(
-      <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />
+      </TestRouter>
     );
 
     const passwordInput = screen.getByLabelText('Password');
@@ -126,9 +135,10 @@ describe('AdminAuthModal', () => {
     const onSuccess = jest.fn();
     const onClose = jest.fn();
 
-    renderWithProviders(
-      <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />
+      </TestRouter>
     );
 
     const passwordInput = screen.getByLabelText('Password');
@@ -150,9 +160,10 @@ describe('AdminAuthModal', () => {
     const onSuccess = jest.fn();
     const onClose = jest.fn();
 
-    renderWithProviders(
-      <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />
+      </TestRouter>
     );
 
     const passwordInput = screen.getByLabelText('Password');
@@ -298,9 +309,10 @@ describe('AdminAuthModal', () => {
     const onSuccess = jest.fn();
     const onClose = jest.fn();
 
-    renderWithProviders(
-      <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />,
-      { authValue: mockAuthContext }
+    render(
+      <TestRouter>
+        <AdminAuthModal isOpen={true} onClose={onClose} onSuccess={onSuccess} />
+      </TestRouter>
     );
 
     const passwordInput = screen.getByLabelText('Password');
