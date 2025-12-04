@@ -416,6 +416,144 @@ describe('RBAC Middleware', () => {
       expect(expiresAtTime).toBeGreaterThan(now);
       expect(expiresAtTime).toBeLessThanOrEqual(now + fifteenMinutes + 1000);
     });
+
+    it('should generate token with ISO string expiration', () => {
+      const userId = '123';
+      const role = 'admin';
+
+      const { expiresAt } = generateElevatedToken(userId, role);
+
+      // Should be a valid ISO string
+      expect(() => new Date(expiresAt)).not.toThrow();
+      expect(new Date(expiresAt).toISOString()).toBe(expiresAt);
+    });
+  });
+
+  describe('requireElevatedSession edge cases', () => {
+    it('should handle token with wrong secret', () => {
+      const wrongToken = jwt.sign(
+        { userId: '123', role: 'admin', expiresAt: Date.now() + 900000, elevated: true },
+        'wrong-secret',
+        { expiresIn: '15m' }
+      );
+
+      req.user = { id: '123', role: 'admin' };
+      req.headers['x-elevated-token'] = wrongToken;
+
+      requireElevatedSession(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Invalid elevated session token',
+        code: 'INVALID_ELEVATED_TOKEN',
+        action: 'reauthenticate',
+      });
+    });
+
+    it('should handle token without elevated flag', () => {
+      const token = jwt.sign(
+        { userId: '123', role: 'admin', expiresAt: Date.now() + 900000 },
+        process.env.JWT_SECRET,
+        { expiresIn: '15m' }
+      );
+
+      req.user = { id: '123', role: 'admin' };
+      req.headers['x-elevated-token'] = token;
+
+      // Token should still work if it has the right structure
+      requireElevatedSession(req, res, next);
+      
+      // Should pass if expiresAt is valid
+      if (Date.now() < Date.now() + 900000) {
+        expect(next).toHaveBeenCalled();
+      }
+    });
+  });
+
+  describe('logAdminAction edge cases', () => {
+    it('should handle request with connection.remoteAddress', async () => {
+      query.mockResolvedValueOnce({ rows: [] });
+      req.connection.remoteAddress = '192.168.1.1';
+      req.ip = undefined;
+
+      await logAdminAction(
+        'role_change',
+        'target-user-id',
+        'admin-user-id',
+        { test: 'data' },
+        req
+      );
+
+      const callArgs = query.mock.calls[0][1];
+      expect(callArgs[2]).toBe('192.168.1.1'); // ip_address
+    });
+
+    it('should handle request with both ip and connection.remoteAddress', async () => {
+      query.mockResolvedValueOnce({ rows: [] });
+      req.ip = '10.0.0.1';
+      req.connection.remoteAddress = '192.168.1.1';
+
+      await logAdminAction(
+        'role_change',
+        'target-user-id',
+        'admin-user-id',
+        {},
+        req
+      );
+
+      const callArgs = query.mock.calls[0][1];
+      expect(callArgs[2]).toBe('10.0.0.1'); // Should prefer req.ip
+    });
+
+    it('should handle complex metadata objects', async () => {
+      query.mockResolvedValueOnce({ rows: [] });
+      const complexMetadata = {
+        old_role: 'user',
+        new_role: 'admin',
+        user_email: 'test@example.com',
+        nested: {
+          data: [1, 2, 3],
+          timestamp: new Date().toISOString(),
+        },
+      };
+
+      await logAdminAction(
+        'role_change',
+        'target-user-id',
+        'admin-user-id',
+        complexMetadata,
+        req
+      );
+
+      const callArgs = query.mock.calls[0][1];
+      const metadata = JSON.parse(callArgs[6]);
+      expect(metadata).toEqual(complexMetadata);
+    });
+  });
+
+  describe('logAuthEvent edge cases', () => {
+    it('should handle request without ip or connection', async () => {
+      query.mockResolvedValueOnce({ rows: [] });
+      req.ip = undefined;
+      req.connection = undefined;
+
+      await logAuthEvent('user-id', 'login', true, null, req);
+
+      const callArgs = query.mock.calls[0][1];
+      expect(callArgs[2]).toBeNull(); // ip_address
+      expect(callArgs[3]).toBeNull(); // user_agent
+    });
+
+    it('should handle all auth event types', async () => {
+      query.mockResolvedValue({ rows: [] });
+      const eventTypes = ['login', 'logout', 'failed_login', 'password_reset', 'account_locked'];
+
+      for (const eventType of eventTypes) {
+        await logAuthEvent('user-id', eventType, true, null, req);
+      }
+
+      expect(query).toHaveBeenCalledTimes(eventTypes.length);
+    });
   });
 });
 
