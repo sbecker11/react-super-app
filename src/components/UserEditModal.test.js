@@ -480,5 +480,5 @@ describe('UserEditModal', () => {
 
     expect(screen.getByText(/⚠️ Security Notice:/)).toBeInTheDocument();
     expect(screen.getByText(/These actions require elevated privileges/)).toBeInTheDocument();
-  });
+});
 });

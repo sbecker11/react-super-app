@@ -262,7 +262,7 @@ describe('AdminAuthModal', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Verifying...')).toBeInTheDocument();
+    expect(screen.getByText('Verifying...')).toBeInTheDocument();
     });
 
     expect(submitButton).toBeDisabled();
