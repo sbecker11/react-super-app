@@ -4,14 +4,14 @@
  * Focuses on error paths and edge cases not covered by integration tests
  */
 
-const adminRoutes = require('../../routes/admin');
 const express = require('express');
 const request = require('supertest');
 
-// Mock dependencies
+// Mock dependencies BEFORE requiring routes
+const mockQuery = jest.fn();
 jest.mock('../../database/connection', () => ({
   pool: {
-    query: jest.fn(),
+    query: mockQuery,
   },
 }));
 
@@ -43,14 +43,23 @@ jest.mock('../../middleware/auth', () => ({
   },
 }));
 
+// Require routes AFTER mocks are set up
+// Note: The routes module will get the mocked pool from the connection module
+const adminRoutes = require('../../routes/admin');
 const { pool } = require('../../database/connection');
 const bcrypt = require('bcryptjs');
+
+// pool.query should be the mock function from the mock factory
+// Use jest.spyOn to ensure we can control it
+const queryMock = jest.spyOn(pool, 'query');
 
 describe('Admin Routes Unit Tests', () => {
   let app;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset the mock query function
+    queryMock.mockClear();
     app = express();
     app.use(express.json());
     app.use('/api/admin', adminRoutes);
@@ -68,7 +77,8 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should return 404 if user not found', async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] });
+      // Mock the query to return empty rows (user not found)
+      queryMock.mockResolvedValueOnce({ rows: [] });
 
       const response = await request(app)
         .post('/api/admin/verify-password')
@@ -77,11 +87,16 @@ describe('Admin Routes Unit Tests', () => {
 
       expect(response.body).toHaveProperty('error', 'User not found');
       expect(response.body).toHaveProperty('code', 'USER_NOT_FOUND');
+      expect(queryMock).toHaveBeenCalledWith(
+        'SELECT password_hash FROM users WHERE id = $1',
+        ['admin-user-id']
+      );
     });
 
     it('should return 401 if password is invalid', async () => {
       const passwordHash = await bcrypt.hash('correctpassword', 10);
-      pool.query.mockResolvedValueOnce({
+      // Mock the query to return a user with password hash
+      queryMock.mockResolvedValueOnce({
         rows: [{ password_hash: passwordHash }],
       });
 
@@ -92,10 +107,14 @@ describe('Admin Routes Unit Tests', () => {
 
       expect(response.body).toHaveProperty('error', 'Invalid password');
       expect(response.body).toHaveProperty('code', 'INVALID_PASSWORD');
+      expect(queryMock).toHaveBeenCalledWith(
+        'SELECT password_hash FROM users WHERE id = $1',
+        ['admin-user-id']
+      );
     });
 
     it('should return 500 on database error', async () => {
-      pool.query.mockRejectedValueOnce(new Error('Database error'));
+      queryMock.mockRejectedValueOnce(new Error('Database error'));
 
       const response = await request(app)
         .post('/api/admin/verify-password')
@@ -109,7 +128,7 @@ describe('Admin Routes Unit Tests', () => {
 
   describe('GET /api/admin/users', () => {
     it('should handle database error gracefully', async () => {
-      pool.query.mockRejectedValueOnce(new Error('Database error'));
+      queryMock.mockRejectedValueOnce(new Error('Database error'));
 
       const response = await request(app)
         .get('/api/admin/users')
@@ -120,21 +139,21 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should handle stats query failure gracefully', async () => {
-      // Mock count query
-      pool.query.mockResolvedValueOnce({
-        rows: [{ count: '10' }],
+      // Mock count query (first call)
+      queryMock.mockResolvedValueOnce({
+        rows: [{ count: '2' }],
       });
 
-      // Mock users query
-      pool.query.mockResolvedValueOnce({
+      // Mock users query (second call)
+      queryMock.mockResolvedValueOnce({
         rows: [
-          { id: '1', name: 'User 1', email: 'user1@example.com' },
-          { id: '2', name: 'User 2', email: 'user2@example.com' },
+          { id: '1', name: 'User 1', email: 'user1@example.com', role: 'user', is_active: true },
+          { id: '2', name: 'User 2', email: 'user2@example.com', role: 'user', is_active: true },
         ],
       });
 
-      // Mock stats query failure
-      pool.query.mockRejectedValueOnce(new Error('Stats table does not exist'));
+      // Mock stats query failure (third call) - but it's wrapped in try-catch, so it should continue
+      queryMock.mockRejectedValueOnce(new Error('Stats table does not exist'));
 
       const response = await request(app)
         .get('/api/admin/users')
@@ -144,15 +163,21 @@ describe('Admin Routes Unit Tests', () => {
       expect(response.body.users).toHaveLength(2);
       // Should have default stats even if stats query fails
       expect(response.body.users[0]).toHaveProperty('stats');
+      expect(response.body.users[0].stats.jobDescriptionsCount).toBe(0);
     });
 
     it('should handle empty user list', async () => {
-      pool.query.mockResolvedValueOnce({
+      // Mock count query (first call)
+      queryMock.mockResolvedValueOnce({
         rows: [{ count: '0' }],
       });
-      pool.query.mockResolvedValueOnce({
+
+      // Mock users query (second call) - empty result
+      queryMock.mockResolvedValueOnce({
         rows: [],
       });
+
+      // No stats query since userIds.length === 0
 
       const response = await request(app)
         .get('/api/admin/users')
@@ -160,12 +185,14 @@ describe('Admin Routes Unit Tests', () => {
 
       expect(response.body.users).toHaveLength(0);
       expect(response.body.pagination.totalCount).toBe(0);
+      expect(response.body.pagination.totalPages).toBe(0);
     });
   });
 
   describe('GET /api/admin/users/:id', () => {
     it('should return 404 if user not found', async () => {
-      pool.query.mockResolvedValueOnce({
+      // Mock user query - user not found
+      queryMock.mockResolvedValueOnce({
         rows: [],
       });
 
@@ -178,11 +205,24 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should handle stats query failure gracefully', async () => {
-      pool.query.mockResolvedValueOnce({
-        rows: [{ id: '1', name: 'User 1', email: 'user1@example.com' }],
+      // Mock user query (first call)
+      queryMock.mockResolvedValueOnce({
+        rows: [{ 
+          id: '1', 
+          name: 'User 1', 
+          email: 'user1@example.com',
+          role: 'user',
+          is_active: true,
+          created_at: '2024-01-01',
+          updated_at: '2024-01-01'
+        }],
       });
-      pool.query.mockRejectedValueOnce(new Error('Stats table error'));
-      pool.query.mockResolvedValueOnce({
+
+      // Mock stats query failure (second call) - wrapped in try-catch
+      queryMock.mockRejectedValueOnce(new Error('Stats table error'));
+
+      // Mock activity query (third call)
+      queryMock.mockResolvedValueOnce({
         rows: [],
       });
 
@@ -192,10 +232,12 @@ describe('Admin Routes Unit Tests', () => {
 
       expect(response.body).toHaveProperty('stats');
       expect(response.body.stats.jobDescriptionsCount).toBe(0);
+      expect(response.body.stats.resumesCount).toBe(0);
+      expect(response.body.stats.coverLettersCount).toBe(0);
     });
 
     it('should return 500 on database error', async () => {
-      pool.query.mockRejectedValueOnce(new Error('Database error'));
+      queryMock.mockRejectedValueOnce(new Error('Database error'));
 
       const response = await request(app)
         .get('/api/admin/users/user-id')
@@ -218,7 +260,7 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should return 400 if admin tries to change own role', async () => {
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [{ name: 'Admin', email: 'admin@example.com', role: 'admin' }],
       });
 
@@ -232,7 +274,7 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should return 404 if user not found', async () => {
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [],
       });
 
@@ -246,10 +288,10 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should return 500 on database error', async () => {
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [{ name: 'User', email: 'user@example.com', role: 'user' }],
       });
-      pool.query.mockRejectedValueOnce(new Error('Database error'));
+      queryMock.mockRejectedValueOnce(new Error('Database error'));
 
       const response = await request(app)
         .put('/api/admin/users/user-id/role')
@@ -273,7 +315,7 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should return 404 if user not found', async () => {
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [],
       });
 
@@ -287,10 +329,10 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should return 500 on database error', async () => {
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [{ email: 'user@example.com' }],
       });
-      pool.query.mockRejectedValueOnce(new Error('Database error'));
+      queryMock.mockRejectedValueOnce(new Error('Database error'));
 
       const response = await request(app)
         .put('/api/admin/users/user-id/password')
@@ -314,7 +356,7 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should return 400 if admin tries to change own status', async () => {
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [{ email: 'admin@example.com', is_active: true }],
       });
 
@@ -329,7 +371,7 @@ describe('Admin Routes Unit Tests', () => {
 
     it('should return 404 if user not found', async () => {
       // First query gets user info
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [],
       });
 
@@ -343,10 +385,10 @@ describe('Admin Routes Unit Tests', () => {
     });
 
     it('should return 500 on database error', async () => {
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [{ email: 'user@example.com', is_active: true }],
       });
-      pool.query.mockRejectedValueOnce(new Error('Database error'));
+      queryMock.mockRejectedValueOnce(new Error('Database error'));
 
       const response = await request(app)
         .put('/api/admin/users/user-id/status')
@@ -360,7 +402,7 @@ describe('Admin Routes Unit Tests', () => {
 
   describe('GET /api/admin/users/:id/activity', () => {
     it('should return 500 on database error', async () => {
-      pool.query.mockRejectedValueOnce(new Error('Database error'));
+      queryMock.mockRejectedValueOnce(new Error('Database error'));
 
       const response = await request(app)
         .get('/api/admin/users/user-id/activity')
@@ -372,7 +414,7 @@ describe('Admin Routes Unit Tests', () => {
 
     it('should handle pagination parameters', async () => {
       // Mock activity query
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [
           { 
             id: '1', 
@@ -384,7 +426,7 @@ describe('Admin Routes Unit Tests', () => {
         ],
       });
       // Mock count query
-      pool.query.mockResolvedValueOnce({
+      queryMock.mockResolvedValueOnce({
         rows: [{ count: '1' }],
       });
 
