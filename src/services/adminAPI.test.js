@@ -15,11 +15,18 @@ describe('Admin API Service', () => {
   });
 
   describe('getHeaders', () => {
-    it('should include Authorization header when token exists', () => {
+    it('should include Authorization header when token exists', async () => {
       localStorage.setItem('token', 'test-token');
       
+      // Mock fetch response
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ users: [], pagination: {} }),
+      });
+      
       // Call a method that uses getHeaders
-      adminAPI.listUsers();
+      await adminAPI.listUsers();
       
       expect(global.fetch).toHaveBeenCalledWith(
         expect.any(String),
@@ -31,10 +38,17 @@ describe('Admin API Service', () => {
       );
     });
 
-    it('should not include Authorization header when token does not exist', () => {
+    it('should not include Authorization header when token does not exist', async () => {
       localStorage.removeItem('token');
       
-      adminAPI.listUsers();
+      // Mock fetch response
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ users: [], pagination: {} }),
+      });
+      
+      await adminAPI.listUsers();
       
       const callArgs = global.fetch.mock.calls[0];
       const headers = callArgs[1].headers;
