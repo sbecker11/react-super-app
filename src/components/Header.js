@@ -27,10 +27,13 @@ function Header({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
   const isProfileActive = location.pathname === '/profile';
   const isAdminActive = location.pathname.startsWith('/admin');
 
+  // Use theme-aware logo: dark logo for light mode, light logo for dark mode
+  const logoSrc = theme === 'light' ? './logo192-dark.png' : './logo192.png';
+
   return (
     <header>
       <div className="header-left">
-        <img src="./logo192.png" alt="Logo" className="header-logo" />
+        <img src={logoSrc} alt="Logo" className="header-logo" />
       </div>
       <div className="header-right">
         <button 
