@@ -1036,5 +1036,103 @@ describe('LoginRegister', () => {
             expect(nameError || emailError || passwordError).toBeTruthy();
         });
     });
+
+    // Branch coverage tests for login/register mode switching
+    describe('Mode switching and branch coverage', () => {
+        it('toggles to login mode when Login tab is clicked', () => {
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            const loginTab = screen.getByText('Login');
+            fireEvent.click(loginTab);
+            
+            // Name field should not be visible in login mode
+            expect(screen.queryByLabelText(/^name$/i)).not.toBeInTheDocument();
+            // Submit button should say "Login"
+            const submitButtons = screen.getAllByRole('button');
+            const loginButton = submitButtons.find(btn => btn.type === 'submit' && btn.textContent === 'Login');
+            expect(loginButton).toBeInTheDocument();
+        });
+
+        it('toggles back to register mode when Register tab is clicked from login mode', () => {
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            // First switch to login mode
+            const loginTab = screen.getByText('Login');
+            fireEvent.click(loginTab);
+            
+            // Then switch back to register mode
+            const registerTab = screen.getByText('Register');
+            fireEvent.click(registerTab);
+            
+            // Name field should be visible again
+            expect(screen.getByLabelText(/^name$/i)).toBeInTheDocument();
+        });
+
+        it('clears name field when switching from register to login mode', () => {
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            const nameInput = screen.getByLabelText(/^name$/i);
+            fireEvent.change(nameInput, { target: { value: 'John Doe' } });
+            
+            // Switch to login mode
+            const loginTab = screen.getByText('Login');
+            fireEvent.click(loginTab);
+            
+            // Switch back to register mode
+            const registerTab = screen.getByText('Register');
+            fireEvent.click(registerTab);
+            
+            // Name should be cleared (branch: !isLoginMode in toggleMode)
+            const newNameInput = screen.getByLabelText(/^name$/i);
+            expect(newNameInput).toHaveValue('');
+        });
+
+        it('does not clear name when already in login mode and clicking login tab again', () => {
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            // Switch to login mode
+            const loginTab = screen.getByText('Login');
+            fireEvent.click(loginTab);
+            
+            // Click login tab again (should not toggle)
+            fireEvent.click(loginTab);
+            
+            // Should still be in login mode
+            expect(screen.queryByLabelText(/^name$/i)).not.toBeInTheDocument();
+        });
+
+        it('does not toggle when clicking register tab while already in register mode', () => {
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            // Get all Register buttons and find the tab button (not the submit button)
+            const registerButtons = screen.getAllByText('Register');
+            const registerTab = registerButtons.find(btn => btn.type === 'button');
+            
+            // Click register tab (already in register mode)
+            fireEvent.click(registerTab);
+            
+            // Should still be in register mode with name field visible
+            expect(screen.getByLabelText(/^name$/i)).toBeInTheDocument();
+        });
+
+        it('shows password requirements only in register mode when password is focused', async () => {
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            const passwordInput = screen.getByLabelText(/password/i);
+            fireEvent.focus(passwordInput);
+            
+            // Should show password requirements in register mode
+            await waitFor(() => {
+                expect(screen.getByText(/Password must contain/i)).toBeInTheDocument();
+            });
+            
+            // Switch to login mode
+            const loginTab = screen.getByText('Login');
+            fireEvent.click(loginTab);
+            
+            // Password requirements should not be visible in login mode
+            const newPasswordInput = screen.getByLabelText(/password/i);
+            fireEvent.focus(newPasswordInput);
+            expect(screen.queryByText(/Password must contain/i)).not.toBeInTheDocument();
+        });
+
+        // Note: Loading message tests are complex due to async form submission
+        // These branches are covered by integration tests
+        // Skipping for now to focus on other branch coverage improvements
+    });
 });
 

@@ -351,42 +351,54 @@ describe('UserManagement', () => {
       </TestRouter>
     );
 
+    // Wait for initial load
     await waitFor(() => {
       expect(adminAPI.listUsers).toHaveBeenCalled();
       expect(screen.getByText('User One')).toBeInTheDocument();
     });
 
+    // Get the Name column header
     const nameHeaders = screen.getAllByText('Name');
     const nameHeader = nameHeaders.find(el => el.tagName === 'TH' || el.closest('th')) || nameHeaders[nameHeaders.length - 1];
     
-    // First click - should set to name ASC
-    fireEvent.click(nameHeader);
-    
-    await waitFor(() => {
-      // Should have been called with name ASC
-      expect(adminAPI.listUsers).toHaveBeenCalledWith(
-        expect.objectContaining({ sort_by: 'name', sort_order: 'ASC' })
-      );
-    }, { timeout: 2000 });
-    
-    // Wait for React to process state updates
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    // Clear and reset mock to track second call
+    // Clear mock to track new calls
     adminAPI.listUsers.mockClear();
     adminAPI.listUsers.mockResolvedValue({
       users: mockUsers,
       pagination: mockPagination,
     });
     
-    // Second click - should toggle to DESC
+    // First click - should set to name ASC (since default is created_at DESC)
     fireEvent.click(nameHeader);
     
+    // Wait for the first API call with name ASC
     await waitFor(() => {
-      // Should have been called with name DESC
-      expect(adminAPI.listUsers).toHaveBeenCalledWith(
-        expect.objectContaining({ sort_by: 'name', sort_order: 'DESC' })
-      );
+      expect(adminAPI.listUsers).toHaveBeenCalled();
+      const lastCall = adminAPI.listUsers.mock.calls[adminAPI.listUsers.mock.calls.length - 1];
+      expect(lastCall[0]).toMatchObject({ sort_by: 'name', sort_order: 'ASC' });
+    }, { timeout: 2000 });
+    
+    // Wait for React to fully process the state update and re-render
+    await waitFor(() => {
+      // Verify the component has updated by checking if it's still rendered
+      expect(screen.getByText('User One')).toBeInTheDocument();
+    });
+    
+    // Clear mock to track second call
+    adminAPI.listUsers.mockClear();
+    adminAPI.listUsers.mockResolvedValue({
+      users: mockUsers,
+      pagination: mockPagination,
+    });
+    
+    // Second click on same column - should toggle to DESC
+    fireEvent.click(nameHeader);
+    
+    // Wait for the second API call with name DESC
+    await waitFor(() => {
+      expect(adminAPI.listUsers).toHaveBeenCalled();
+      const lastCall = adminAPI.listUsers.mock.calls[adminAPI.listUsers.mock.calls.length - 1];
+      expect(lastCall[0]).toMatchObject({ sort_by: 'name', sort_order: 'DESC' });
     }, { timeout: 3000 });
   });
 
