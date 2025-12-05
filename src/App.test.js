@@ -3,6 +3,16 @@ import React from 'react';
 import App from './App';
 import * as api from './services/api';
 
+// Mock CSS imports
+jest.mock('react-toastify/dist/ReactToastify.css', () => ({}));
+
+// Mock TestingCoverage to avoid react-markdown import issues
+jest.mock('./components/TestingCoverage', () => {
+  return function MockTestingCoverage() {
+    return <div data-testid="testing-coverage">Testing Coverage</div>;
+  };
+});
+
 // Mock authAPI.getCurrentUser to prevent real API calls in AuthProvider
 jest.mock('./services/api', () => {
   const actual = jest.requireActual('./services/api');

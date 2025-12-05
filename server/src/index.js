@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 3001;
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin');
+const coverageRoutes = require('./routes/coverage');
 
 // Middleware
 app.use(helmet()); // Security headers
@@ -34,6 +35,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/coverage', coverageRoutes);
 
 // 404 handler
 app.use((req, res) => {

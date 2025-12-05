@@ -33,6 +33,15 @@ const AdminDashboard = () => {
           </div>
         </Link>
 
+        <Link to="/admin/testing" className="admin-card">
+          <div className="admin-card-icon">🧪</div>
+          <h2>Testing & Coverage</h2>
+          <p>View test results and coverage reports</p>
+          <div className="admin-card-actions">
+            <span>View Reports →</span>
+          </div>
+        </Link>
+
         <div className="admin-card admin-card-disabled">
           <div className="admin-card-icon">📊</div>
           <h2>Analytics</h2>
