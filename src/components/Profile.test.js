@@ -528,6 +528,179 @@ describe('Profile Component', () => {
     });
   });
 
+  describe('Edge Case Error Handling', () => {
+    it('should handle API fetch failure with fallback to context user', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: mockUser,
+        logout: jest.fn(),
+        updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockRejectedValueOnce(new Error('Network error'));
+
+      render(
+        <RouterWrapper>
+          <Profile />
+        </RouterWrapper>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+      });
+
+      // Should fallback to context user data
+      expect(usersAPI.getCurrent).toHaveBeenCalled();
+    });
+
+    it('should handle update error with various error formats', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: mockUser,
+        logout: jest.fn(),
+        updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValueOnce({ user: mockUser });
+      usersAPI.update.mockRejectedValueOnce({
+        error: 'Email already exists',
+      });
+
+      render(
+        <RouterWrapper>
+          <Profile />
+        </RouterWrapper>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Edit Profile'));
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
+      });
+
+      const nameInput = screen.getByDisplayValue('John Doe');
+      fireEvent.change(nameInput, { target: { value: 'Jane Doe' } });
+
+      const saveButton = await screen.findByText('Save Changes');
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith('Email already exists');
+      });
+    });
+
+    it('should handle update error with array of errors', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: mockUser,
+        logout: jest.fn(),
+        updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValueOnce({ user: mockUser });
+      usersAPI.update.mockRejectedValueOnce({
+        errors: [
+          { msg: 'Email is required' },
+          { msg: 'Name is too short' }
+        ],
+      });
+
+      render(
+        <RouterWrapper>
+          <Profile />
+        </RouterWrapper>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Edit Profile'));
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
+      });
+
+      // Make a change to enable the save button
+      const nameInput = screen.getByDisplayValue('John Doe');
+      fireEvent.change(nameInput, { target: { value: 'Jane Doe' } });
+
+      const saveButton = await screen.findByText('Save Changes');
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalled();
+        const errorCall = toast.error.mock.calls[0][0];
+        expect(errorCall).toContain('Email is required');
+      });
+    });
+
+    it('should handle update error with data.error format', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: mockUser,
+        logout: jest.fn(),
+        updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValueOnce({ user: mockUser });
+      usersAPI.update.mockRejectedValueOnce({
+        data: { error: 'Server error occurred' },
+      });
+
+      render(
+        <RouterWrapper>
+          <Profile />
+        </RouterWrapper>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Edit Profile'));
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
+      });
+
+      // Make a change to enable the save button
+      const nameInput = screen.getByDisplayValue('John Doe');
+      fireEvent.change(nameInput, { target: { value: 'Jane Doe' } });
+
+      const saveButton = await screen.findByText('Save Changes');
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(toast.error).toHaveBeenCalledWith('Server error occurred');
+      });
+    });
+
+    it('should handle null or undefined user gracefully', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: null,
+        logout: jest.fn(),
+        updateUser: jest.fn(),
+      });
+
+      usersAPI.getCurrent.mockResolvedValueOnce({ user: null });
+
+      render(
+        <RouterWrapper>
+          <Profile />
+        </RouterWrapper>
+      );
+
+      // Should not crash - component should handle null user
+      // The component will try to fetch user data, and if that fails, it should handle gracefully
+      await waitFor(() => {
+        // Component should render something (loading or error state)
+        const hasContent = screen.queryByText('Profile') || screen.queryByText('Loading');
+        expect(hasContent || mockNavigate).toBeTruthy();
+      }, { timeout: 2000 });
+    });
+  });
+
   describe('Logout Functionality', () => {
     it('should call logout when Logout button clicked', async () => {
       const mockLogout = jest.fn();

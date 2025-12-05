@@ -4,6 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react'; 
 import { TestRouter } from '../test-utils';
 import LoginRegister from './LoginRegister';
+import { toast } from 'react-toastify';
 
 // Mock useAuth hook
 jest.mock('../contexts/AuthContext', () => ({
@@ -29,13 +30,21 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
-// Mock API
-jest.mock('../services/api', () => ({
-  authAPI: {
-    register: jest.fn(),
-    login: jest.fn(),
-  },
-}));
+// Mock API - create mocks first
+const mockLogin = jest.fn();
+const mockRegister = jest.fn();
+
+jest.mock('../services/api', () => {
+  // Use the mocks defined above
+  const mockLogin = jest.fn();
+  const mockRegister = jest.fn();
+  return {
+    authAPI: {
+      register: mockRegister,
+      login: mockLogin,
+    },
+  };
+});
 
 // Helper to get form element since it doesn't have role="form"
 const getForm = () => {
@@ -53,8 +62,12 @@ const getForm = () => {
 export const onLoginRegisterClick = jest.fn();
 
 describe('LoginRegister', () => {
+    let authAPI;
+
     beforeEach(() => {
         jest.clearAllMocks();
+        // Get the mocked authAPI
+        authAPI = require('../services/api').authAPI;
     });
 
     it('renders without crashing', () => {
@@ -1133,6 +1146,132 @@ describe('LoginRegister', () => {
         // Note: Loading message tests are complex due to async form submission
         // These branches are covered by integration tests
         // Skipping for now to focus on other branch coverage improvements
+    });
+
+    describe('Branch coverage - API error handling', () => {
+        it('should handle API error with message in login mode', async () => {
+            const { authAPI } = require('../services/api');
+            authAPI.login.mockRejectedValueOnce(new Error('Invalid credentials'));
+
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            
+            // Switch to login mode
+            const loginTab = screen.getByText('Login');
+            fireEvent.click(loginTab);
+            
+            // Fill form with valid data
+            const emailInput = screen.getByLabelText(/email/i);
+            const passwordInput = screen.getByLabelText(/password/i);
+            fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+            fireEvent.change(passwordInput, { target: { value: 'Test123!@#' } });
+            
+            // Wait for form to be valid
+            await waitFor(() => {
+                const submitButtons = screen.getAllByRole('button');
+                const loginButton = submitButtons.find(btn => btn.type === 'submit' && btn.textContent === 'Login');
+                expect(loginButton).not.toBeDisabled();
+            });
+            
+            // Submit form
+            const form = getForm();
+            fireEvent.submit(form);
+            
+            await waitFor(() => {
+                expect(toast.error).toHaveBeenCalledWith('Invalid credentials');
+            });
+        });
+
+        it('should handle API error without message in login mode', async () => {
+            const { authAPI } = require('../services/api');
+            authAPI.login.mockRejectedValueOnce({});
+
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            
+            // Switch to login mode
+            const loginTab = screen.getByText('Login');
+            fireEvent.click(loginTab);
+            
+            // Fill form with valid data
+            const emailInput = screen.getByLabelText(/email/i);
+            const passwordInput = screen.getByLabelText(/password/i);
+            fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+            fireEvent.change(passwordInput, { target: { value: 'Test123!@#' } });
+            
+            // Wait for form to be valid
+            await waitFor(() => {
+                const submitButtons = screen.getAllByRole('button');
+                const loginButton = submitButtons.find(btn => btn.type === 'submit' && btn.textContent === 'Login');
+                expect(loginButton).not.toBeDisabled();
+            });
+            
+            // Submit form
+            const form = getForm();
+            fireEvent.submit(form);
+            
+            await waitFor(() => {
+                expect(toast.error).toHaveBeenCalledWith('An error occurred. Please try again.');
+            });
+        });
+
+        it('should handle API error with message in register mode', async () => {
+            const { authAPI } = require('../services/api');
+            authAPI.register.mockRejectedValueOnce(new Error('Email already exists'));
+
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            
+            // Fill form in register mode with valid data
+            const nameInput = screen.getByLabelText(/^name$/i);
+            const emailInput = screen.getByLabelText(/email/i);
+            const passwordInput = screen.getByLabelText(/password/i);
+            fireEvent.change(nameInput, { target: { value: 'John Doe' } });
+            fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+            fireEvent.change(passwordInput, { target: { value: 'Test123!@#' } });
+            
+            // Wait for form to be valid
+            await waitFor(() => {
+                const submitButtons = screen.getAllByRole('button');
+                const registerButton = submitButtons.find(btn => btn.type === 'submit' && btn.textContent === 'Register');
+                expect(registerButton).not.toBeDisabled();
+            });
+            
+            // Submit form
+            const form = getForm();
+            fireEvent.submit(form);
+            
+            await waitFor(() => {
+                expect(toast.error).toHaveBeenCalledWith('Email already exists');
+            });
+        });
+
+        it('should handle API error without message in register mode', async () => {
+            const { authAPI } = require('../services/api');
+            authAPI.register.mockRejectedValueOnce({});
+
+            render(<TestRouter><LoginRegister /></TestRouter>);
+            
+            // Fill form in register mode with valid data
+            const nameInput = screen.getByLabelText(/^name$/i);
+            const emailInput = screen.getByLabelText(/email/i);
+            const passwordInput = screen.getByLabelText(/password/i);
+            fireEvent.change(nameInput, { target: { value: 'John Doe' } });
+            fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+            fireEvent.change(passwordInput, { target: { value: 'Test123!@#' } });
+            
+            // Wait for form to be valid
+            await waitFor(() => {
+                const submitButtons = screen.getAllByRole('button');
+                const registerButton = submitButtons.find(btn => btn.type === 'submit' && btn.textContent === 'Register');
+                expect(registerButton).not.toBeDisabled();
+            });
+            
+            // Submit form
+            const form = getForm();
+            fireEvent.submit(form);
+            
+            await waitFor(() => {
+                expect(toast.error).toHaveBeenCalledWith('An error occurred. Please try again.');
+            });
+        });
     });
 });
 

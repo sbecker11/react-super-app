@@ -751,5 +751,39 @@ describe('API Service', () => {
       await expect(authAPI.getCurrentUser()).rejects.toThrow('Unauthorized');
     });
   });
+
+  describe('Edge Case Error Handling', () => {
+    it('should handle error array with mixed formats', async () => {
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        json: async () => ({
+          errors: [
+            { msg: 'Error with msg' },
+            { message: 'Error with message' },
+            'String error',
+            { field: 'Error without msg or message' }
+          ]
+        }),
+      });
+
+      await expect(authAPI.login('test@example.com', 'password'))
+        .rejects.toThrow('Error with msg, Error with message, String error, [object Object]');
+    });
+
+    it('should handle 204 No Content response correctly', async () => {
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+        json: async () => {
+          throw new Error('Should not call json() on 204');
+        },
+      });
+
+      // Test with usersAPI.delete which should handle 204
+      const result = await usersAPI.delete('123');
+      expect(result).toEqual({ success: true });
+    });
+  });
 });
 
