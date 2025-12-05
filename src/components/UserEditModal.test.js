@@ -236,7 +236,7 @@ describe('UserEditModal', () => {
     // Wait for modal to render
     await waitFor(() => {
       expect(screen.getByText('Edit User')).toBeInTheDocument();
-    });
+  });
 
     const roleSelect = screen.getByLabelText('User Role');
     fireEvent.change(roleSelect, { target: { value: 'admin' } });
@@ -559,5 +559,5 @@ describe('UserEditModal', () => {
 
     expect(screen.getByText(/⚠️ Security Notice:/)).toBeInTheDocument();
     expect(screen.getByText(/These actions require elevated privileges/)).toBeInTheDocument();
-});
+  });
 });

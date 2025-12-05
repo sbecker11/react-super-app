@@ -8,11 +8,7 @@ import { toast } from 'react-toastify';
 
 // Mock useAuth hook
 jest.mock('../contexts/AuthContext', () => ({
-  useAuth: () => ({
-    register: jest.fn(),
-    login: jest.fn(),
-    isAuthenticated: false,
-  }),
+  useAuth: jest.fn(),
 }));
 
 // Mock useNavigate hook
@@ -30,16 +26,20 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
-// Mock API - create mocks first
-const mockLogin = jest.fn();
-const mockRegister = jest.fn();
-
+// Mock API
 jest.mock('../services/api', () => {
-  // Use the mocks defined above
+  const actual = jest.requireActual('../services/api');
   const mockLogin = jest.fn();
   const mockRegister = jest.fn();
+  
+  // Store references globally so we can access them in tests
+  global.__mockLoginFn = mockLogin;
+  global.__mockRegisterFn = mockRegister;
+  
   return {
+    ...actual,
     authAPI: {
+      ...actual.authAPI,
       register: mockRegister,
       login: mockLogin,
     },
@@ -62,12 +62,16 @@ const getForm = () => {
 export const onLoginRegisterClick = jest.fn();
 
 describe('LoginRegister', () => {
-    let authAPI;
+    const { useAuth } = require('../contexts/AuthContext');
 
     beforeEach(() => {
         jest.clearAllMocks();
-        // Get the mocked authAPI
-        authAPI = require('../services/api').authAPI;
+        // Set default mock return value
+        useAuth.mockReturnValue({
+            register: jest.fn(),
+            login: jest.fn(),
+            isAuthenticated: false,
+        });
     });
 
     it('renders without crashing', () => {
@@ -1149,9 +1153,13 @@ describe('LoginRegister', () => {
     });
 
     describe('Branch coverage - API error handling', () => {
+        beforeEach(() => {
+            jest.clearAllMocks();
+        });
+
         it('should handle API error with message in login mode', async () => {
-            const { authAPI } = require('../services/api');
-            authAPI.login.mockRejectedValueOnce(new Error('Invalid credentials'));
+            const error = new Error('Invalid credentials');
+            global.__mockLoginFn.mockRejectedValueOnce(error);
 
             render(<TestRouter><LoginRegister /></TestRouter>);
             
@@ -1182,8 +1190,9 @@ describe('LoginRegister', () => {
         });
 
         it('should handle API error without message in login mode', async () => {
-            const { authAPI } = require('../services/api');
-            authAPI.login.mockRejectedValueOnce({});
+            // Error object without message property
+            const errorWithoutMessage = { error: 'Some error' };
+            global.__mockLoginFn.mockRejectedValueOnce(errorWithoutMessage);
 
             render(<TestRouter><LoginRegister /></TestRouter>);
             
@@ -1214,8 +1223,8 @@ describe('LoginRegister', () => {
         });
 
         it('should handle API error with message in register mode', async () => {
-            const { authAPI } = require('../services/api');
-            authAPI.register.mockRejectedValueOnce(new Error('Email already exists'));
+            const error = new Error('Email already exists');
+            global.__mockRegisterFn.mockRejectedValueOnce(error);
 
             render(<TestRouter><LoginRegister /></TestRouter>);
             
@@ -1244,8 +1253,9 @@ describe('LoginRegister', () => {
         });
 
         it('should handle API error without message in register mode', async () => {
-            const { authAPI } = require('../services/api');
-            authAPI.register.mockRejectedValueOnce({});
+            // Error object without message property
+            const errorWithoutMessage = {};
+            global.__mockRegisterFn.mockRejectedValueOnce(errorWithoutMessage);
 
             render(<TestRouter><LoginRegister /></TestRouter>);
             

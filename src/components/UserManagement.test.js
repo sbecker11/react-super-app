@@ -392,8 +392,23 @@ describe('UserManagement', () => {
     
     // Wait for React to process state updates
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 200));
     });
+    
+    // Clear mock again for second click
+    adminAPI.listUsers.mockClear();
+    firstCallResolved = false;
+    
+    // Second click - should toggle to name DESC
+    fireEvent.click(nameHeader);
+    
+    // Wait for the second API call with name DESC
+    await waitFor(() => {
+      expect(adminAPI.listUsers).toHaveBeenCalled();
+      const calls = adminAPI.listUsers.mock.calls;
+      const nameDescCall = calls.find(call => call[0].sort_by === 'name' && call[0].sort_order === 'DESC');
+      expect(nameDescCall).toBeDefined();
+    }, { timeout: 2000 });
     
     // Clear mock to track second call only
     const initialCallCount = adminAPI.listUsers.mock.calls.length;

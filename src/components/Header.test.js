@@ -23,10 +23,24 @@ jest.mock('../services/api', () => {
   };
 });
 
+// Mock AuthContext for branch coverage tests
+jest.mock('../contexts/AuthContext', () => ({
+  ...jest.requireActual('../contexts/AuthContext'),
+  useAuth: jest.fn(),
+}));
+
 describe("Header", () => {
   beforeEach(() => {
     localStorage.removeItem('token');
     jest.clearAllMocks();
+    // Set default mock return value for useAuth
+    AuthContext.useAuth.mockReturnValue({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      isAdmin: jest.fn(() => false),
+      hasElevatedSession: jest.fn(() => false),
+    });
   });
 
   afterEach(() => {
@@ -158,33 +172,20 @@ describe("Header", () => {
   });
 
   // Branch coverage tests for authenticated states
-  // Note: These tests are complex due to AuthContext mocking
-  // Skipping for now as they require more complex setup
-  describe.skip('Branch coverage - authenticated states', () => {
-    let originalUseAuth;
-
-    beforeAll(() => {
-      // Save original useAuth
-      originalUseAuth = AuthContext.useAuth;
-    });
-
+  describe('Branch coverage - authenticated states', () => {
     beforeEach(() => {
-      // Mock useAuth for these tests
-      AuthContext.useAuth = jest.fn();
+      // Clear any previous mocks
+      jest.clearAllMocks();
     });
 
-    afterAll(() => {
-      // Restore original useAuth
-      AuthContext.useAuth = originalUseAuth;
-    });
 
     it('shows authenticated user links when user is authenticated', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: { id: 1, name: 'Test User', email: 'test@example.com' },
         token: 'test-token',
         isAuthenticated: true,
-        isAdmin: () => false,
-        hasElevatedSession: () => false,
+        isAdmin: jest.fn(() => false),
+        hasElevatedSession: jest.fn(() => false),
       });
 
       render(
@@ -209,8 +210,8 @@ describe("Header", () => {
         user: { id: 1, name: 'Admin User', email: 'admin@example.com', role: 'admin' },
         token: 'test-token',
         isAuthenticated: true,
-        isAdmin: () => true,
-        hasElevatedSession: () => false,
+        isAdmin: jest.fn(() => true),
+        hasElevatedSession: jest.fn(() => false),
       });
 
       render(
@@ -233,8 +234,8 @@ describe("Header", () => {
         user: { id: 1, name: 'Regular User', email: 'user@example.com' },
         token: 'test-token',
         isAuthenticated: true,
-        isAdmin: () => false,
-        hasElevatedSession: () => false,
+        isAdmin: jest.fn(() => false),
+        hasElevatedSession: jest.fn(() => false),
       });
 
       render(
@@ -253,13 +254,12 @@ describe("Header", () => {
     });
 
     it('toggles theme when theme button is clicked', async () => {
-      // Mock useAuth for this test
       AuthContext.useAuth.mockReturnValue({
         user: null,
         token: null,
         isAuthenticated: false,
-        isAdmin: () => false,
-        hasElevatedSession: () => false,
+        isAdmin: jest.fn(() => false),
+        hasElevatedSession: jest.fn(() => false),
       });
 
       render(
@@ -276,7 +276,7 @@ describe("Header", () => {
         const themeButton = screen.getByLabelText('Toggle theme');
         expect(themeButton).toBeInTheDocument();
         fireEvent.click(themeButton);
-        // Theme should toggle (tested via ThemeContext)
+        // Theme toggle is tested via ThemeContext
       });
     });
   });

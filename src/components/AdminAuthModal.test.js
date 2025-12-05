@@ -313,9 +313,7 @@ describe('AdminAuthModal', () => {
     ).toBeInTheDocument();
   });
 
-  it.skip('should submit form on Enter key press', async () => {
-    // This test requires form submission on Enter key which may not work in jsdom
-    // The component uses form onSubmit which should handle Enter, but jsdom may not trigger it
+  it('should submit form on Enter key press', async () => {
     mockRequestElevatedSession.mockResolvedValue(true);
     const onSuccess = jest.fn();
     const onClose = jest.fn();
@@ -330,8 +328,14 @@ describe('AdminAuthModal', () => {
     fireEvent.change(passwordInput, { target: { value: 'testpassword' } });
     
     // Submit form by pressing Enter on the input
-    // The form's onSubmit handler should be triggered
-    fireEvent.keyPress(passwordInput, { key: 'Enter', code: 'Enter', keyCode: 13, charCode: 13 });
+    // Use keyDown instead of keyPress for better jsdom support
+    fireEvent.keyDown(passwordInput, { key: 'Enter', code: 'Enter', keyCode: 13 });
+    
+    // Also trigger submit on the form directly as a fallback
+    const form = passwordInput.closest('form');
+    if (form) {
+      fireEvent.submit(form);
+    }
 
     await waitFor(() => {
       expect(mockRequestElevatedSession).toHaveBeenCalledWith('testpassword');
