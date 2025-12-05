@@ -102,8 +102,8 @@ const LoginRegister = () => {
         if (isLoginMode) {
           setProfileData({
             name: '',
-            email: 'admin@react-super-app.local',
-            password: 'Admin123!',
+            email: process.env.REACT_APP_ADMIN_EMAIL || 'admin@react-super-app.local',
+            password: process.env.REACT_APP_ADMIN_PASSWORD || 'Admin123!',
           });
           toast.info('Admin credentials auto-filled');
         }

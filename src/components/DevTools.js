@@ -33,8 +33,6 @@ function DevTools() {
       <h2>Useful Keyboard Shortcuts</h2>
       <ul>
         <li><kbd>Ctrl+Shift+A</kbd> (or <kbd>Cmd+Shift+A</kbd>) - Auto-fill admin credentials on login page</li>
-        <li><kbd>F12</kbd> - Open browser DevTools</li>
-        <li><kbd>Ctrl+Shift+I</kbd> (or <kbd>Cmd+Option+I</kbd>) - Open browser DevTools</li>
       </ul>
     </PageContainer>
   );

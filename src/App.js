@@ -19,6 +19,7 @@ import JDAnalyzer from './components/JDAnalyzer';
 import Profile from './components/Profile';
 import AdminDashboard from './components/AdminDashboard';
 import UserManagement from './components/UserManagement';
+import TestingCoverage from './components/TestingCoverage';
 import NotFound from './components/NotFound';
 import ErrorBoundary from './components/ErrorBoundary';
 import DevTools from './components/DevTools';
@@ -65,13 +66,21 @@ function App() {
           </ProtectedRoute>
         } 
       />
-      <Route 
-        path="/admin/users" 
+      <Route
+        path="/admin/users"
         element={
           <ProtectedRoute>
             <UserManagement />
           </ProtectedRoute>
-        } 
+        }
+      />
+      <Route
+        path="/admin/testing"
+        element={
+          <ProtectedRoute>
+            <TestingCoverage />
+          </ProtectedRoute>
+        }
       />
       <Route path="*" element={<NotFound />} />
     </Routes>

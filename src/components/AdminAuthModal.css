@@ -24,7 +24,7 @@
 }
 
 .admin-auth-modal {
-  background: white;
+  background: var(--body-bg);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   max-width: 500px;
@@ -50,20 +50,21 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--sidebar-bg);
 }
 
 .admin-auth-modal-header h2 {
   margin: 0;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--text-color);
 }
 
 .close-button {
   background: none;
   border: none;
   font-size: 2rem;
-  color: #666;
+  color: var(--text-color);
+  opacity: 0.6;
   cursor: pointer;
   padding: 0;
   width: 32px;
@@ -72,12 +73,12 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--button-border-radius);
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
 .close-button:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--sidebar-bg);
+  opacity: 1;
 }
 
 .admin-auth-modal-body {
@@ -86,7 +87,8 @@
 
 .admin-auth-message {
   margin-bottom: 1.5rem;
-  color: #666;
+  color: var(--text-color);
+  opacity: 0.8;
   line-height: 1.6;
 }
 
@@ -98,15 +100,17 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
 .form-group input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--sidebar-bg);
   border-radius: 4px;
   font-size: 1rem;
+  background-color: var(--body-bg);
+  color: var(--text-color);
   transition: border-color 0.2s;
 }
 
@@ -117,8 +121,9 @@
 }
 
 .form-group input:disabled {
-  background-color: #f5f5f5;
+  background-color: var(--sidebar-bg);
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .error-message {
@@ -173,15 +178,17 @@
 .admin-auth-note {
   margin-top: 1.5rem;
   padding: 1rem;
-  background-color: #f8f9fa;
+  background-color: var(--sidebar-bg);
   border-left: 4px solid #007bff;
   border-radius: 4px;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-color);
+  opacity: 0.8;
 }
 
 .admin-auth-note strong {
-  color: #333;
+  color: var(--text-color);
+  opacity: 1;
 }
 
 /* Responsive */
