@@ -291,6 +291,19 @@ const TestingCoverage = () => {
           </ul>
           <p><strong>Target:</strong> Aim for at least 80% coverage across all metrics</p>
         </div>
+
+        <div className="info-card">
+          <h3>🧪 Understanding Tests</h3>
+          <ul>
+            <li><strong>Unit Tests:</strong> Test individual components or functions in isolation</li>
+            <li><strong>Integration Tests:</strong> Test how multiple components work together end-to-end</li>
+            <li><strong>API Tests:</strong> Validate REST API endpoints, request/response handling</li>
+            <li><strong>Middleware Tests:</strong> Test authentication, authorization, and request processing</li>
+            <li><strong>Client Tests:</strong> Frontend React components, hooks, and UI interactions</li>
+            <li><strong>Server Tests:</strong> Backend routes, database operations, and business logic</li>
+          </ul>
+          <p><strong>Best Practice:</strong> Combine different test types for comprehensive coverage</p>
+        </div>
       </div>
     </PageContainer>
   );
