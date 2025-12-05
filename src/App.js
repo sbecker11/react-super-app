@@ -13,6 +13,7 @@ import Footer from "./components/Footer";
 import "./App.css"; // Import the CSS file
 import About from "./components/About";
 import Home from "./components/Home";
+import TestPage from "./components/TestPage";
 import LoginRegister from "./components/LoginRegister";
 import JDAnalyzer from './components/JDAnalyzer';
 import Profile from './components/Profile';
@@ -20,6 +21,7 @@ import AdminDashboard from './components/AdminDashboard';
 import UserManagement from './components/UserManagement';
 import NotFound from './components/NotFound';
 import ErrorBoundary from './components/ErrorBoundary';
+import DevTools from './components/DevTools';
 
 function App() {
   function handleHomeClick() {
@@ -37,6 +39,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/dev-tools" element={<DevTools />} />
       <Route path="/login-register" element={<LoginRegister />} />
       <Route 
         path="/analyzer" 
@@ -75,49 +78,40 @@ function App() {
   );
 
   return (
-    <ThemeProvider>
-    <ErrorBoundary>
+    <Router>
       <AuthProvider>
-        <Router
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <div>
-            <Header
-              onHomeClick={handleHomeClick}
-              onAboutClick={handleAboutClick}
-              onLoginRegisterClick={handleLoginRegisterClick}
-            />
-            <div className="container">
-              <div className="left-column">
-                <Left
-                  onHomeClick={handleHomeClick}
-                  onAboutClick={handleAboutClick}
-                  onLoginRegisterClick={handleLoginRegisterClick}
-                />
+        <ThemeProvider>
+          <ErrorBoundary>
+            <div className="App">
+              <Header
+                onHomeClick={handleHomeClick}
+                onAboutClick={handleAboutClick}
+                onLoginRegisterClick={handleLoginRegisterClick}
+              />
+              <div className="container">
+                <Left />
+                <div className="body-content">
+                  {body_content}
+                </div>
               </div>
-              <div className="body-content">{body_content}</div>
+              <Footer />
+              <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+              />
             </div>
-            <Footer />
-          </div>
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
-        </Router>
+          </ErrorBoundary>
+        </ThemeProvider>
       </AuthProvider>
-    </ErrorBoundary>
-    </ThemeProvider>
+    </Router>
   );
 }
 

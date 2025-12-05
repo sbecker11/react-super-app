@@ -1,6 +1,12 @@
 /* App.css */
 /* CSS Variables are now defined in index.css */
 
+/* Prevent any images from causing overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Theme Toggle Button */
 .theme-toggle {
   background: none;
@@ -38,13 +44,12 @@
 header {
     background-color: var(--header-bg) !important;
     color: var(--link-color) !important;
-    height: 100px; /* Reduced header height */
-    position: fixed;
+    height: 100px;
+    position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
+    width: 100%;
     display: flex;
-    align-items: center; /* Vertically center header content */
+    align-items: center;
   }
   
   /* Styling for the Header Links */
@@ -54,27 +59,29 @@ header {
     margin: 0;
     display: flex; /* Display links horizontally */
     align-items: center; /* Vertically center links */
+    flex-wrap: wrap; /* Allow items to wrap if needed */
+    gap: 0; /* Remove gap to avoid layout issues */
   }
 
   .header-left {
     width: 75px;
     height: 75px;
     margin-left: 12.5px;
+    flex-shrink: 0;
   }
-  
+
   .header-logo {
     width: 75px;
     height: 75px;
-    margin-left: 12.5px;
-    display: flex;
-    align-items: center;
   }
 
   .header-right {
-    flex-grow: 1; /* Takes up remaining screen width */
+    flex: 1;
     display: flex;
-    justify-content: flex-end; /* Align content to the right */
+    justify-content: flex-end;
     align-items: center;
+    min-width: 0;
+    overflow: hidden;
   }
   
 
@@ -104,25 +111,34 @@ header {
   footer {
     background-color: var(--footer-bg) !important;
     color: var(--link-color) !important;
-    height: 100px; /* Reduced footer height */
-    position: fixed;
+    height: 50px;
+    position: absolute;
     bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Container for left-column and body-content */
+  .container {
+    position: absolute;
+    top: 100px;
+    bottom: 50px;
     left: 0;
     right: 0;
-    display: flex;
-    justify-content: center; /* Horizontally center footer content */
-    align-items: center; /* Vertically center footer content */
+    width: 100%;
   }
-  
+
   /* Styling for the left-column */
   .left-column {
     background-color: var(--sidebar-bg) !important;
     color: var(--text-color) !important;
-    width: 200px;
-    position: fixed;
-    top: 100px; /* Updated top margin based on reduced header height */
-    bottom: 100px; /* Updated bottom margin based on reduced footer height */
+    width: 175px;
+    position: absolute;
     left: 0;
+    top: 0;
+    height: 100%;
     overflow-y: auto;
     border-right: 1px solid var(--sidebar-bg) !important;
   }
@@ -181,16 +197,16 @@ header {
   
   /* Styling for the body-content */
   .body-content {
-    position: fixed;
-    top: 100px; /* Updated top margin based on reduced header height */
-    left: 200px;
+    position: absolute;
+    left: 175px;
     right: 0;
-    bottom: 100px; /* Updated bottom margin based on reduced footer height */
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
     background-color: var(--body-bg) !important;
     color: var(--text-color) !important;
-    overflow: auto; /* Enable scrolling when content exceeds viewport */
-    padding-left: 25px; /* Add padding to avoid overlapping with left-column */
-    padding-right: 25px; /* Add padding to avoid overlapping with left-column */
+    box-sizing: border-box;
+    padding: 20px;
   }
 
   /* Styling for body-content scrollbar */
@@ -217,10 +233,3 @@ header {
   .body-content::-webkit-scrollbar-thumb:hover {
     opacity: 0.8;
   }
-
-  /* Styling for the logo image in the Header */
-  .header-logo {
-    width: 75px;
-    height: 75px;
-  }
-  

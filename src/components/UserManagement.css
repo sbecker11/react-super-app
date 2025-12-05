@@ -43,10 +43,10 @@
 .filter-group input,
 .filter-group select {
   padding: 0.75rem;
-  border: 1px solid rgb(128, 128, 128);
+  border: 2px solid var(--sidebar-bg);
   border-radius: 4px;
   font-size: 1rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   background-color: var(--body-bg);
   color: var(--text-color);
 }
@@ -55,7 +55,7 @@
 .filter-group select:focus {
   outline: none;
   border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
 
 /* Table */
@@ -99,18 +99,30 @@
 }
 
 .users-table tbody tr {
+  height: 60px;
   border-bottom: 1px solid var(--sidebar-bg);
   transition: background-color 0.2s;
+  margin: 0;
+}
+
+/* Alternating row colors */
+.users-table tbody tr:nth-child(even) {
+  background-color: var(--sidebar-bg);
+}
+
+.users-table tbody tr:nth-child(odd) {
+  background-color: var(--body-bg);
 }
 
 .users-table tbody tr:hover {
-  background-color: var(--body-bg);
-  opacity: 0.8;
+  filter: brightness(0.95);
 }
 
 .users-table td {
-  padding: 1rem;
+  padding: 0.5rem 1rem;
+  margin: 0;
   color: var(--text-color);
+  vertical-align: middle;
 }
 
 /* Badges */

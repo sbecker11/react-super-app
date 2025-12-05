@@ -7,27 +7,22 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const toggleDevPanel = () => {
-    if (window.toggleDevPanel) {
-      window.toggleDevPanel();
-    }
-  };
-
   // Only show dev tools in development
-  const isDevelopment = window.location.hostname === 'localhost' || 
-                        window.location.hostname === '127.0.0.1' || 
+  const isDevelopment = window.location.hostname === 'localhost' ||
+                        window.location.hostname === '127.0.0.1' ||
                         window.location.hostname === '';
 
   // Determine active route
   const isHomeActive = location.pathname === '/' || location.pathname === '/home';
   const isAboutActive = location.pathname === '/about';
+  const isDevToolsActive = location.pathname === '/dev-tools';
   const isLoginRegisterActive = location.pathname === '/login-register';
   const isAnalyzerActive = location.pathname === '/analyzer';
   const isProfileActive = location.pathname === '/profile';
   const isAdminActive = location.pathname.startsWith('/admin');
 
   return (
-    <div className="left">
+    <div className="left-column">
       <ul>
         {/* Use Link components for navigation */}
         <li>
@@ -61,9 +56,12 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
         )}
         {isDevelopment && (
           <li>
-            <a href="#" onClick={(e) => { e.preventDefault(); toggleDevPanel(); }}>
+            <Link
+              to="/dev-tools"
+              className={isDevToolsActive ? 'active' : ''}
+            >
               Dev Tools
-            </a>
+            </Link>
           </li>
         )}
         {isAuthenticated && (
@@ -77,11 +75,11 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
               </Link>
             </li>
             <li>
-              <Link 
+              <Link
                 to="/profile"
                 className={isProfileActive ? 'active' : ''}
               >
-                Profile {user?.name && <span style={{ fontStyle: 'italic' }}>{user.name}</span>}
+                Profile
               </Link>
             </li>
             {isAdmin() && (

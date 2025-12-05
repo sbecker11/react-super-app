@@ -93,6 +93,27 @@ const LoginRegister = () => {
     }
   }, [isAuthenticated]);
 
+  // Keyboard shortcut to auto-fill admin credentials (Ctrl/Cmd+Shift+A)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Check for Ctrl+Shift+A (Windows/Linux) or Cmd+Shift+A (Mac)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        if (isLoginMode) {
+          setProfileData({
+            name: '',
+            email: 'admin@react-super-app.local',
+            password: 'Admin123!',
+          });
+          toast.info('Admin credentials auto-filled');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLoginMode]);
+
   // Get the appropriate validation schema based on mode
   const getValidationSchema = () => {
     return isLoginMode ? buildLoginSchema() : buildRegisterSchema();
@@ -490,8 +511,8 @@ const LoginRegister = () => {
         <span style={{ fontSize: '14px', color: '#666' }}>
           {isLoginMode ? "Don't have an account? " : "Already have an account? "}
         </span>
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={toggleMode}
           style={{
             background: 'none',
@@ -506,6 +527,34 @@ const LoginRegister = () => {
           {isLoginMode ? "Register here" : "Login here"}
         </button>
       </div>
+
+      {/* Dev shortcut hint - only show in login mode */}
+      {isLoginMode && (
+        <div style={{
+          marginTop: '10px',
+          textAlign: 'center',
+          padding: '8px',
+          backgroundColor: '#fff3cd',
+          border: '1px solid #ffc107',
+          borderRadius: '4px',
+          fontSize: '12px',
+          color: '#856404'
+        }}>
+          <strong>Dev tip:</strong> Press <kbd style={{
+            padding: '2px 6px',
+            backgroundColor: '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '3px',
+            fontFamily: 'monospace'
+          }}>Ctrl+Shift+A</kbd> (or <kbd style={{
+            padding: '2px 6px',
+            backgroundColor: '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '3px',
+            fontFamily: 'monospace'
+          }}>Cmd+Shift+A</kbd> on Mac) to auto-fill admin credentials
+        </div>
+      )}
     </div>
   );
 };

@@ -215,7 +215,7 @@ const UserManagement = () => {
         </div>
 
         <div className="filter-group">
-          <label htmlFor="limit">Per Page</label>
+          <label htmlFor="limit">Items Per Page</label>
           <select
             id="limit"
             value={pagination.limit}
