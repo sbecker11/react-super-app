@@ -504,7 +504,7 @@ describe('Admin Routes Integration Tests', () => {
         .post('/api/admin/verify-password')
         .set('Authorization', `Bearer ${fakeToken}`)
         .send({ password: 'password' })
-        .expect(404);
+        .expect(401); // Auth middleware returns 401 when user doesn't exist
 
       expect(response.body).toHaveProperty('error', 'User not found');
     });

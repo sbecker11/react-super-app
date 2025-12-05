@@ -122,8 +122,14 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
     const sortColumn = validSortColumns.includes(sort_by) ? sort_by : 'created_at';
     const sortDirection = sort_order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
+    // Validate and parse pagination parameters
+    const parsedPage = parseInt(page);
+    const parsedLimit = parseInt(limit);
+    const validPage = !isNaN(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+    const validLimit = !isNaN(parsedLimit) && parsedLimit > 0 && parsedLimit <= 100 ? parsedLimit : 50;
+
     // Calculate pagination
-    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const offset = (validPage - 1) * validLimit;
 
     // Get total count
     const countQuery = `SELECT COUNT(*) FROM users ${whereClause}`;
@@ -135,14 +141,14 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
     console.log('📊 [Admin Users] Total Count Result:', totalCount);
 
     // Get users
-    const usersQuery = `SELECT 
+    const usersQuery = `SELECT
       id, name, email, role, is_active, last_login_at, created_at, updated_at,
       created_by, updated_by
      FROM users
      ${whereClause}
      ORDER BY ${sortColumn} ${sortDirection}
      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-    const usersParams = [...params, parseInt(limit), offset];
+    const usersParams = [...params, validLimit, offset];
     console.log('📊 [Admin Users] Users Query:', usersQuery);
     console.log('📊 [Admin Users] Users Params:', usersParams);
     const usersResult = await pool.query(usersQuery, usersParams);
@@ -200,10 +206,10 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
     const response = {
       users,
       pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
+        page: validPage,
+        limit: validLimit,
         totalCount,
-        totalPages: Math.ceil(totalCount / parseInt(limit))
+        totalPages: Math.ceil(totalCount / validLimit)
       }
     };
 

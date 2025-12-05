@@ -385,6 +385,299 @@ describe('AuthContext', () => {
     });
   });
 
+  describe('isAdmin and hasRole functions', () => {
+    it('should return true for admin user', async () => {
+      const mockToken = 'token';
+      const mockUser = { id: '1', name: 'Admin', email: 'admin@test.com', role: 'admin' };
+
+      localStorageMock.getItem.mockReturnValue(mockToken);
+      authAPI.getCurrentUser.mockResolvedValue({ user: mockUser });
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.isAdmin()).toBe(true);
+      expect(result.current.hasRole('admin')).toBe(true);
+    });
+
+    it('should return false for non-admin user', async () => {
+      const mockToken = 'token';
+      const mockUser = { id: '1', name: 'User', email: 'user@test.com', role: 'user' };
+
+      localStorageMock.getItem.mockReturnValue(mockToken);
+      authAPI.getCurrentUser.mockResolvedValue({ user: mockUser });
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.isAdmin()).toBe(false);
+      expect(result.current.hasRole('user')).toBe(true);
+      expect(result.current.hasRole('admin')).toBe(false);
+    });
+
+    it('should return false when user has no role', async () => {
+      const mockToken = 'token';
+      const mockUser = { id: '1', name: 'User', email: 'user@test.com' };
+
+      localStorageMock.getItem.mockReturnValue(mockToken);
+      authAPI.getCurrentUser.mockResolvedValue({ user: mockUser });
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.isAdmin()).toBe(false);
+      expect(result.current.hasRole('admin')).toBe(false);
+    });
+
+    it('should handle null user safely', async () => {
+      localStorageMock.getItem.mockReturnValue(null);
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.isAdmin()).toBe(false);
+      expect(result.current.hasRole('admin')).toBe(false);
+    });
+  });
+
+  describe('elevated session management', () => {
+    beforeEach(() => {
+      global.fetch = jest.fn();
+    });
+
+    afterEach(() => {
+      delete global.fetch;
+    });
+
+    it('should request elevated session successfully', async () => {
+      const mockToken = 'token';
+      const mockUser = { id: '1', name: 'Admin', email: 'admin@test.com', role: 'admin' };
+      const elevatedToken = 'elevated-token-123';
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+      localStorageMock.getItem.mockReturnValue(mockToken);
+      authAPI.getCurrentUser.mockResolvedValue({ user: mockUser });
+
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ elevatedToken, expiresAt }),
+      });
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      let success;
+      await act(async () => {
+        success = await result.current.requestElevatedSession('correct-password');
+      });
+
+      expect(success).toBe(true);
+      expect(result.current.elevatedToken).toBe(elevatedToken);
+      expect(result.current.elevatedExpiresAt).toBe(expiresAt);
+      expect(result.current.hasElevatedSession()).toBe(true);
+      expect(toast.success).toHaveBeenCalledWith('Elevated session granted (15 minutes)');
+    });
+
+    it('should handle failed elevated session request', async () => {
+      const mockToken = 'token';
+      const mockUser = { id: '1', name: 'Admin', email: 'admin@test.com', role: 'admin' };
+
+      localStorageMock.getItem.mockReturnValue(mockToken);
+      authAPI.getCurrentUser.mockResolvedValue({ user: mockUser });
+
+      global.fetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ error: 'Invalid password' }),
+      });
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      let success;
+      await act(async () => {
+        success = await result.current.requestElevatedSession('wrong-password');
+      });
+
+      expect(success).toBe(false);
+      expect(result.current.elevatedToken).toBeNull();
+      expect(result.current.hasElevatedSession()).toBe(false);
+      expect(toast.error).toHaveBeenCalledWith('Invalid password');
+    });
+
+    it('should handle network error in elevated session request', async () => {
+      const mockToken = 'token';
+      const mockUser = { id: '1', name: 'Admin', email: 'admin@test.com', role: 'admin' };
+
+      localStorageMock.getItem.mockReturnValue(mockToken);
+      authAPI.getCurrentUser.mockResolvedValue({ user: mockUser });
+
+      global.fetch.mockRejectedValueOnce(new Error('Network error'));
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      let success;
+      await act(async () => {
+        success = await result.current.requestElevatedSession('password');
+      });
+
+      expect(success).toBe(false);
+      expect(toast.error).toHaveBeenCalled();
+    });
+
+    it('should clear elevated session', async () => {
+      const mockToken = 'token';
+      const mockUser = { id: '1', name: 'Admin', email: 'admin@test.com', role: 'admin' };
+      const elevatedToken = 'elevated-token-123';
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+      localStorageMock.getItem.mockReturnValue(mockToken);
+      authAPI.getCurrentUser.mockResolvedValue({ user: mockUser });
+
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ elevatedToken, expiresAt }),
+      });
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      await act(async () => {
+        await result.current.requestElevatedSession('password');
+      });
+
+      expect(result.current.hasElevatedSession()).toBe(true);
+
+      act(() => {
+        result.current.clearElevatedSession();
+      });
+
+      expect(result.current.elevatedToken).toBeNull();
+      expect(result.current.elevatedExpiresAt).toBeNull();
+      expect(result.current.hasElevatedSession()).toBe(false);
+    });
+
+    it('should detect expired elevated session', async () => {
+      const mockToken = 'token';
+      const mockUser = { id: '1', name: 'Admin', email: 'admin@test.com', role: 'admin' };
+      const elevatedToken = 'elevated-token-123';
+      const expiresAt = new Date(Date.now() - 1000).toISOString(); // Expired 1 second ago
+
+      localStorageMock.getItem.mockReturnValue(mockToken);
+      authAPI.getCurrentUser.mockResolvedValue({ user: mockUser });
+
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ elevatedToken, expiresAt }),
+      });
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      await act(async () => {
+        await result.current.requestElevatedSession('password');
+      });
+
+      expect(result.current.hasElevatedSession()).toBe(false);
+    });
+
+    it('should return false for hasElevatedSession when no token', async () => {
+      localStorageMock.getItem.mockReturnValue(null);
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.hasElevatedSession()).toBe(false);
+    });
+
+    it('should clear elevated session on logout', async () => {
+      const mockToken = 'token';
+      const mockUser = { id: '1', name: 'Admin', email: 'admin@test.com', role: 'admin' };
+      const elevatedToken = 'elevated-token-123';
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+      localStorageMock.getItem.mockReturnValue(mockToken);
+      authAPI.getCurrentUser.mockResolvedValue({ user: mockUser });
+
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ elevatedToken, expiresAt }),
+      });
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      await act(async () => {
+        await result.current.requestElevatedSession('password');
+      });
+
+      expect(result.current.hasElevatedSession()).toBe(true);
+
+      act(() => {
+        result.current.logout();
+      });
+
+      expect(result.current.elevatedToken).toBeNull();
+      expect(result.current.elevatedExpiresAt).toBeNull();
+      expect(result.current.hasElevatedSession()).toBe(false);
+    });
+  });
+
   describe('edge cases', () => {
     it('should handle expired token gracefully', async () => {
       const mockToken = 'expired-token';
