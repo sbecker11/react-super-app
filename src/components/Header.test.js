@@ -5,6 +5,7 @@ import React from "react";
 import { TestRouterWithAllProviders } from "../test-utils";
 import Header from "./Header";
 import * as api from "../services/api";
+import * as AuthContext from "../contexts/AuthContext";
 
 import { onHomeClick } from "./Home.test";
 import { onAboutClick } from "./About.test";
@@ -156,7 +157,125 @@ describe("Header", () => {
     expect(onLoginRegisterClick).toHaveBeenCalled();
   });
 
-  // Branch coverage tests - These would require mocking AuthContext properly
-  // For now, we'll skip these as they require more complex setup
-  // The existing tests already cover the main branches
+  // Branch coverage tests for authenticated states
+  describe('Branch coverage - authenticated states', () => {
+    let originalUseAuth;
+
+    beforeAll(() => {
+      // Save original useAuth
+      originalUseAuth = AuthContext.useAuth;
+    });
+
+    beforeEach(() => {
+      // Mock useAuth for these tests
+      AuthContext.useAuth = jest.fn();
+    });
+
+    afterAll(() => {
+      // Restore original useAuth
+      AuthContext.useAuth = originalUseAuth;
+    });
+
+    it('shows authenticated user links when user is authenticated', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: 'test-token',
+        isAuthenticated: true,
+        isAdmin: () => false,
+        hasElevatedSession: () => false,
+      });
+
+      render(
+        <TestRouterWithAllProviders>
+          <Header
+            onHomeClick={() => {}}
+            onAboutClick={() => {}}
+            onLoginRegisterClick={() => {}}
+          />
+        </TestRouterWithAllProviders>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Analyzer')).toBeInTheDocument();
+        expect(screen.getByText('Profile')).toBeInTheDocument();
+        expect(screen.queryByText('Login/Register')).not.toBeInTheDocument();
+      });
+    });
+
+    it('shows admin link when user is authenticated and is admin', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: { id: 1, name: 'Admin User', email: 'admin@example.com', role: 'admin' },
+        token: 'test-token',
+        isAuthenticated: true,
+        isAdmin: () => true,
+        hasElevatedSession: () => false,
+      });
+
+      render(
+        <TestRouterWithAllProviders>
+          <Header
+            onHomeClick={() => {}}
+            onAboutClick={() => {}}
+            onLoginRegisterClick={() => {}}
+          />
+        </TestRouterWithAllProviders>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Admin')).toBeInTheDocument();
+      });
+    });
+
+    it('does not show admin link when user is authenticated but not admin', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: { id: 1, name: 'Regular User', email: 'user@example.com' },
+        token: 'test-token',
+        isAuthenticated: true,
+        isAdmin: () => false,
+        hasElevatedSession: () => false,
+      });
+
+      render(
+        <TestRouterWithAllProviders>
+          <Header
+            onHomeClick={() => {}}
+            onAboutClick={() => {}}
+            onLoginRegisterClick={() => {}}
+          />
+        </TestRouterWithAllProviders>
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText('Admin')).not.toBeInTheDocument();
+      });
+    });
+
+    it('toggles theme when theme button is clicked', async () => {
+      // Mock useAuth for this test
+      AuthContext.useAuth.mockReturnValue({
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        isAdmin: () => false,
+        hasElevatedSession: () => false,
+      });
+
+      render(
+        <TestRouterWithAllProviders>
+          <Header
+            onHomeClick={() => {}}
+            onAboutClick={() => {}}
+            onLoginRegisterClick={() => {}}
+          />
+        </TestRouterWithAllProviders>
+      );
+
+      await waitFor(() => {
+        const themeButton = screen.getByLabelText('Toggle theme');
+        expect(themeButton).toBeInTheDocument();
+        fireEvent.click(themeButton);
+        // Theme should toggle (tested via ThemeContext)
+      });
+    });
+  });
 });

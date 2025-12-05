@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { TestRouterWithAllProviders } from "../test-utils";
 import { authAPI } from "../services/api";
+import * as AuthContext from "../contexts/AuthContext";
 
 import Left from "./Left";
 
@@ -165,7 +166,154 @@ describe("Left", () => {
     });
   });
 
-  // Branch coverage tests - These would require mocking AuthContext properly
-  // For now, we'll skip these as they require more complex setup
-  // The existing tests already cover the main branches
+  // Branch coverage tests for authenticated states
+  describe('Branch coverage - authenticated states', () => {
+    let originalUseAuth;
+
+    beforeAll(() => {
+      // Save original useAuth
+      originalUseAuth = AuthContext.useAuth;
+    });
+
+    beforeEach(() => {
+      // Mock useAuth for these tests
+      AuthContext.useAuth = jest.fn();
+    });
+
+    afterAll(() => {
+      // Restore original useAuth
+      AuthContext.useAuth = originalUseAuth;
+    });
+
+    it('shows authenticated user links when user is authenticated', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: 'test-token',
+        isAuthenticated: true,
+        isAdmin: () => false,
+        hasElevatedSession: () => false,
+        logout: jest.fn(),
+      });
+
+      render(
+        <TestRouterWithAllProviders>
+          <Left
+            onHomeClick={() => {}}
+            onAboutClick={() => {}}
+            onLoginRegisterClick={() => {}}
+          />
+        </TestRouterWithAllProviders>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Analyzer')).toBeInTheDocument();
+        expect(screen.getByText('Profile')).toBeInTheDocument();
+        expect(screen.getByText('Logout')).toBeInTheDocument();
+        expect(screen.queryByText('Login/Register')).not.toBeInTheDocument();
+      });
+    });
+
+    it('shows admin link when user is authenticated and is admin', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: { id: 1, name: 'Admin User', email: 'admin@example.com', role: 'admin' },
+        token: 'test-token',
+        isAuthenticated: true,
+        isAdmin: () => true,
+        hasElevatedSession: () => false,
+        logout: jest.fn(),
+      });
+
+      render(
+        <TestRouterWithAllProviders>
+          <Left
+            onHomeClick={() => {}}
+            onAboutClick={() => {}}
+            onLoginRegisterClick={() => {}}
+          />
+        </TestRouterWithAllProviders>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Admin')).toBeInTheDocument();
+      });
+    });
+
+    it('does not show admin link when user is authenticated but not admin', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: { id: 1, name: 'Regular User', email: 'user@example.com' },
+        token: 'test-token',
+        isAuthenticated: true,
+        isAdmin: () => false,
+        hasElevatedSession: () => false,
+        logout: jest.fn(),
+      });
+
+      render(
+        <TestRouterWithAllProviders>
+          <Left
+            onHomeClick={() => {}}
+            onAboutClick={() => {}}
+            onLoginRegisterClick={() => {}}
+          />
+        </TestRouterWithAllProviders>
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText('Admin')).not.toBeInTheDocument();
+      });
+    });
+
+    it('shows user name in profile link when user is authenticated with name', async () => {
+      AuthContext.useAuth.mockReturnValue({
+        user: { id: 1, name: 'John Doe', email: 'john@example.com' },
+        token: 'test-token',
+        isAuthenticated: true,
+        isAdmin: () => false,
+        hasElevatedSession: () => false,
+        logout: jest.fn(),
+      });
+
+      render(
+        <TestRouterWithAllProviders>
+          <Left
+            onHomeClick={() => {}}
+            onAboutClick={() => {}}
+            onLoginRegisterClick={() => {}}
+          />
+        </TestRouterWithAllProviders>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
+      });
+    });
+
+    it('calls logout when logout button is clicked', async () => {
+      const mockLogout = jest.fn();
+      AuthContext.useAuth.mockReturnValue({
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: 'test-token',
+        isAuthenticated: true,
+        isAdmin: () => false,
+        hasElevatedSession: () => false,
+        logout: mockLogout,
+      });
+
+      render(
+        <TestRouterWithAllProviders>
+          <Left
+            onHomeClick={() => {}}
+            onAboutClick={() => {}}
+            onLoginRegisterClick={() => {}}
+          />
+        </TestRouterWithAllProviders>
+      );
+
+      await waitFor(() => {
+        const logoutButton = screen.getByText('Logout');
+        fireEvent.click(logoutButton);
+        expect(mockLogout).toHaveBeenCalled();
+      });
+    });
+  });
 });

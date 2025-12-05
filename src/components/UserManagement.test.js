@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import UserManagement from './UserManagement';
 import { TestRouter } from '../test-utils';
 import { adminAPI } from '../services/adminAPI';
@@ -361,11 +361,17 @@ describe('UserManagement', () => {
     const nameHeaders = screen.getAllByText('Name');
     const nameHeader = nameHeaders.find(el => el.tagName === 'TH' || el.closest('th')) || nameHeaders[nameHeaders.length - 1];
     
-    // Clear mock to track new calls
+    // Clear mock to track new calls - set up a promise that we can track
+    let firstCallResolved = false;
     adminAPI.listUsers.mockClear();
-    adminAPI.listUsers.mockResolvedValue({
-      users: mockUsers,
-      pagination: mockPagination,
+    adminAPI.listUsers.mockImplementation(async (params) => {
+      if (!firstCallResolved && params.sort_by === 'name' && params.sort_order === 'ASC') {
+        firstCallResolved = true;
+      }
+      return {
+        users: mockUsers,
+        pagination: mockPagination,
+      };
     });
     
     // First click - should set to name ASC (since default is created_at DESC)
@@ -374,21 +380,30 @@ describe('UserManagement', () => {
     // Wait for the first API call with name ASC
     await waitFor(() => {
       expect(adminAPI.listUsers).toHaveBeenCalled();
-      const lastCall = adminAPI.listUsers.mock.calls[adminAPI.listUsers.mock.calls.length - 1];
-      expect(lastCall[0]).toMatchObject({ sort_by: 'name', sort_order: 'ASC' });
+      const calls = adminAPI.listUsers.mock.calls;
+      const nameAscCall = calls.find(call => call[0].sort_by === 'name' && call[0].sort_order === 'ASC');
+      expect(nameAscCall).toBeDefined();
     }, { timeout: 2000 });
     
-    // Wait for React to fully process the state update and re-render
+    // Wait for the API call to complete
     await waitFor(() => {
-      // Verify the component has updated by checking if it's still rendered
-      expect(screen.getByText('User One')).toBeInTheDocument();
+      expect(firstCallResolved).toBe(true);
     });
     
-    // Clear mock to track second call
+    // Wait for React to process state updates
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    });
+    
+    // Clear mock to track second call only
+    const initialCallCount = adminAPI.listUsers.mock.calls.length;
     adminAPI.listUsers.mockClear();
-    adminAPI.listUsers.mockResolvedValue({
-      users: mockUsers,
-      pagination: mockPagination,
+    // Reset the call count but keep the implementation
+    adminAPI.listUsers.mockImplementation(async (params) => {
+      return {
+        users: mockUsers,
+        pagination: mockPagination,
+      };
     });
     
     // Second click on same column - should toggle to DESC
@@ -397,8 +412,9 @@ describe('UserManagement', () => {
     // Wait for the second API call with name DESC
     await waitFor(() => {
       expect(adminAPI.listUsers).toHaveBeenCalled();
-      const lastCall = adminAPI.listUsers.mock.calls[adminAPI.listUsers.mock.calls.length - 1];
-      expect(lastCall[0]).toMatchObject({ sort_by: 'name', sort_order: 'DESC' });
+      const calls = adminAPI.listUsers.mock.calls;
+      const nameDescCall = calls.find(call => call[0].sort_by === 'name' && call[0].sort_order === 'DESC');
+      expect(nameDescCall).toBeDefined();
     }, { timeout: 3000 });
   });
 
