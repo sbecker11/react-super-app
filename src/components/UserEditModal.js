@@ -17,6 +17,8 @@ const UserEditModal = ({ user, isOpen, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -221,14 +223,25 @@ const UserEditModal = ({ user, isOpen, onClose, onSuccess }) => {
               <h3>Reset Password</h3>
               <div className="form-group">
                 <label htmlFor="newPassword">New Password</label>
-                <input
-                  type="password"
-                  id="newPassword"
-                  value={formData.newPassword}
-                  onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
-                  placeholder="Enter new password (min 8 characters)"
-                  disabled={loading}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    id="newPassword"
+                    value={formData.newPassword}
+                    onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
+                    placeholder="Enter new password (min 8 characters)"
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    title={showNewPassword ? "Hide password" : "Show password"}
+                    tabIndex="-1"
+                  >
+                    {showNewPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
                 {errors.newPassword && (
                   <p className="form-error">{errors.newPassword}</p>
                 )}
@@ -236,14 +249,25 @@ const UserEditModal = ({ user, isOpen, onClose, onSuccess }) => {
 
               <div className="form-group">
                 <label htmlFor="confirmPassword">Confirm Password</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  placeholder="Confirm new password"
-                  disabled={loading}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    placeholder="Confirm new password"
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    title={showConfirmPassword ? "Hide password" : "Show password"}
+                    tabIndex="-1"
+                  >
+                    {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
                 {errors.confirmPassword && (
                   <p className="form-error">{errors.confirmPassword}</p>
                 )}

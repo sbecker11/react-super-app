@@ -13,7 +13,6 @@ import Footer from "./components/Footer";
 import "./App.css"; // Import the CSS file
 import About from "./components/About";
 import Home from "./components/Home";
-import TestPage from "./components/TestPage";
 import LoginRegister from "./components/LoginRegister";
 import JDAnalyzer from './components/JDAnalyzer';
 import Profile from './components/Profile';

@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import Lin
 import { useAuth } from '../contexts/AuthContext';
 
 function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
-  const { isAuthenticated, isAdmin, logout, user } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,8 +26,8 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
       <ul>
         {/* Use Link components for navigation */}
         <li>
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             onClick={onHomeClick}
             className={isHomeActive ? 'active' : ''}
           >
@@ -67,13 +67,23 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
         {isAuthenticated && (
           <>
             <li>
-              <Link 
+              <Link
                 to="/analyzer"
                 className={isAnalyzerActive ? 'active' : ''}
               >
                 Analyzer
               </Link>
             </li>
+            {isAdmin() && (
+              <li>
+                <Link
+                  to="/admin"
+                  className={isAdminActive ? 'active' : ''}
+                >
+                  Admin
+                </Link>
+              </li>
+            )}
             <li>
               <Link
                 to="/profile"
@@ -82,17 +92,6 @@ function Left({ onHomeClick, onAboutClick, onLoginRegisterClick }) {
                 Profile
               </Link>
             </li>
-            {isAdmin() && (
-              <li>
-                <Link 
-                  to="/admin" 
-                  className={isAdminActive ? 'active' : ''}
-                  style={{ fontWeight: isAdminActive ? 'bold' : 'bold' }}
-                >
-                  Admin
-                </Link>
-              </li>
-            )}
             <li>
               <button 
                 onClick={() => {

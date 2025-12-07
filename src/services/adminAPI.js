@@ -167,5 +167,20 @@ export const adminAPI = {
     });
     return handleResponse(response);
   },
+
+  /**
+   * Impersonate (login as) another user
+   * Requires elevated session token
+   * @param {string} userId - User ID to impersonate
+   * @param {string} elevatedToken - Elevated session token
+   * @returns {Promise<object>} { user, token, message, originalAdmin }
+   */
+  impersonateUser: async (userId, elevatedToken) => {
+    const response = await fetch(`${API_BASE_URL}/admin/impersonate/${userId}`, {
+      method: 'POST',
+      headers: getHeaders(elevatedToken),
+    });
+    return handleResponse(response);
+  },
 };
 

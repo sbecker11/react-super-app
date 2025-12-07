@@ -4,13 +4,13 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
 import { usersAPI } from '../services/api';
 import Loading from './Loading';
-import { validationConfig, validateField as validateFieldUtil } from '../validation';
+import { validateField as validateFieldUtil } from '../validation';
 import PageContainer from './PageContainer';
 import './LoginRegister.css';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, logout, updateUser } = useAuth();
+  const { user, logout, updateUser, isAdmin } = useAuth();
   
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -216,7 +216,7 @@ const Profile = () => {
 
   return (
     <PageContainer maxWidth="600px">
-      <h2>User Profile</h2>
+      <h2>{isAdmin() ? 'Admin Profile' : 'User Profile'}</h2>
 
       <div style={{ 
         border: '1px solid var(--sidebar-bg)', 

@@ -6,8 +6,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { flushSync } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { adminAPI } from '../services/adminAPI';
 import AdminAuthModal from './AdminAuthModal';
 import UserEditModal from './UserEditModal';
@@ -16,7 +17,8 @@ import PageContainer from './PageContainer';
 import './UserManagement.css';
 
 const UserManagement = () => {
-  const { isAdmin, hasElevatedSession } = useAuth();
+  const { isAdmin, hasElevatedSession, login, user: currentUser, elevatedToken } = useAuth();
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -89,14 +91,14 @@ const UserManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.limit, sortBy, sortOrder, filters]);
+  }, [pagination.page, pagination.limit, sortBy, sortOrder, filters, isAdmin]);
 
   useEffect(() => {
     // Only load if user is admin
     if (isAdmin()) {
       loadUsers();
     }
-  }, [loadUsers]);
+  }, [loadUsers, isAdmin]);
 
   // Redirect non-admins (must be after all hooks)
   if (!isAdmin()) {
@@ -125,6 +127,53 @@ const UserManagement = () => {
     setShowEditModal(true);
   };
 
+  // Handle "Login As" (impersonate user)
+  const handleLoginAs = async (targetUser, providedElevatedToken = null) => {
+    try {
+      // Prevent logging in as self
+      if (targetUser.id === currentUser?.id) {
+        toast.error('Cannot impersonate yourself');
+        return;
+      }
+
+      // Show loading state
+      toast.info(`Switching to ${targetUser.name}...`);
+
+      // Use provided token (from fresh auth) or fall back to state
+      const tokenToUse = providedElevatedToken || elevatedToken;
+
+      // Call impersonate API
+      const response = await adminAPI.impersonateUser(targetUser.id, tokenToUse);
+      console.log('Impersonation response:', response);
+
+      // Store original admin info and token for "switch back" feature
+      const currentToken = localStorage.getItem('token');
+      localStorage.setItem('originalAdmin', JSON.stringify({
+        id: currentUser.id,
+        email: currentUser.email,
+        name: currentUser.name,
+        token: currentToken
+      }));
+
+      // Switch to the target user's session (force synchronous update)
+      flushSync(() => {
+        login(response.user, response.token);
+      });
+
+      // Show success message
+      toast.success(response.message || `Now logged in as ${targetUser.name}`);
+
+      // Delay navigation to allow state to propagate
+      setTimeout(() => {
+        console.log('Navigating to profile...');
+        navigate('/profile');
+      }, 100);
+    } catch (error) {
+      console.error('Failed to impersonate user:', error);
+      toast.error(error.message || 'Failed to impersonate user');
+    }
+  };
+
   // Handle action requiring elevated session
   const handleSensitiveAction = (action, user) => {
     if (hasElevatedSession()) {
@@ -132,16 +181,16 @@ const UserManagement = () => {
       action(user);
     } else {
       // Need to authenticate
-      setPendingAction(() => () => action(user));
+      setPendingAction(() => (token) => action(user, token));
       setSelectedUser(user);
       setShowAuthModal(true);
     }
   };
 
   // After elevated auth success
-  const handleAuthSuccess = () => {
+  const handleAuthSuccess = (elevatedToken) => {
     if (pendingAction) {
-      pendingAction();
+      pendingAction(elevatedToken);
       setPendingAction(null);
     }
   };
@@ -259,6 +308,7 @@ const UserManagement = () => {
                     Created {sortBy === 'created_at' && (sortOrder === 'ASC' ? '↑' : '↓')}
                   </th>
                   <th>Actions</th>
+                  <th>Impersonate</th>
                 </tr>
               </thead>
               <tbody>
@@ -286,6 +336,18 @@ const UserManagement = () => {
                       >
                         ✏️
                       </button>
+                    </td>
+                    <td>
+                      {user.id !== currentUser?.id && (
+                        <button
+                          className="btn-action btn-impersonate"
+                          onClick={() => handleSensitiveAction(handleLoginAs, user)}
+                          title={`Login as ${user.name}`}
+                          disabled={!user.is_active}
+                        >
+                          LOGIN AS
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

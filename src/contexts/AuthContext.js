@@ -18,11 +18,14 @@ export const AuthProvider = ({ children }) => {
         try {
           // Try to fetch current user with the stored token
           // This verifies the token is still valid
+          console.log('Verifying token...');
           const response = await authAPI.getCurrentUser();
+          console.log('Token verification successful:', response.user);
           setUser(response.user);
         } catch (error) {
           // Token is invalid or expired
           console.error('Token verification failed:', error);
+          console.log('Logging out due to token verification failure');
           logout();
         }
       }
@@ -52,6 +55,7 @@ export const AuthProvider = ({ children }) => {
     setElevatedToken(null);
     setElevatedExpiresAt(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('originalAdmin'); // Clear impersonation data
     toast.info('You have been logged out.');
   };
 
@@ -89,12 +93,12 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
       setElevatedToken(data.elevatedToken);
       setElevatedExpiresAt(data.expiresAt);
-      
+
       toast.success('Elevated session granted (15 minutes)');
-      return true;
+      return { success: true, token: data.elevatedToken };
     } catch (error) {
       toast.error(error.message || 'Failed to verify password');
-      return false;
+      return { success: false, token: null };
     }
   };
 

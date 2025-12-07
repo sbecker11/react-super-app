@@ -89,11 +89,6 @@ const TestingCoverage = () => {
     };
   }, []);
 
-  const handleRefresh = () => {
-    loadReports();
-    toast.info('Refreshing coverage reports...');
-  };
-
   const handleRegenerateReport = async (type) => {
     const reportType = type === 'client' ? 'Client' : 'Server';
 

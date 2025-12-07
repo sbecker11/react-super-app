@@ -12,7 +12,7 @@ import PageContainer from './PageContainer';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
 
   // Redirect non-admins
   if (!isAdmin()) {

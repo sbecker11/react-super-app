@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 import './LoginRegister.css';
-import { 
-  validationConfig, 
-  validatePasswordRules, 
-  getPasswordRequirements,
+import {
+  validationConfig,
   registerSchema,
   loginSchema
 } from '../validation';
@@ -133,8 +130,9 @@ const LoginRegister = () => {
         setIsFormValid(false);
       }
     };
-    
+
     checkFormValidity();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileData, isLoginMode]);
 
   /**
@@ -419,7 +417,7 @@ const LoginRegister = () => {
             <label htmlFor="password">Password</label>
             {errors.password && <div className="error">{errors.password}</div>}
           </div>
-          <div style={{ position: 'relative' }}>
+          <div className="password-input-wrapper">
             <input
               type={showPassword ? "text" : "password"}
               id="password"
@@ -437,24 +435,13 @@ const LoginRegister = () => {
               data-validation-field-type="password"
               required
               className={errors.password ? 'error-input' : ''}
-              style={{ paddingRight: '40px' }}
             />
             <button
               type="button"
+              className="password-toggle-btn"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: 'absolute',
-                right: '8px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '18px',
-                padding: '4px 8px',
-                color: '#666',
-              }}
               title={showPassword ? "Hide password" : "Show password"}
+              tabIndex="-1"
             >
               {showPassword ? '👁️' : '👁️‍🗨️'}
             </button>

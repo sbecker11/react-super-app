@@ -75,6 +75,95 @@ router.post('/verify-password', authenticateToken, requireAdmin, async (req, res
 });
 
 /**
+ * POST /api/admin/impersonate/:userId
+ * Allow admin to impersonate (login as) another user
+ * Requires elevated session for security
+ */
+router.post('/impersonate/:userId', authenticateToken, requireAdmin, requireElevatedSession, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const adminId = req.user.id;
+
+    // Prevent admin from impersonating themselves
+    if (userId === adminId) {
+      return res.status(400).json({
+        error: 'Cannot impersonate yourself',
+        code: 'SELF_IMPERSONATION'
+      });
+    }
+
+    // Get target user
+    const userResult = await pool.query(
+      'SELECT id, name, email, role, is_active FROM users WHERE id = $1',
+      [userId]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({
+        error: 'User not found',
+        code: 'USER_NOT_FOUND'
+      });
+    }
+
+    const targetUser = userResult.rows[0];
+
+    // Check if target user is active
+    if (!targetUser.is_active) {
+      return res.status(400).json({
+        error: 'Cannot impersonate inactive user',
+        code: 'USER_INACTIVE'
+      });
+    }
+
+    // Generate a regular token for the target user
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      {
+        userId: targetUser.id,
+        email: targetUser.email,
+        role: targetUser.role
+      },
+      process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production',
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+    );
+
+    // Log the impersonation action
+    await logAdminAction(
+      req.user.id,
+      'impersonate_user',
+      userId,
+      {
+        target_user_email: targetUser.email,
+        target_user_role: targetUser.role,
+        admin_email: req.user.email
+      }
+    );
+
+    res.json({
+      user: {
+        id: targetUser.id,
+        name: targetUser.name,
+        email: targetUser.email,
+        role: targetUser.role,
+        is_active: targetUser.is_active
+      },
+      token,
+      message: `Now logged in as ${targetUser.name}`,
+      originalAdmin: {
+        id: adminId,
+        email: req.user.email
+      }
+    });
+  } catch (error) {
+    console.error('Error impersonating user:', error);
+    res.status(500).json({
+      error: 'Failed to impersonate user',
+      code: 'IMPERSONATION_ERROR'
+    });
+  }
+});
+
+/**
  * GET /api/admin/users
  * List all users with filtering, sorting, and pagination
  * Admin only - Returns ALL users including other admins (no role filtering by default)

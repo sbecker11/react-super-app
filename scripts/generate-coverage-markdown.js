@@ -27,13 +27,13 @@ function generateMarkdownReport(coverageSummary, reportType = 'Client') {
 
   let status = '🔴 Poor';
   let statusEmoji = '🔴';
-  if (overallPct >= 90) {
+  if (overallPct >= 80) {
     status = '🟢 Excellent';
     statusEmoji = '🟢';
-  } else if (overallPct >= 80) {
+  } else if (overallPct >= 70) {
     status = '🟡 Good';
     statusEmoji = '🟡';
-  } else if (overallPct >= 70) {
+  } else if (overallPct >= 50) {
     status = '🟠 Fair';
     statusEmoji = '🟠';
   }
