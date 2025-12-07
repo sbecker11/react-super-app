@@ -58,6 +58,7 @@ describe('Profile Component', () => {
     it('should render user profile information', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -83,6 +84,7 @@ describe('Profile Component', () => {
     it('should display formatted member since date', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -108,6 +110,7 @@ describe('Profile Component', () => {
     it('should render Edit Profile button', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -130,6 +133,7 @@ describe('Profile Component', () => {
     it('should render Logout button', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -154,6 +158,7 @@ describe('Profile Component', () => {
     it('should enter edit mode when Edit Profile clicked', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -183,6 +188,7 @@ describe('Profile Component', () => {
     it('should allow editing name field', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -216,6 +222,7 @@ describe('Profile Component', () => {
     it('should allow editing email field', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -252,6 +259,7 @@ describe('Profile Component', () => {
 
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: mockUpdateUser,
       });
@@ -309,6 +317,7 @@ describe('Profile Component', () => {
     it('should cancel edit mode and restore original values', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -351,6 +360,7 @@ describe('Profile Component', () => {
     it('should handle API error during update', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -393,6 +403,7 @@ describe('Profile Component', () => {
     it('should handle network error during update', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -435,6 +446,7 @@ describe('Profile Component', () => {
     it('should show loading spinner while saving', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -485,6 +497,7 @@ describe('Profile Component', () => {
     it('should prevent double submission', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -532,6 +545,7 @@ describe('Profile Component', () => {
     it('should handle API fetch failure with fallback to context user', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -555,6 +569,7 @@ describe('Profile Component', () => {
     it('should handle update error with various error formats', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -594,6 +609,7 @@ describe('Profile Component', () => {
     it('should handle update error with array of errors', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -639,6 +655,7 @@ describe('Profile Component', () => {
     it('should handle update error with data.error format', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -707,6 +724,7 @@ describe('Profile Component', () => {
 
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: mockLogout,
         updateUser: jest.fn(),
       });
@@ -735,6 +753,7 @@ describe('Profile Component', () => {
 
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: mockLogout,
         updateUser: jest.fn(),
       });
@@ -863,6 +882,7 @@ describe('Profile Component', () => {
     it('should display password change note', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -887,6 +907,7 @@ describe('Profile Component', () => {
     it('should require name field', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -916,6 +937,7 @@ describe('Profile Component', () => {
     it('should require email field', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: mockUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });

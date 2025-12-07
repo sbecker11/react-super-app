@@ -301,4 +301,63 @@ router.post('/regenerate/server', async (req, res) => {
   }
 });
 
+// Serve HTML coverage reports
+router.get('/html/:type', (req, res) => {
+  const type = req.params.type; // 'client' or 'server'
+
+  if (type !== 'client' && type !== 'server') {
+    return res.status(400).json({ error: 'Invalid type. Must be "client" or "server"' });
+  }
+
+  const htmlPath = path.join(__dirname, `../../../coverage-reports/${type}-coverage.html`);
+
+  if (!fs.existsSync(htmlPath)) {
+    return res.status(404).json({
+      error: `${type.charAt(0).toUpperCase() + type.slice(1)} coverage HTML report not found`,
+      hint: `Run coverage tests first: ${type === 'client' ? 'npm run test:coverage' : 'cd server && npm run test:coverage'}`
+    });
+  }
+
+  res.sendFile(htmlPath);
+});
+
+// Open terminal and run coverage script
+router.post('/run/:type', async (req, res) => {
+  const type = req.params.type; // 'client' or 'server'
+
+  if (type !== 'client' && type !== 'server') {
+    return res.status(400).json({ error: 'Invalid type. Must be "client" or "server"' });
+  }
+
+  const scriptPath = path.join(__dirname, `../../../scripts/run-${type}-coverage.sh`);
+
+  if (!fs.existsSync(scriptPath)) {
+    return res.status(404).json({
+      error: `Coverage script not found: ${scriptPath}`
+    });
+  }
+
+  try {
+    // Open a new terminal window with the script
+    const { exec } = require('child_process');
+    exec(`open -a Terminal "${scriptPath}"`, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Error opening terminal:', error);
+      }
+    });
+
+    res.json({
+      success: true,
+      message: `Opening new terminal to run ${type} coverage tests...`,
+      script: scriptPath
+    });
+  } catch (error) {
+    console.error('Error triggering coverage script:', error);
+    res.status(500).json({
+      error: 'Failed to open terminal',
+      details: error.message
+    });
+  }
+});
+
 module.exports = router;

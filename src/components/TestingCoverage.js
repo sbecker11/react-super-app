@@ -91,6 +91,27 @@ const TestingCoverage = () => {
     });
   };
 
+  const handleRunCoverage = async () => {
+    try {
+      toast.info(`Opening terminal to run ${activeTab} coverage tests...`);
+
+      const response = await fetch(`${API_URL}/coverage/run/${activeTab}`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success('Terminal opened! Tests are running in new window.');
+      } else {
+        toast.error(data.error || 'Failed to open terminal');
+      }
+    } catch (error) {
+      console.error('Error running coverage:', error);
+      toast.error('Failed to trigger coverage tests');
+    }
+  };
+
   // Fetch coverage reports on mount
   useEffect(() => {
     loadReports();
@@ -227,27 +248,24 @@ const TestingCoverage = () => {
             <div className="report-header-section">
               <h2>{activeTab === 'client' ? 'Client' : 'Server'} Test Coverage Report</h2>
               <div className="regenerate-controls">
-                <div className="terminal-command-box">
-                  <div className="command-label">
-                    💻 To regenerate, run in terminal:
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-                    <code style={{ flex: 1 }}>
-                      {activeTab === 'client'
-                        ? 'cd /Users/sbecker11/workspace-react/react-super-app && npm run test:coverage'
-                        : 'cd /Users/sbecker11/workspace-react/react-super-app/server && npm run test:coverage'}
-                    </code>
-                    <button
-                      onClick={handleCopyCommand}
-                      className="btn-copy-command"
-                      title="Copy command to clipboard"
-                    >
-                      {copied ? '✓ Copied!' : '📋 Copy'}
-                    </button>
-                  </div>
-                  <div className="terminal-helper-text">
-                    ⏱️ Takes ~60-90 seconds. After completion, refresh this page to see updated coverage.
-                  </div>
+                <button
+                  onClick={handleRunCoverage}
+                  className="btn-run-coverage"
+                  title="Opens a new terminal window and runs coverage tests"
+                >
+                  🚀 Run Coverage Tests
+                </button>
+                <div className="terminal-helper-text" style={{ marginTop: '12px', marginLeft: '0' }}>
+                  ⏱️ Takes ~60-90 seconds. After completion, refresh this page to see updated coverage report, or{' '}
+                  <a
+                    href={`${API_URL}/coverage/html/${activeTab}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="html-report-link"
+                  >
+                    click this link
+                  </a>
+                  {' '}to see the HTML-formatted report in a new window.
                 </div>
               </div>
             </div>

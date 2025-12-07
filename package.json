@@ -20,7 +20,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "NODE_OPTIONS='--no-deprecation' react-scripts test",
-    "test:coverage": "NODE_OPTIONS='--no-deprecation' react-scripts test --coverage --watchAll=false; node scripts/generate-coverage-markdown.js client",
+    "test:coverage": "NODE_OPTIONS='--no-deprecation' react-scripts test --coverage --watchAll=false; node scripts/generate-coverage-markdown.js client; cd coverage-reports && pandoc -s --metadata title=\"Client Coverage Report\" -c \"data:text/css,table{border-collapse:collapse;width:100%}th,td{border:1px solid \\#ddd;padding:8px 12px;text-align:left}th{background:\\#1a1a2e;color:white}tr:nth-child(even){background:\\#f9f9f9}code{background:\\#e8e8e8;padding:2px 6px;border-radius:4px}\" client-coverage.md -o client-coverage.html || echo 'Pandoc not installed - HTML generation skipped'",
     "test:integration": "./scripts/ensure-docker-services.sh && NODE_OPTIONS='--no-deprecation' REACT_APP_API_URL=http://localhost:3001/api react-scripts test --setupFilesAfterEnv=./src/setupTests.integration.js --testMatch='**/*.integration.test.js' --watchAll=false",
     "test:integration:watch": "./scripts/ensure-docker-services.sh && NODE_OPTIONS='--no-deprecation' REACT_APP_API_URL=http://localhost:3001/api react-scripts test --setupFilesAfterEnv=./src/setupTests.integration.js --testMatch='**/*.integration.test.js'",
     "test:all": "npm test -- --watchAll=false && npm run test:integration",
