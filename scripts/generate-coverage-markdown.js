@@ -10,15 +10,23 @@ const path = require('path');
 function generateMarkdownReport(coverageSummary, reportType = 'Client') {
   let markdown = '';
 
+  // Helper function for status emoji
+  const getStatus = (pct) => {
+    if (pct >= 80) return '🟢';
+    if (pct >= 70) return '🟡';
+    if (pct >= 50) return '🟠';
+    return '🔴';
+  };
+
   // Overall summary
   const total = coverageSummary.total;
   markdown += `## Overall Coverage\n\n`;
   markdown += `| Metric | Covered | Total | Percentage |\n`;
   markdown += `|--------|---------|-------|------------|\n`;
-  markdown += `| **Lines** | ${total.lines.covered} | ${total.lines.total} | **${total.lines.pct.toFixed(2)}%** |\n`;
-  markdown += `| **Statements** | ${total.statements.covered} | ${total.statements.total} | **${total.statements.pct.toFixed(2)}%** |\n`;
-  markdown += `| **Functions** | ${total.functions.covered} | ${total.functions.total} | **${total.functions.pct.toFixed(2)}%** |\n`;
-  markdown += `| **Branches** | ${total.branches.covered} | ${total.branches.total} | **${total.branches.pct.toFixed(2)}%** |\n\n`;
+  markdown += `| **Lines** | ${total.lines.covered} | ${total.lines.total} | ${getStatus(total.lines.pct)} **${total.lines.pct.toFixed(2)}%** |\n`;
+  markdown += `| **Statements** | ${total.statements.covered} | ${total.statements.total} | ${getStatus(total.statements.pct)} **${total.statements.pct.toFixed(2)}%** |\n`;
+  markdown += `| **Functions** | ${total.functions.covered} | ${total.functions.total} | ${getStatus(total.functions.pct)} **${total.functions.pct.toFixed(2)}%** |\n`;
+  markdown += `| **Branches** | ${total.branches.covered} | ${total.branches.total} | ${getStatus(total.branches.pct)} **${total.branches.pct.toFixed(2)}%** |\n\n`;
 
   // Coverage status
   const overallPct = (
@@ -59,19 +67,19 @@ function generateMarkdownReport(coverageSummary, reportType = 'Client') {
       const fileName = path.basename(filePath);
       const relPath = filePath.replace(/^.*\/src\//, 'src/');
 
-      const getStatus = (pct) => {
-        if (pct >= 80) return '🟢';
-        if (pct >= 70) return '🟡';
-        if (pct >= 50) return '🟠';
-        return '🔴';
-      };
-
       markdown += `| \`${relPath}\` | `;
       markdown += `${getStatus(fileData.lines.pct)} ${fileData.lines.pct.toFixed(1)}% | `;
       markdown += `${getStatus(fileData.statements.pct)} ${fileData.statements.pct.toFixed(1)}% | `;
       markdown += `${getStatus(fileData.functions.pct)} ${fileData.functions.pct.toFixed(1)}% | `;
       markdown += `${getStatus(fileData.branches.pct)} ${fileData.branches.pct.toFixed(1)}% |\n`;
     });
+
+    // Add overall summary row
+    markdown += `| **OVERALL** | `;
+    markdown += `${getStatus(total.lines.pct)} **${total.lines.pct.toFixed(1)}%** | `;
+    markdown += `${getStatus(total.statements.pct)} **${total.statements.pct.toFixed(1)}%** | `;
+    markdown += `${getStatus(total.functions.pct)} **${total.functions.pct.toFixed(1)}%** | `;
+    markdown += `${getStatus(total.branches.pct)} **${total.branches.pct.toFixed(1)}%** |\n`;
     markdown += `\n`;
   }
 
@@ -195,7 +203,13 @@ function main() {
   // Save to file
   try {
     fs.writeFileSync(outputFile, markdown, 'utf8');
-    console.log(`✓ ${reportType} coverage report generated: ${outputFile}`);
+    if (type === 'server') {
+      console.log(`✓ Refresh browser page http://localhost:3000/admin/testing to see the updated server coverage report.`);
+      console.log(`   Server coverage report markdown file also available using: "open ${outputFile}"`);
+    } else {
+      console.log(`✓ Refresh browser page http://localhost:3000/admin/testing to see the updated client coverage report.`);
+      console.log(`   Client coverage report markdown file also available using: "open ${outputFile}"`);
+    }
   } catch (error) {
     console.error(`Error writing markdown file: ${error.message}`);
     process.exit(1);

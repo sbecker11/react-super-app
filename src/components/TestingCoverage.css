@@ -497,3 +497,60 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Terminal Command Box */
+.terminal-command-box {
+  background: var(--sidebar-bg);
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid var(--body-bg);
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.terminal-command-box .command-label {
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.terminal-command-box code {
+  display: block;
+  padding: 8px;
+  background: var(--body-bg);
+  border-radius: 3px;
+  color: var(--text-color);
+  word-break: break-all;
+}
+
+.btn-copy-command {
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-copy-command:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-copy-command:active {
+  transform: translateY(0);
+}
+
+.terminal-helper-text {
+  font-size: 12px;
+  color: var(--text-color);
+  opacity: 0.7;
+  font-style: italic;
+  margin-top: 8px;
+}

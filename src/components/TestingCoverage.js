@@ -18,6 +18,7 @@ const TestingCoverage = () => {
   const [regenerating, setRegenerating] = useState(null); // 'client', 'server', or null
   const [elapsedTime, setElapsedTime] = useState(0);
   const [abortController, setAbortController] = useState(null);
+  const [copied, setCopied] = useState(false);
   const timerRef = React.useRef(null);
 
   const loadReports = async () => {
@@ -72,6 +73,22 @@ const TestingCoverage = () => {
     setRegenerating(null);
     setElapsedTime(0);
     toast.warning('Report generation cancelled');
+  };
+
+  const handleCopyCommand = () => {
+    const projectRoot = '/Users/sbecker11/workspace-react/react-super-app';
+    const command = activeTab === 'client'
+      ? `cd ${projectRoot} && npm run test:coverage`
+      : `cd ${projectRoot}/server && npm run test:coverage`;
+
+    navigator.clipboard.writeText(command).then(() => {
+      setCopied(true);
+      toast.success('Command copied to clipboard!');
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      toast.error('Failed to copy command');
+    });
   };
 
   // Fetch coverage reports on mount
@@ -210,33 +227,28 @@ const TestingCoverage = () => {
             <div className="report-header-section">
               <h2>{activeTab === 'client' ? 'Client' : 'Server'} Test Coverage Report</h2>
               <div className="regenerate-controls">
-                {regenerating === activeTab ? (
-                  <>
+                <div className="terminal-command-box">
+                  <div className="command-label">
+                    💻 To regenerate, run in terminal:
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                    <code style={{ flex: 1 }}>
+                      {activeTab === 'client'
+                        ? 'cd /Users/sbecker11/workspace-react/react-super-app && npm run test:coverage'
+                        : 'cd /Users/sbecker11/workspace-react/react-super-app/server && npm run test:coverage'}
+                    </code>
                     <button
-                      className="btn-regenerate-inline btn-regenerating"
-                      disabled
-                      title="Generating coverage report..."
+                      onClick={handleCopyCommand}
+                      className="btn-copy-command"
+                      title="Copy command to clipboard"
                     >
-                      <span className="spinner-small"></span>
-                      Generating Report ({formatElapsedTime(elapsedTime)})
+                      {copied ? '✓ Copied!' : '📋 Copy'}
                     </button>
-                    <button
-                      className="btn-cancel"
-                      onClick={handleCancelRegeneration}
-                      title="Cancel report generation"
-                    >
-                      ✕
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    className="btn-regenerate-inline"
-                    onClick={() => handleRegenerateReport(activeTab)}
-                    title={`Run tests and regenerate ${activeTab} coverage report`}
-                  >
-                    ▶ Regenerate Report
-                  </button>
-                )}
+                  </div>
+                  <div className="terminal-helper-text">
+                    ⏱️ Takes ~60-90 seconds. After completion, refresh this page to see updated coverage.
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -11,6 +11,72 @@ const execPromise = util.promisify(exec);
  * Serves markdown coverage reports for client and server tests
  */
 
+// History file paths
+const HISTORY_DIR = path.join(__dirname, '../../../coverage-reports');
+const CLIENT_HISTORY_PATH = path.join(HISTORY_DIR, 'client-history.json');
+const SERVER_HISTORY_PATH = path.join(HISTORY_DIR, 'server-history.json');
+
+// Ensure history directory exists
+if (!fs.existsSync(HISTORY_DIR)) {
+  fs.mkdirSync(HISTORY_DIR, { recursive: true });
+}
+
+/**
+ * Load history from file
+ */
+function loadHistory(historyPath) {
+  try {
+    if (fs.existsSync(historyPath)) {
+      return JSON.parse(fs.readFileSync(historyPath, 'utf8'));
+    }
+  } catch (error) {
+    console.error('Error loading history:', error);
+  }
+  return [];
+}
+
+/**
+ * Save history to file (keep last 10 entries)
+ */
+function saveHistory(historyPath, entry) {
+  try {
+    const history = loadHistory(historyPath);
+    history.unshift(entry); // Add to beginning
+    const trimmedHistory = history.slice(0, 10); // Keep only last 10
+    fs.writeFileSync(historyPath, JSON.stringify(trimmedHistory, null, 2));
+  } catch (error) {
+    console.error('Error saving history:', error);
+  }
+}
+
+/**
+ * Parse test output to extract stats
+ */
+function parseTestOutput(output) {
+  const stats = {
+    tests: { total: 0, passed: 0, failed: 0, skipped: 0 },
+    suites: { total: 0, passed: 0, failed: 0 }
+  };
+
+  // Parse Jest output
+  const testMatch = output.match(/Tests:\s+(?:(\d+) failed,?\s*)?(?:(\d+) skipped,?\s*)?(\d+) passed,?\s*(\d+) total/);
+  if (testMatch) {
+    stats.tests.failed = parseInt(testMatch[1] || 0);
+    stats.tests.skipped = parseInt(testMatch[2] || 0);
+    stats.tests.passed = parseInt(testMatch[3] || 0);
+    stats.tests.total = parseInt(testMatch[4] || 0);
+  }
+
+  const suiteMatch = output.match(/Test Suites:\s+(?:(\d+) failed,?\s*)?(\d+) passed,?\s*(\d+) total/);
+  if (suiteMatch) {
+    stats.suites.failed = parseInt(suiteMatch[1] || 0);
+    stats.suites.passed = parseInt(suiteMatch[2] || 0);
+    stats.suites.total = parseInt(suiteMatch[3] || 0);
+  }
+
+  return stats;
+}
+
 // Get client coverage report
 router.get('/client', (req, res) => {
   const reportPath = path.join(__dirname, '../../../coverage-reports/client-coverage.md');
@@ -101,8 +167,26 @@ router.get('/all', (req, res) => {
   }
 });
 
+// Get coverage history
+router.get('/history', (req, res) => {
+  try {
+    const clientHistory = loadHistory(CLIENT_HISTORY_PATH);
+    const serverHistory = loadHistory(SERVER_HISTORY_PATH);
+
+    res.json({
+      client: clientHistory,
+      server: serverHistory
+    });
+  } catch (error) {
+    console.error('Error reading coverage history:', error);
+    res.status(500).json({ error: 'Failed to read coverage history' });
+  }
+});
+
 // Regenerate client coverage report
 router.post('/regenerate/client', async (req, res) => {
+  const startTime = Date.now();
+
   try {
     console.log('Regenerating client coverage report...');
 
@@ -112,15 +196,45 @@ router.post('/regenerate/client', async (req, res) => {
       timeout: 300000 // 5 minute timeout
     });
 
+    const endTime = Date.now();
+    const duration = Math.round((endTime - startTime) / 1000); // seconds
+
     console.log('Client coverage regenerated:', stdout);
     if (stderr) console.error('Stderr:', stderr);
 
+    // Parse test output for stats
+    const stats = parseTestOutput(stderr || stdout);
+
+    // Save to history
+    const historyEntry = {
+      timestamp: new Date().toISOString(),
+      duration,
+      stats,
+      success: true
+    };
+    saveHistory(CLIENT_HISTORY_PATH, historyEntry);
+
     res.json({
       success: true,
-      message: 'Client coverage report regenerated successfully'
+      message: 'Client coverage report regenerated successfully',
+      duration,
+      stats
     });
   } catch (error) {
+    const endTime = Date.now();
+    const duration = Math.round((endTime - startTime) / 1000);
+
     console.error('Error regenerating client coverage:', error);
+
+    // Save failed attempt to history
+    const historyEntry = {
+      timestamp: new Date().toISOString(),
+      duration,
+      success: false,
+      error: error.message
+    };
+    saveHistory(CLIENT_HISTORY_PATH, historyEntry);
+
     res.status(500).json({
       error: 'Failed to regenerate client coverage report',
       details: error.message
@@ -130,6 +244,8 @@ router.post('/regenerate/client', async (req, res) => {
 
 // Regenerate server coverage report
 router.post('/regenerate/server', async (req, res) => {
+  const startTime = Date.now();
+
   try {
     console.log('Regenerating server coverage report...');
 
@@ -139,15 +255,45 @@ router.post('/regenerate/server', async (req, res) => {
       timeout: 300000 // 5 minute timeout
     });
 
+    const endTime = Date.now();
+    const duration = Math.round((endTime - startTime) / 1000); // seconds
+
     console.log('Server coverage regenerated:', stdout);
     if (stderr) console.error('Stderr:', stderr);
 
+    // Parse test output for stats
+    const stats = parseTestOutput(stderr || stdout);
+
+    // Save to history
+    const historyEntry = {
+      timestamp: new Date().toISOString(),
+      duration,
+      stats,
+      success: true
+    };
+    saveHistory(SERVER_HISTORY_PATH, historyEntry);
+
     res.json({
       success: true,
-      message: 'Server coverage report regenerated successfully'
+      message: 'Server coverage report regenerated successfully',
+      duration,
+      stats
     });
   } catch (error) {
+    const endTime = Date.now();
+    const duration = Math.round((endTime - startTime) / 1000);
+
     console.error('Error regenerating server coverage:', error);
+
+    // Save failed attempt to history
+    const historyEntry = {
+      timestamp: new Date().toISOString(),
+      duration,
+      success: false,
+      error: error.message
+    };
+    saveHistory(SERVER_HISTORY_PATH, historyEntry);
+
     res.status(500).json({
       error: 'Failed to regenerate server coverage report',
       details: error.message
