@@ -2,14 +2,14 @@
 
 | Metric | Covered | Total | Percentage |
 |--------|---------|-------|------------|
-| **Lines** | 749 | 1012 | 🟡 **74.01%** |
-| **Statements** | 782 | 1058 | 🟡 **73.91%** |
-| **Functions** | 183 | 242 | 🟡 **75.61%** |
-| **Branches** | 463 | 803 | 🟠 **57.65%** |
+| **Lines** | 810 | 1012 | 🟢 **80.03%** |
+| **Statements** | 845 | 1058 | 🟡 **79.86%** |
+| **Functions** | 192 | 242 | 🟡 **79.33%** |
+| **Branches** | 544 | 803 | 🟠 **67.74%** |
 
 ### Coverage Status: 🟡 Good
 
-Overall coverage: **70.30%**
+Overall coverage: **76.74%**
 
 ---
 
@@ -34,7 +34,7 @@ Overall coverage: **70.30%**
 | `src/components/LoginRegister.js` | 🟢 87.7% | 🟢 87.5% | 🟢 89.3% | 🟡 73.1% |
 | `src/components/NotFound.js` | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% |
 | `src/components/PageContainer.js` | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% |
-| `src/components/Profile.js` | 🔴 44.0% | 🔴 42.9% | 🔴 20.0% | 🔴 10.7% |
+| `src/components/Profile.js` | 🟢 90.0% | 🟢 88.6% | 🟡 73.3% | 🟠 61.4% |
 | `src/components/ProtectedRoute.js` | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% |
 | `src/components/TestPage.js` | 🔴 0.0% | 🔴 0.0% | 🔴 0.0% | 🟢 100.0% |
 | `src/components/UserEditModal.js` | 🟢 85.2% | 🟢 87.0% | 🟢 82.6% | 🟡 73.8% |
@@ -48,8 +48,8 @@ Overall coverage: **70.30%**
 | `src/validation/index.js` | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% |
 | `src/validation/validationConfig.js` | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% | 🟢 100.0% |
 | `src/validation/validationSchemas.js` | 🟠 63.1% | 🟠 64.1% | 🟡 72.7% | 🟠 61.5% |
-| `src/validation/validationUtils.js` | 🔴 34.5% | 🔴 34.5% | 🔴 25.0% | 🔴 45.8% |
-| **OVERALL** | 🟡 **74.0%** | 🟡 **73.9%** | 🟡 **75.6%** | 🟠 **57.6%** |
+| `src/validation/validationUtils.js` | 🟠 61.8% | 🟠 61.8% | 🟠 50.0% | 🟠 66.7% |
+| **OVERALL** | 🟢 **80.0%** | 🟡 **79.9%** | 🟡 **79.3%** | 🟠 **67.7%** |
 
 ---
 
@@ -64,4 +64,4 @@ Overall coverage: **70.30%**
 
 ## Recommendations
 
-- ⚠️ **Branch coverage is low (57.6%)** - Add more tests for conditional logic and edge cases
+- ⚠️ **Branch coverage is low (67.7%)** - Add more tests for conditional logic and edge cases
