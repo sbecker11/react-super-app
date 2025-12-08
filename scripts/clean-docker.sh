@@ -34,7 +34,7 @@ cd "$PROJECT_ROOT"
 
 # Step 1: Stop and remove containers
 echo -e "${CYAN}[1/5] Stopping and removing containers...${NC}"
-docker-compose down 2>/dev/null || true
+docker compose down 2>/dev/null || true
 echo -e "${GREEN}✅ Containers removed${NC}"
 echo ""
 

@@ -130,9 +130,9 @@ else
     # Stop and remove containers
     echo -e "${YELLOW}   Stopping containers...${NC}"
     if [ "$CLEAN_VOLUMES" = true ]; then
-        docker-compose down -v > /dev/null 2>&1 || true
+        docker compose down -v > /dev/null 2>&1 || true
     else
-        docker-compose down > /dev/null 2>&1 || true
+        docker compose down > /dev/null 2>&1 || true
     fi
 
     # Remove project-specific images
@@ -154,7 +154,7 @@ echo ""
 
 # Step 4: Start Docker services
 echo -e "${CYAN}[4/8] Starting Docker services (database)...${NC}"
-docker-compose up -d postgres
+docker compose up -d postgres
 echo -e "${YELLOW}⏳ Waiting for database to be ready...${NC}"
 sleep 5
 

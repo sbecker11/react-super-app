@@ -67,7 +67,7 @@ echo ""
 # Stop Docker services
 echo -e "${CYAN}[3/3] Stopping Docker services...${NC}"
 cd "$PROJECT_ROOT"
-docker-compose down
+docker compose down
 echo -e "${GREEN}✅ Docker services stopped${NC}"
 echo ""
 

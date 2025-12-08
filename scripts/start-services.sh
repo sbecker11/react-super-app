@@ -23,10 +23,10 @@ if ! "$SCRIPT_DIR/check-ports.sh"; then
 fi
 
 echo ""
-echo -e "${GREEN}Starting all services with docker-compose...${NC}"
+echo -e "${GREEN}Starting all services with docker compose...${NC}"
 echo ""
 
-# Run docker-compose with the provided arguments
+# Run docker compose with the provided arguments
 cd "$PROJECT_ROOT"
-docker-compose "$@"
+docker compose "$@"
 

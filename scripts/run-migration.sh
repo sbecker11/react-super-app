@@ -58,7 +58,7 @@ if ! docker ps | grep -q react_super_app_postgres; then
     echo -e "${YELLOW}⚠️  Database container not running${NC}"
     echo "Starting database container..."
     cd "$PROJECT_ROOT"
-    docker-compose up -d postgres
+    docker compose up -d postgres
     echo "Waiting for database to be ready..."
     sleep 5
 fi
