@@ -696,6 +696,7 @@ describe('Profile Component', () => {
     it('should handle null or undefined user gracefully', async () => {
       AuthContext.useAuth.mockReturnValue({
         user: null,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -782,6 +783,7 @@ describe('Profile Component', () => {
     it('should show loading when user is null', () => {
       AuthContext.useAuth.mockReturnValue({
         user: null,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -805,6 +807,7 @@ describe('Profile Component', () => {
 
       AuthContext.useAuth.mockReturnValue({
         user: minimalUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -833,6 +836,7 @@ describe('Profile Component', () => {
 
       AuthContext.useAuth.mockReturnValue({
         user: longNameUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });
@@ -860,6 +864,7 @@ describe('Profile Component', () => {
 
       AuthContext.useAuth.mockReturnValue({
         user: specialCharUser,
+        isAdmin: jest.fn(() => false),
         logout: jest.fn(),
         updateUser: jest.fn(),
       });

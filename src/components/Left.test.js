@@ -161,7 +161,7 @@ describe("Left", () => {
     );
     
     await waitFor(() => {
-      const leftElement = container.querySelector('.left');
+      const leftElement = container.querySelector('.left-column');
       expect(leftElement).toBeInTheDocument();
     });
   });
@@ -284,7 +284,8 @@ describe("Left", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
+        // Profile link shows "Profile" text, not user name
+        expect(screen.getByText('Profile')).toBeInTheDocument();
       });
     });
 

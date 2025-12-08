@@ -304,7 +304,7 @@ describe('UserManagement', () => {
       expect(adminAPI.listUsers).toHaveBeenCalled();
     });
 
-    const limitSelect = screen.getByLabelText('Per Page');
+    const limitSelect = screen.getByLabelText('Items Per Page');
     fireEvent.change(limitSelect, { target: { value: '50' } });
 
     await waitFor(() => {

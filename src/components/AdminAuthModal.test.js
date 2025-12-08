@@ -86,7 +86,7 @@ describe('AdminAuthModal', () => {
   });
 
   it('should call requestElevatedSession on form submit', async () => {
-    mockRequestElevatedSession.mockResolvedValue(true);
+    mockRequestElevatedSession.mockResolvedValue({ success: true, token: 'mock-elevated-token' });
     const onSuccess = jest.fn();
     const onClose = jest.fn();
 
@@ -108,7 +108,7 @@ describe('AdminAuthModal', () => {
   });
 
   it('should call onSuccess and onClose on successful authentication', async () => {
-    mockRequestElevatedSession.mockResolvedValue(true);
+    mockRequestElevatedSession.mockResolvedValue({ success: true, token: 'mock-elevated-token' });
     const onSuccess = jest.fn();
     const onClose = jest.fn();
 
@@ -131,7 +131,7 @@ describe('AdminAuthModal', () => {
   });
 
   it('should display error message on authentication failure', async () => {
-    mockRequestElevatedSession.mockResolvedValue(false);
+    mockRequestElevatedSession.mockResolvedValue({ success: false, token: null });
     const onSuccess = jest.fn();
     const onClose = jest.fn();
 

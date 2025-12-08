@@ -491,12 +491,12 @@ describe('AuthContext', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      let success;
+      let result_obj;
       await act(async () => {
-        success = await result.current.requestElevatedSession('correct-password');
+        result_obj = await result.current.requestElevatedSession('correct-password');
       });
 
-      expect(success).toBe(true);
+      expect(result_obj.success).toBe(true);
       expect(result.current.elevatedToken).toBe(elevatedToken);
       expect(result.current.elevatedExpiresAt).toBe(expiresAt);
       expect(result.current.hasElevatedSession()).toBe(true);
@@ -523,12 +523,12 @@ describe('AuthContext', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      let success;
+      let result_obj;
       await act(async () => {
-        success = await result.current.requestElevatedSession('wrong-password');
+        result_obj = await result.current.requestElevatedSession('wrong-password');
       });
 
-      expect(success).toBe(false);
+      expect(result_obj.success).toBe(false);
       expect(result.current.elevatedToken).toBeNull();
       expect(result.current.hasElevatedSession()).toBe(false);
       expect(toast.error).toHaveBeenCalledWith('Invalid password');
@@ -551,12 +551,12 @@ describe('AuthContext', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      let success;
+      let result_obj;
       await act(async () => {
-        success = await result.current.requestElevatedSession('password');
+        result_obj = await result.current.requestElevatedSession('password');
       });
 
-      expect(success).toBe(false);
+      expect(result_obj.success).toBe(false);
       expect(toast.error).toHaveBeenCalled();
     });
 
