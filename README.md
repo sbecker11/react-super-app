@@ -374,7 +374,7 @@ Follow these docs in order for the complete picture:
 ### 📊 Project Status & Planning
 
 - **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Current status, recent accomplishments, roadmap (37% complete)
-- **[CREDENTIALS.md](./CREDENTIALS.md)** - Default credentials (PostgreSQL, Admin user)
+  - Includes default credentials section (PostgreSQL, Admin user)
 
 ### 🎨 Additional Resources
 
