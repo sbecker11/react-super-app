@@ -1,36 +1,44 @@
-# React Web Application
+# 🚀 React Super App
 
-A React-based single-page application built with Create React App, featuring routing, authentication forms, and a job description analyzer.
+A full-stack job search tracking application built with React 18, Express.js, and PostgreSQL. Track job applications, manage resumes, organize recruiters, and analyze job descriptions—all in one place.
 
 ## 📋 Project Overview
 
-This web application includes:
-- **Routing**: React Router for navigation between pages
-- **Components**: Header, Footer, Sidebar (Left), Home, About, Login/Register
-- **Features**: 
-  - User authentication form with validation (using Yup)
-  - Job Description Analyzer component (in development)
-  - Responsive layout with header, sidebar, and footer
+**Purpose**: Help job seekers manage their entire job search process from finding opportunities to tracking outcomes.
+
+**Architecture**: Modern full-stack application with Docker containerization
+- **Frontend**: React 18 with React Router, Yup validation, and context-based state management
+- **Backend**: Express.js REST API with JWT authentication and RBAC
+- **Database**: PostgreSQL 15 with 8 normalized tables
+- **DevOps**: Docker Compose for local development with hot reload
+
+**Key Features**:
+- 🔐 User authentication with JWT and role-based access control (Admin/User)
+- 🛡️ Protected routes with authentication checks
+- 📊 Job description analyzer (in development)
+- 👥 User management for admins
+- 🧪 Comprehensive testing (96+ tests, 98.6% pass rate)
+- 🐳 Fully containerized development environment
 
 ## 📊 Project Status
 
-**Architecture**: Full-stack React application with Express.js REST API and PostgreSQL database
+**Completion Rate**: **37%** (13/35 features complete)
 
-**Current Status**:
-- ✅ **Client**: React app with routing, forms, validation, and UI components
-- ✅ **Server**: Express.js REST API with authentication endpoints
-- ✅ **Database**: PostgreSQL with Docker Compose setup
-- ✅ **Testing**: 96+ tests with 98% statement coverage
-- 🔄 **Integration**: Backend ready, client-backend integration in progress
+**Current Phase**: Core authentication complete, building features
 
-**Completion Rate**: ~31% (10 completed / 32 total features tracked)
+**Recent Milestones** (Dec 2025):
+- ✅ Client-backend integration complete
+- ✅ Authentication system production-ready
+- ✅ Protected routes implemented
+- ✅ RBAC system functional
+- ✅ Documentation consolidated
 
-**Next Steps** (High Priority):
-1. Connect LoginRegister form to backend API
-2. Implement Authentication Context for state management
-3. Create protected routes
+**Next Priorities**:
+1. Complete admin UI components
+2. Implement JDAnalyzer functionality
+3. Build job tracking features
 
-📖 **See [Features Summary](./docs/FEATURES_SUMMARY.md) for complete feature status and roadmap**
+📖 **See [PROJECT_STATUS.md](./PROJECT_STATUS.md) for detailed status and roadmap**
 
 ## 🚀 Getting Started
 
@@ -97,7 +105,23 @@ npm run start:services:detached
 
 **🎉 That's it!** The application is now running with all services.
 
-📖 **For complete setup instructions, prerequisites, troubleshooting, and alternative local development options, see [Getting Started Guide](./docs/GETTING_STARTED.md)**
+### 4-Terminal Development Setup
+
+For an optimized development workflow, use our iTerm2 script that opens 4 color-coded panes:
+
+```bash
+bash scripts/dev-terminals.sh
+```
+
+This creates:
+- **Terminal 1 (Cyan)**: Database (PostgreSQL)
+- **Terminal 2 (Green)**: Server (Express API with hot reload)
+- **Terminal 3 (Blue)**: Client (React with hot reload)
+- **Terminal 4 (Purple)**: Claude Code (AI assistant)
+
+**Setup**: Create 4 profiles in iTerm2 named "Database", "Server", "Client", "Claude" with your preferred background colors.
+
+📖 **For complete setup instructions, 4-terminal workflow details, and troubleshooting, see [docs/01_GETTING_STARTED.md](./docs/01_GETTING_STARTED.md)**
 
 ---
 
@@ -257,43 +281,59 @@ npm run test:coverage        # Generate coverage report
 ```bash
 npm test                    # Run tests in watch mode
 npm run test:coverage       # Generate coverage report
+cd server && npm test       # Run server tests
 ```
 
-**Test Status**: 96+ tests with 98% statement coverage
+**Test Status**: 96+ tests, 98.6% pass rate (575/583 passing)
+- Client: 69 tests, 52% coverage
+- Server: 27 tests, 47% coverage
 
-📖 **For comprehensive testing documentation including test structure, coverage analysis, best practices, troubleshooting, and server-side tests, see [Testing Guide](./docs/TESTING_GUIDE.md)**
+📖 **For comprehensive testing guide, see [docs/07_TESTING.md](./docs/07_TESTING.md)**
 
-## 🔍 Current Routes
+## 🔍 Application Routes
 
-The application has the following routes:
+### Public Routes
 - `/` or `/home` - Home page
 - `/about` - About page
 - `/login-register` - Login/Register form
+
+### Protected Routes (Require Authentication)
 - `/analyzer` - Job Description Analyzer
+- `/profile` - User profile management
+- `/admin` - Admin dashboard (admin role required)
+- `/admin/users` - User management (admin role required)
+- `/admin/testing` - Testing coverage viewer (admin role required)
+
+### Error Routes
 - `*` (any other path) - 404 Not Found page
+
+📖 **For complete routing documentation, see [docs/06_CLIENT.md](./docs/06_CLIENT.md)**
 
 ## 📝 Key Features
 
-- **Form Validation**: Yup-based validation with real-time feedback and enhanced error messages
-- **Routing**: React Router with multiple routes including 404 handling
-- **Error Handling**: Error boundaries for graceful error recovery
-- **Loading States**: Reusable loading spinner component
-- **Authentication Forms**: Login/Register with comprehensive validation
+### ✅ Completed
+- 🔐 **Authentication**: JWT-based with bcrypt password hashing
+- 🛡️ **RBAC**: Role-Based Access Control (Admin/User)
+- 🔒 **Protected Routes**: Authentication-required routes
+- ✅ **Form Validation**: Yup-based with real-time feedback
+- 🚨 **Error Handling**: Error boundaries for graceful recovery
+- ⏳ **Loading States**: Reusable loading spinner
+- 🔔 **Toast Notifications**: Success/error feedback
+- 🐳 **Docker Support**: Full containerization
+- 🧪 **Testing**: 96+ tests with high pass rate
 
-📖 **For detailed validation rules, error handling, and UI feedback patterns, see [Validation Guide](./docs/VALIDATION_GUIDE.md)**
+### 🔄 In Progress
+- 👥 Admin UI components (20% complete)
+- 📊 JDAnalyzer functionality (10% complete)
 
-## ⚠️ Known Issues / TODO
+### 📋 Planned
+- Job search tracking
+- Resume/cover letter management
+- Interview tracking
+- Analytics and reporting
+- Email integration
 
-For a comprehensive overview of feature status (completed, in progress, and planned), see:
-
-👉 **[Features Summary](./docs/FEATURES_SUMMARY.md)**
-
-**Quick Summary:**
-- Backend API ready; client integration needed
-- Authentication Context implementation pending
-- Protected routes need to be created
-- Toast notification system needed for API feedback
-- JDAnalyzer core functionality pending
+📖 **For complete feature roadmap, see [docs/02_FEATURES.md](./docs/02_FEATURES.md)**
 
 ## 🔧 Troubleshooting
 
@@ -317,37 +357,29 @@ npm install
 
 This project includes comprehensive documentation covering all aspects of development, deployment, testing, and more. All documentation files are located in the [`docs/`](./docs/) directory.
 
-### 🚀 Getting Started & Setup
+### 📑 Core Documentation (Numbered Sequence)
 
-- **[Getting Started Guide](./docs/GETTING_STARTED.md)** - Quick start guide to get the application up and running with Docker Compose, PostgreSQL, and REST API
-- **[Create React App Guide](./docs/CREATE-REACT-APP-GUIDE.md)** - Detailed instructions for creating a new React application from scratch using different methods (Create React App, Vite, Next.js, or manual setup)
+Follow these docs in order for the complete picture:
 
-### 🐳 Docker & Deployment
+1. **[00_QUICK_START.md](./docs/00_QUICK_START.md)** - One-command startup guide
+2. **[01_GETTING_STARTED.md](./docs/01_GETTING_STARTED.md)** - Complete setup with 4-terminal development workflow
+3. **[02_FEATURES.md](./docs/02_FEATURES.md)** - Architecture diagrams + feature roadmap (37% complete)
+4. **[03_DOCKER.md](./docs/03_DOCKER.md)** - Docker Compose setup and configuration
+5. **[04_DATABASE.md](./docs/04_DATABASE.md)** - PostgreSQL schema (8 tables) with RBAC
+6. **[05_SERVER.md](./docs/05_SERVER.md)** - Express.js REST API reference
+7. **[06_CLIENT.md](./docs/06_CLIENT.md)** - React app guide with components and routing
+8. **[07_TESTING.md](./docs/07_TESTING.md)** - Testing guide (96+ tests, coverage analysis)
+9. **[08_TROUBLESHOOTING.md](./docs/08_TROUBLESHOOTING.md)** - Common issues and solutions
 
-- **[Docker Setup Guide](./docs/DOCKER_SETUP_GUIDE.md)** - Comprehensive guide for setting up and running the application using Docker Compose
-- **[Docker Compose Summary](./docs/DOCKER_COMPOSE_SUMMARY.md)** - Quick reference for the Docker Compose setup and services
+### 📊 Project Status & Planning
 
-### 💾 Storage & Persistence
+- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Current status, recent accomplishments, roadmap (37% complete)
+- **[CREDENTIALS.md](./CREDENTIALS.md)** - Default credentials (PostgreSQL, Admin user)
 
-- **[Storage Guide](./docs/STORAGE_GUIDE.md)** - Complete guide covering PostgreSQL database setup, schemas, REST API schemas, and client-side session storage
+### 🎨 Additional Resources
 
-### 🧪 Testing
-
-- **[Testing Guide](./docs/TESTING_GUIDE.md)** - Comprehensive testing documentation including client-side tests, server-side tests, coverage analysis, and best practices
-- **[Manual Setup Guide](./docs/MANUAL_SETUP.md)** - Step-by-step manual commands for setup and troubleshooting
-
-### ✅ Validation
-
-- **[Validation Guide](./docs/VALIDATION_GUIDE.md)** - Complete guide to form validation including Yup implementation, error handling, UI feedback, and centralized configuration
-
-### 📋 Project Planning
-
-- **[Features Summary](./docs/FEATURES_SUMMARY.md)** - Comprehensive overview of feature status including completed features, in-progress items, and planned improvements, organized by priority
-
-### 🔑 Credentials & Security
-
-- **[Credentials Reference](./CREDENTIALS.md)** - Quick access to all default credentials (PostgreSQL, Application Admin)
-- **[Database Isolation](./docs/DATABASE_ISOLATION.md)** - How the app uses its own isolated database
+- **[CLAUDE.md](./CLAUDE.md)** - Project context for AI assistants
+- **[VALIDATION_GUIDE.md](./docs/VALIDATION_GUIDE.md)** - Form validation patterns with Yup
 
 ---
 
