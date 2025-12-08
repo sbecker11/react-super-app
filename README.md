@@ -38,7 +38,7 @@ A full-stack job search tracking application built with React 18, Express.js, an
 2. Implement JDAnalyzer functionality
 3. Build job tracking features
 
-📖 **See [PROJECT_STATUS.md](./PROJECT_STATUS.md) for detailed status and roadmap**
+📖 **See [docs/09_PROJECT_STATUS.md](./docs/09_PROJECT_STATUS.md) for detailed status and roadmap**
 
 ## 🚀 Getting Started
 
@@ -365,16 +365,12 @@ Follow these docs in order for the complete picture:
 2. **[01_GETTING_STARTED.md](./docs/01_GETTING_STARTED.md)** - Complete setup with 4-terminal development workflow
 3. **[02_FEATURES.md](./docs/02_FEATURES.md)** - Architecture diagrams + feature roadmap (37% complete)
 4. **[03_DOCKER.md](./docs/03_DOCKER.md)** - Docker Compose setup and configuration
-5. **[04_DATABASE.md](./docs/04_DATABASE.md)** - PostgreSQL schema (8 tables) with RBAC
+5. **[04_DATABASE.md](./docs/04_DATABASE.md)** - PostgreSQL schema (8 tables) with RBAC + database credentials
 6. **[05_SERVER.md](./docs/05_SERVER.md)** - Express.js REST API reference
 7. **[06_CLIENT.md](./docs/06_CLIENT.md)** - React app guide with components and routing
 8. **[07_TESTING.md](./docs/07_TESTING.md)** - Testing guide (96+ tests, coverage analysis)
 9. **[08_TROUBLESHOOTING.md](./docs/08_TROUBLESHOOTING.md)** - Common issues and solutions
-
-### 📊 Project Status & Planning
-
-- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Current status, recent accomplishments, roadmap (37% complete)
-  - Includes default credentials section (PostgreSQL, Admin user)
+10. **[09_PROJECT_STATUS.md](./docs/09_PROJECT_STATUS.md)** - Current status, accomplishments, roadmap + admin credentials
 
 ### 🎨 Additional Resources
 
